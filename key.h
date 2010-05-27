@@ -7,7 +7,7 @@
 
 typedef struct cs_key_struct {
     jack_client_t *client;
-    pthread_mutex_t *lock;
+    pthread_mutex_t lock;
     jack_port_t *note_port;
     jack_port_t *freq_port;
     size_t tuning_length;
@@ -19,7 +19,7 @@ typedef struct cs_key_struct {
 int cs_key_init(cs_key_t *self, const char *client_name, jack_options_t flags, char *server_name);
 int cs_key_set_root(cs_key_t *self, jack_default_audio_sample_t root);
 int cs_key_set_tuning(cs_key_t *self, jack_default_audio_sample_t *tuning, size_t tuning_length);
-jack_default_audio_sample_t cs_key_note_freq(cs_key_t *self, jack_default_audio_sample_t note);
+jack_default_audio_sample_t cs_key_note2freq(cs_key_t *self, jack_default_audio_sample_t note);
 
 #define CS_A 220.0
 #define CS_A_SHARP 233.081880759045
@@ -43,16 +43,16 @@ jack_default_audio_sample_t cs_key_note_freq(cs_key_t *self, jack_default_audio_
 #define CS_G_SHARP 415.304697579945
 #define CS_A_FLAT 415.304697579945
 
-const jack_default_audio_sample_t *CS_MAJOR_TUNING;
+extern const jack_default_audio_sample_t CS_MAJOR_TUNING[];
 #define CS_MAJOR_TUNING_SIZE 7
 
-const jack_default_audio_sample_t *CS_MINOR_TUNING;
+extern const jack_default_audio_sample_t CS_MINOR_TUNING[];
 #define CS_MINOR_TUNING_SIZE 7
 
-const jack_default_audio_type *CS_PYTHAGOREAN_TUNING;
+extern const jack_default_audio_sample_t CS_PYTHAGOREAN_TUNING[];
 #define CS_PYTHAGOREAN_TUNING_SIZE 12
 
-#define CS_EQUAL_TUNING ((jack_default_audio_t *) -1)
+#define CS_EQUAL_TUNING ((jack_default_audio_sample_t *) -1)
 #define CS_EQUAL_TUNING_SIZE 12
 
 #endif

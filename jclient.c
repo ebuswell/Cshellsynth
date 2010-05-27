@@ -9,7 +9,7 @@ int jclient_init(jclient_t *self, const char *client_name, jack_options_t flags,
     } else {
 	self->client = jack_client_open(client_name, flags, &status, server_name);
     }
-    if(cself->client == NULL) {
+    if(self->client == NULL) {
 	return status;
     } else {
 	return 0;
@@ -21,20 +21,7 @@ int jclient_locking_init(jclient_locking_t *self, const char *client_name, jack_
     if(r != 0) {
 	return r;
     }
-    pthread_mutexattr_t attr;
-    r = pthread_mutexattr_init(&attr);
-    if(r != 0) {
-	return r;
-    }
-    r = pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
-    if(r != 0) {
-	return r;
-    }
-    r = pthread_mutex_init(&self->lock, &attr);
-    if(r != 0) {
-	return r;
-    }
-    r = pthread_mutexattr_destroy(&attr);
+    r = pthread_mutex_init(&self->lock, NULL);
     if(r != 0) {
 	return r;
     }

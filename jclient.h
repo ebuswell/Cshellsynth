@@ -10,7 +10,7 @@ typedef struct jclient_struct {
 
 typedef struct jclient_locking_struct {
     jack_client_t *client;
-    pthread_mutex_t *lock;
+    pthread_mutex_t lock;
 } jclient_locking_t;
 
 int jclient_destroy(jclient_t *self);

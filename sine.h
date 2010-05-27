@@ -2,6 +2,7 @@
 #define SINE_H 1
 
 #include <jack/jack.h>
+#include "synth.h"
 
 typedef struct cs_sine_struct {
     jack_client_t *client;
