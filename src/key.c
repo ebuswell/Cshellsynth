@@ -71,31 +71,35 @@ static int cs_key_process(jack_nframes_t nframes, void *arg) {
 }
 
 jack_default_audio_sample_t cs_key_note2freq(cs_key_t *self, jack_default_audio_sample_t note) {
+    if(note == NAN) {
+	return NAN;
+    }
     if(self->tuning == CS_EQUAL_TUNING) {
 	return self->root * powf(2.0f, (note/12.0f));
     } else {
+	int tuning_length = self->tuning_length;
 	jack_default_audio_sample_t f = note;
-	int n = floor(f);
+	int n = floorf(f);
 	f -= (jack_default_audio_sample_t) n;
-	int m = n % self->tuning_length;
-	int e = n / self->tuning_length;
+	int m = n % tuning_length;
+	int e = n / tuning_length;
 	if(m < 0) {
 	    e -= 1;
-	    m = self->tuning_length + m;
+	    m = tuning_length + m;
 	}
 	jack_default_audio_sample_t freq = self->tuning[m];
 	if(f != 0.0f) {
-	    if(m == (self->tuning_length - 1)) {
+	    if(m == (tuning_length - 1)) {
 		freq *= powf(2.0/self->tuning[m], f);
 	    } else {
 		freq *= powf(self->tuning[m + 1]/self->tuning[m], f);
 	    }
 	}
 	if(e >= 0) {
-	    return (freq * self->root) * (1 << e);
+	    return ((freq * self->root) * (1 << e));
 	} else {
 	    e = -e;
-	    return (freq * self->root) / (1 << e);
+	    return ((freq * self->root) / (1 << e));
 	}
     }
 }
