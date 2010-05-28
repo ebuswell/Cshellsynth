@@ -2,6 +2,7 @@
 #define CONTROLLER_H 1
 
 #include <jack/jack.h>
+#include "jclient.h"
 
 typedef struct cs_ctlr_struct {
     jack_client_t *client;

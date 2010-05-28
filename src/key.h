@@ -9,6 +9,7 @@ typedef struct cs_key_struct {
     jack_client_t *client;
     pthread_mutex_t lock;
     jack_port_t *note_port;
+    jack_default_audio_sample_t note;
     jack_port_t *freq_port;
     size_t tuning_length;
     jack_default_audio_sample_t *tuning;
@@ -18,8 +19,9 @@ typedef struct cs_key_struct {
 #define cs_key_destroy(cs_key) jclient_locking_destroy((jclient_locking_t *) (cs_key))
 int cs_key_init(cs_key_t *self, const char *client_name, jack_options_t flags, char *server_name);
 int cs_key_set_root(cs_key_t *self, jack_default_audio_sample_t root);
-int cs_key_set_tuning(cs_key_t *self, jack_default_audio_sample_t *tuning, size_t tuning_length);
+int cs_key_set_tuning(cs_key_t *self, const jack_default_audio_sample_t *tuning, size_t tuning_length);
 jack_default_audio_sample_t cs_key_note2freq(cs_key_t *self, jack_default_audio_sample_t note);
+int cs_key_set_note(cs_key_t *self, jack_default_audio_sample_t note);
 
 #define CS_A 220.0
 #define CS_A_SHARP 233.081880759045

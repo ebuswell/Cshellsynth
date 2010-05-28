@@ -40,38 +40,8 @@ const jack_default_audio_sample_t CS_PYTHAGOREAN_TUNING[] = {
     243.0f/128.0f
 };
 
-static int cs_key_process(jack_nframes_t nframes, void *arg) {
-    cs_key_t *self = (cs_key_t *) arg;
-
-    jack_default_audio_sample_t *note_buffer = (jack_default_audio_sample_t *)jack_port_get_buffer(self->note_port, nframes);
-    if(note_buffer == NULL) {
-	return -1;
-    }
-
-    jack_default_audio_sample_t *freq_buffer = (jack_default_audio_sample_t *)jack_port_get_buffer(self->freq_port, nframes);
-    if(freq_buffer == NULL) {
-	return -1;
-    }
-
-    int r = pthread_mutex_lock(&self->lock);
-    {
-	if(r != 0) {
-	    return r;
-	}
-	int i;
-	for(i = 0; i < nframes; i++) {
-	    freq_buffer[i] = cs_key_note2freq(self, note_buffer[i]);
-	}
-    }
-    r = pthread_mutex_unlock(&self->lock);
-    if(r != 0) {
-	return r;
-    }
-    return 0;
-}
-
-jack_default_audio_sample_t cs_key_note2freq(cs_key_t *self, jack_default_audio_sample_t note) {
-    if(note == NAN) {
+static inline jack_default_audio_sample_t cs_key_note2freq_nolock(cs_key_t *self, jack_default_audio_sample_t note) {
+    if(isnanf(note)) {
 	return NAN;
     }
     if(self->tuning == CS_EQUAL_TUNING) {
@@ -104,7 +74,61 @@ jack_default_audio_sample_t cs_key_note2freq(cs_key_t *self, jack_default_audio_
     }
 }
 
-int cs_key_set_tuning(cs_key_t *self, jack_default_audio_sample_t *tuning, size_t tuning_length) {
+static int cs_key_process(jack_nframes_t nframes, void *arg) {
+    cs_key_t *self = (cs_key_t *) arg;
+
+    jack_default_audio_sample_t *note_buffer;
+    jack_default_audio_sample_t *freq_buffer = (jack_default_audio_sample_t *) jack_port_get_buffer(self->freq_port, nframes);
+    if(freq_buffer == NULL) {
+	return -1;
+    }
+
+    int r = pthread_mutex_lock(&self->lock);
+    {
+	if(r != 0) {
+	    return r;
+	}
+	if(isnanf(self->note)) {
+	    note_buffer = (jack_default_audio_sample_t *) jack_port_get_buffer(self->note_port, nframes);
+	    if(note_buffer == NULL) {
+		return -1;
+	    }
+	    int i;
+	    for(i = 0; i < nframes; i++) {
+		freq_buffer[i] = cs_key_note2freq_nolock(self, note_buffer[i]);
+	    }
+	} else {
+	    int i;
+	    jack_default_audio_sample_t freq = cs_key_note2freq_nolock(self, self->note);
+	    for(i = 0; i < nframes; i++) {
+		freq_buffer[i] = freq;
+	    }
+	}
+    }
+    r = pthread_mutex_unlock(&self->lock);
+    if(r != 0) {
+	return r;
+    }
+    return 0;
+}
+
+jack_default_audio_sample_t cs_key_note2freq(cs_key_t *self, jack_default_audio_sample_t note) {
+    jack_default_audio_sample_t freq;
+    int r = pthread_mutex_lock(&self->lock);
+    {
+	if(r != 0) {
+	    return NAN;
+	}
+	freq = cs_key_note2freq_nolock(self, note);
+    }
+    r = pthread_mutex_unlock(&self->lock);
+    if(r != 0) {
+	return NAN;
+    }
+    return freq;
+}
+
+int cs_key_set_tuning(cs_key_t *self, const jack_default_audio_sample_t *tuning, size_t tuning_length) {
     jack_default_audio_sample_t *tuning_cpy;
     if(tuning != CS_EQUAL_TUNING) {
 	tuning_cpy = malloc(tuning_length * sizeof(jack_default_audio_sample_t));
@@ -145,6 +169,17 @@ int cs_key_set_root(cs_key_t *self, jack_default_audio_sample_t root) {
     r = pthread_mutex_unlock(&self->lock);
 }
 
+int cs_key_set_note(cs_key_t *self, jack_default_audio_sample_t note) {
+    int r = pthread_mutex_lock(&self->lock);
+    {
+	if(r != 0) {
+	    return r;
+	}
+	self->note = note;
+    }
+    r = pthread_mutex_unlock(&self->lock);
+}
+
 int cs_key_init(cs_key_t *self, const char *client_name, jack_options_t flags, char *server_name) {
     int r = jclient_locking_init((jclient_locking_t *) self, client_name, flags, server_name);
     if(r != 0) {
@@ -166,11 +201,19 @@ int cs_key_init(cs_key_t *self, const char *client_name, jack_options_t flags, c
     self->tuning_length = CS_EQUAL_TUNING_SIZE;
     self->tuning = CS_EQUAL_TUNING;
     self->root = CS_C;
+    self->note = NAN;
 
     r = jack_set_process_callback(self->client, cs_key_process, self);
     if(r != 0) {
 	jclient_locking_destroy((jclient_locking_t *) self);
 	return r;
     }
+
+    r = jack_activate(self->client);
+    if(r != 0) {
+	jclient_locking_destroy((jclient_locking_t *) self);
+	return r;
+    }
+
     return 0;
 }

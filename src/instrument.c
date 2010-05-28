@@ -22,7 +22,7 @@ static int cs_inst_process(jack_nframes_t nframes, void *arg) {
 	int i;
 	for(i = 0; i < nframes; i++) {
 	    if(self->value != self->last_value) {
-		if(self->value == NAN) {
+		if(isnanf(self->value)) {
 		    ctl_buffer[i] = -1.0f;
 		} else {
 		    ctl_buffer[i] = 1.0f;
@@ -44,6 +44,7 @@ static int cs_inst_process(jack_nframes_t nframes, void *arg) {
 int cs_inst_init(cs_inst_t *self, const char *client_name, jack_options_t flags, char *server_name) {
     int r = cs_ctlr_init((cs_ctlr_t *) self, client_name, flags, server_name);
     if(r != 0) {
+	cs_ctlr_destroy((cs_ctlr_t *) self);
 	return r;
     }
 
@@ -52,8 +53,16 @@ int cs_inst_init(cs_inst_t *self, const char *client_name, jack_options_t flags,
 
     r = jack_set_process_callback(self->client, cs_inst_process, self);
     if(r != 0) {
+	cs_ctlr_destroy((cs_ctlr_t *) self);
 	return r;
     }
+
+    r = jack_activate(self->client);
+    if(r != 0) {
+	cs_ctlr_destroy((cs_ctlr_t *) self);
+	return r;
+    }
+
     return 0;
 }
 
