@@ -1,1 +1,2 @@
 SUBDIRS = src
+MAINTAINERCLEANFILES = aclocal.m4 config.guess config.h.in config.h.in~ config.sub configure depcomp install-sh ltmain.sh Makefile.in missing

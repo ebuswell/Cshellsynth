@@ -12,6 +12,7 @@ AC_PROG_CC
 AC_PROG_LIBTOOL
 
 # Checks for libraries.
+PKG_CHECK_MODULES([JACK], [jack], [HAVE_JACK=true], [HAVE_JACK=false])
 
 # Checks for header files.
 
