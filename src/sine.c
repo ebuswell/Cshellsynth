@@ -31,7 +31,7 @@ static int cs_sine_process(jack_nframes_t nframes, void *arg) {
 		out_buffer[i] = 0.0f;
 	    } else {
 		double period = sample_rate / f;
-		if(self->offset > period) {
+		while(self->offset >= period) {
 		    self->offset -= period;
 		}
 		out_buffer[i] = sinf((2.0 * M_PI * f * self->offset) / sample_rate);

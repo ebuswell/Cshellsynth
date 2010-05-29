@@ -21,7 +21,8 @@ static int cs_inst_process(jack_nframes_t nframes, void *arg) {
 	}
 	int i;
 	for(i = 0; i < nframes; i++) {
-	    if(self->value != self->last_value) {
+	    if((self->value != self->last_value)
+	       && !(isnanf(self->value) && isnanf(self->last_value))) {
 		if(isnanf(self->value)) {
 		    ctl_buffer[i] = -1.0f;
 		} else {

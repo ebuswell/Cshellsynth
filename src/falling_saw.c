@@ -37,7 +37,7 @@ static int cs_fsaw_process(jack_nframes_t nframes, void *arg) {
 		//  \|
 		// 10
 		double period = sample_rate / f;
-		if(self->offset >= period) {
+		while(self->offset >= period) {
 		    self->offset -= period;
 		}
 		double offset = self->offset + (period / 2);

@@ -32,7 +32,7 @@ static int cs_square_process(jack_nframes_t nframes, void *arg) {
 		out_buffer[i] = 0.0f;
 	    } else {
 		double period = sample_rate / f;
-		if(self->offset >= period) {
+		while(self->offset >= period) {
 		    self->offset -= period;
 		}
 		if(self->offset >= (period / 2.0)) {

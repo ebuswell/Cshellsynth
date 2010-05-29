@@ -1,5 +1,5 @@
 lib_LTLIBRARIES = libcshellsynth.la
-libcshellsynth_la_SOURCES = controller.c falling_saw.c instrument.c jclient.c key.c modulator.c rising_saw.c sine.c square.c synth.c triangle.c
+libcshellsynth_la_SOURCES = clock.c controller.c envelope_generator.c falling_saw.c instrument.c jclient.c key.c mixer.c modulator.c rising_saw.c sequencer.c sine.c square.c synth.c triangle.c
 libcshellsynth_la_LDFLAGS = $(JACK_LIBS) -module -export-dynamic $(LDFLAGS)
 libcshellsynth_la_CFLAGS = $(JACK_CFLAGS) $(CFLAGS)
 # include_HEADERS = controller.h instrument.h synth.h jclient.h
