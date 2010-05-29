@@ -1,0 +1,3 @@
+* Add velocity to controllers and envelope generator
+* Add aftertouch to controllers
+* Create portamento (time-smoothed value changes)
