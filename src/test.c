@@ -7,6 +7,7 @@
 #include "rising_saw.h"
 #include "falling_saw.h"
 #include "square.h"
+#include "infh.h"
 #include "modulator.h"
 #include "envelope_generator.h"
 #include "clock.h"
@@ -29,6 +30,7 @@ int main(int argc, char **argv) {
     cs_rsaw_t rsaw;
     cs_fsaw_t fsaw;
     cs_square_t square;
+    cs_infh_t infh;
     cs_envg_t envg;
     cs_modu_t envm;
     cs_seq_t seq;
@@ -130,6 +132,12 @@ int main(int argc, char **argv) {
 	exit(r);
     }
 
+    r = cs_infh_init(&infh, "infh", 0, NULL);
+    if(r != 0) {
+	perror("Could not initialize infh");
+	exit(r);
+    }
+
     r = cs_envg_init(&envg, "envg", 0, NULL);
     if(r != 0) {
 	perror("Could not initialize envg");
@@ -202,6 +210,7 @@ int main(int argc, char **argv) {
     jack_connect(rsaw.client, "rsaw:out", "envm:in1");
     jack_connect(fsaw.client, "fsaw:out", "envm:in1");
     jack_connect(square.client, "square:out", "envm:in1");
+    jack_connect(infh.client, "infh:out", "envm:in1");
     jack_connect(envm.client, "envm:out", "system:playback_1");
     jack_connect(envm.client, "envm:out", "system:playback_2");
 
@@ -253,6 +262,8 @@ int main(int argc, char **argv) {
     	perror("Could not stop instrument");
     	exit(r);
     }
+    jack_connect(key.client, "key:freq", "infh:freq");
+    jack_disconnect(key.client, "key:freq", "fsaw:freq");
     jack_connect(clock.client, "clock:clock", "seq:clock");
     jack_disconnect(inst.client, "inst:out", "vibm:in2");
     jack_disconnect(inst.client, "inst:ctl", "envg:ctl");
@@ -375,6 +386,11 @@ int main(int argc, char **argv) {
     r = cs_square_destroy(&square);
     if(r != 0) {
 	perror("Could not destroy square");
+	exit(r);
+    }
+    r = cs_infh_destroy(&infh);
+    if(r != 0) {
+	perror("Could not destroy infh");
 	exit(r);
     }
     r = cs_envg_destroy(&envg);
