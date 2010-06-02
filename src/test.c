@@ -1,18 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "instrument.h"
-#include "key.h"
-#include "sine.h"
-#include "triangle.h"
-#include "rising_saw.h"
-#include "falling_saw.h"
-#include "square.h"
-#include "infh.h"
-#include "modulator.h"
-#include "envelope_generator.h"
-#include "clock.h"
-#include "sequencer.h"
-#include "mixer.h"
+#include "cshellsynth.h"
 #include <time.h>
 #include <math.h>
 

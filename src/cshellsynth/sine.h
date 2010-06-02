@@ -1,8 +1,9 @@
-#ifndef SINE_H
-#define SINE_H 1
+#ifndef CSHELLSYNTH_SINE_H
+#define CSHELLSYNTH_SINE_H 1
 
 #include <jack/jack.h>
-#include "synth.h"
+#include <pthread.h>
+#include <cshellsynth/synth.h>
 
 typedef struct cs_sine_struct {
     jack_client_t *client;

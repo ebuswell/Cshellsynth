@@ -1,7 +1,7 @@
 #include <jack/jack.h>
 #include <math.h>
-#include "synth.h"
-#include "jclient.h"
+#include "cshellsynth/synth.h"
+#include "cshellsynth/jclient.h"
 
 int cs_synth_set_freq(cs_synth_t *self, jack_default_audio_sample_t freq) {
     int r = pthread_mutex_lock(&self->lock);

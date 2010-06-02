@@ -1,6 +1,6 @@
 #include <jack/jack.h>
-#include "controller.h"
-#include "jclient.h"
+#include "cshellsynth/controller.h"
+#include "cshellsynth/jclient.h"
 
 int cs_ctlr_init(cs_ctlr_t *self, const char *client_name, jack_options_t flags, char *server_name) {
     int r = jclient_locking_init((jclient_locking_t *) self, client_name, flags, server_name);

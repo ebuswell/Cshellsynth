@@ -1,8 +1,8 @@
 #include <jack/jack.h>
 #include <math.h>
-#include "rising_saw.h"
-#include "synth.h"
-#include "jclient.h"
+#include "cshellsynth/rising_saw.h"
+#include "cshellsynth/synth.h"
+#include "cshellsynth/jclient.h"
 
 static int cs_rsaw_process(jack_nframes_t nframes, void *arg) {
     cs_rsaw_t *self = (cs_rsaw_t *) arg;

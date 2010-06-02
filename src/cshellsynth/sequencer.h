@@ -1,9 +1,10 @@
-#ifndef SEQUENCER_H
-#define SEQUENCER_H 1
+#ifndef CSHELLSYNTH_SEQUENCER_H
+#define CSHELLSYNTH_SEQUENCER_H 1
 
 #include <jack/jack.h>
 #include <stdbool.h>
-#include "controller.h"
+#include <pthread.h>
+#include <cshellsynth/controller.h>
 
 typedef struct cs_seq_sequence_struct {
     jack_default_audio_sample_t offset;

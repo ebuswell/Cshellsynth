@@ -1,8 +1,9 @@
-#ifndef ENVELOPE_GENERATOR_H
-#define ENVELOPE_GENERATOR_H 1
+#ifndef CSHELLSYNTH_ENVELOPE_GENERATOR_H
+#define CSHELLSYNTH_ENVELOPE_GENERATOR_H 1
 
 #include <jack/jack.h>
-#include "jclient.h"
+#include <pthread.h>
+#include <cshellsynth/jclient.h>
 
 enum cs_envg_state {
     ATTACK,

@@ -1,8 +1,8 @@
 #include <jack/jack.h>
 #include <math.h>
-#include "infh.h"
-#include "synth.h"
-#include "jclient.h"
+#include "cshellsynth/infh.h"
+#include "cshellsynth/synth.h"
+#include "cshellsynth/jclient.h"
 
 static int cs_infh_process(jack_nframes_t nframes, void *arg) {
     cs_infh_t *self = (cs_infh_t *) arg;

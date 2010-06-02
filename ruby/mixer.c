@@ -1,162 +1,120 @@
 #include <ruby.h>
-#include <jack/jack.h>
+#include <cshellsynth/mixer.h>
+#include <math.h>
 #include "jackruby.h"
-#include <errno.h>
 
-static VALUE cJMixer;
+VALUE cCSMixer;
 
-typedef struct jmix_struct {
-    jack_client_t *client;
-    int closed;
-    jack_port_t **in_ports;
-    size_t in_ports_size;
-    jack_port_t *out_port;
-} jmix_t;
-
-static int jmix_process(jack_nframes_t nframes, void *arg) {
-    jmix_t *jmix = (jmix_t *) arg;
-    jack_default_audio_sample_t *out_buffer = (jack_default_audio_sample_t *)jack_port_get_buffer(jmix->out_port, nframes);
-    if(out_buffer == NULL) {
-	return -1;
-    }
-    size_t i = 0;
-    jack_nframes_t j;
-    jack_default_audio_sample_t *in_buffer;
-    if(jmix->in_ports_size > 0) {
-	in_buffer = (jack_default_audio_sample_t *)jack_port_get_buffer(jmix->in_ports[0], nframes);
-	if(in_buffer == NULL) {
-	    return -1;
+static VALUE rbcs_mix_in1(VALUE self) {
+    cs_mix_t *cself;
+    Data_Get_Struct(self, cs_mix_t, cself);
+    if(isnanf(cself->in1)) {
+	VALUE in1_port = rb_iv_get(self, "@in1_port");
+	if(NIL_P(in1_port)) {
+	    in1_port = Data_Wrap_Struct(cJackPort, 0, fake_free, cself->in1_port);
+	    rb_iv_set(self, "@in1_port", in1_port);
 	}
-	memcpy(out_buffer, in_buffer, nframes * sizeof(jack_default_audio_sample_t));
-	i++;
+	return in1_port;
+    } else {
+	return DBL2NUM(cself->in1);
     }
-    for(;i < jmix->in_ports_size; i++) {
-	in_buffer = (jack_default_audio_sample_t *)jack_port_get_buffer(jmix->in_ports[i], nframes);
-	if(in_buffer == NULL) {
-	    return -1;
-	}
-	for(j = 0; j < nframes; j++) {
-	    out_buffer[j] += in_buffer[j];
-	}
-    }
-    return 0;
 }
 
-void jmix_free(void *mem) {
-    jmix_t *cself = mem;
-    if(!cself->closed) {
-	j_client_close(cself->client);
+static VALUE rbcs_mix_set_in1(VALUE self, VALUE in1) {
+    if(KIND_OF(in1, rb_cNumeric)) {
+	cs_mix_t *cself;
+	Data_Get_Struct(self, cs_mix_t, cself);
+	int r = cs_mix_set_in1(cself, NUM2DBL(in1));
+	if(r != 0) {
+	    rb_raise(eJackFailure, "Overall operation failed: %d", r);
+	}
+    } else {
+	VALUE in1_port = rb_iv_get(self, "@in1_port");
+	if(NIL_P(in1_port)) {
+	    cs_mix_t *cself;
+	    Data_Get_Struct(self, cs_mix_t, cself);
+	    in1_port = Data_Wrap_Struct(cJackPort, 0, fake_free, cself->in1_port);
+	    rb_iv_set(self, "@in1_port", in1_port);
+	}
+	jr_client_connect(self, in1, in1_port);
+	// ignore return value
     }
-    xfree(cself->in_ports);
+    return in1;
+}
+
+static VALUE rbcs_mix_in2(VALUE self) {
+    cs_mix_t *cself;
+    Data_Get_Struct(self, cs_mix_t, cself);
+    if(isnanf(cself->in2)) {
+	VALUE in2_port = rb_iv_get(self, "@in2_port");
+	if(NIL_P(in2_port)) {
+	    in2_port = Data_Wrap_Struct(cJackPort, 0, fake_free, cself->in2_port);
+	    rb_iv_set(self, "@in2_port", in2_port);
+	}
+	return in2_port;
+    } else {
+	return DBL2NUM(cself->in2);
+    }
+}
+
+static VALUE rbcs_mix_set_in2(VALUE self, VALUE in2) {
+    if(KIND_OF(in2, rb_cNumeric)) {
+	cs_mix_t *cself;
+	Data_Get_Struct(self, cs_mix_t, cself);
+	int r = cs_mix_set_in2(cself, NUM2DBL(in2));
+	if(r != 0) {
+	    rb_raise(eJackFailure, "Overall operation failed: %d", r);
+	}
+    } else {
+	VALUE in2_port = rb_iv_get(self, "@in2_port");
+	if(NIL_P(in2_port)) {
+	    cs_mix_t *cself;
+	    Data_Get_Struct(self, cs_mix_t, cself);
+	    in2_port = Data_Wrap_Struct(cJackPort, 0, fake_free, cself->in2_port);
+	    rb_iv_set(self, "@in2_port", in2_port);
+	}
+	jr_client_connect(self, in2, in2_port);
+	// ignore return value
+    }
+    return in2;
+}
+
+static VALUE rbcs_mix_out(VALUE self) {
+    VALUE out_port = rb_iv_get(self, "@out_port");
+    if(NIL_P(out_port)) {
+	cs_mix_t *cself;
+	Data_Get_Struct(self, cs_mix_t, cself);
+	out_port = Data_Wrap_Struct(cJackPort, 0, fake_free, cself->out_port);
+	rb_iv_set(self, "@out_port", out_port);
+    }
+    return out_port;
+}
+
+static void cs_mix_free(void *mem) {
+    cs_mix_t *cself = (cs_mix_t *) mem;
+    cs_mix_destroy(cself);
     xfree(cself);
 }
 
-static VALUE jmix_new(int argc, VALUE *argv, VALUE klass) {
-    VALUE rname, rnports;
-    char *name = "mixer";
-    size_t nports = 4;
-    switch(rb_scan_args(argc, argv, "02", &rname, &rnports)) {
-    case 2:
-	nports = NUM2SIZET(rnports);
-	if((nports > 999) || (nports < 1)) {
-	    rb_raise(rb_eArgError, "ports must be between 1 and 999");
-	}
-    case 1:
+static VALUE rbcs_mix_new(int argc, VALUE *argv, VALUE klass) {
+    VALUE rname;
+    char *name = "mix";
+    if(rb_scan_args(argc, argv, "01", &rname)) {
 	name = StringValueCStr(rname);
     }
-
-    jmix_t *cself = ALLOC(jmix_t);
-    jclient_init(name, 0, NULL, (jclient_t *) cself);
-
-    cself->in_ports = ALLOC_N(jack_port_t *, nports);
-    char *reg_name = ALLOCA_N(char, 6);
-    size_t i;
-    for(i = 0; i < nports; i++) {
-	snprintf(reg_name, 6, "in%ld", i + 1);
-	cself->in_ports[i] = j_client_port_register(cself->client, reg_name, JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
-	if(cself->in_ports[i] == NULL) {
-	    for(; i >= 0; i--) {
-		j_client_port_unregister(cself->client, cself->in_ports[i]);
-	    }
-	    j_client_close(cself->client);
-	    xfree(cself->in_ports);
-	    xfree(cself);
-	    rb_raise(eJackFailure, "Overall operation failed");
-	}
-    }
-
-    cself->out_port = j_client_port_register(cself->client, "out", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
-    if(cself->out_port == NULL) {
-	for(i = nports; i >= 0; i--) {
-	    j_client_port_unregister(cself->client, cself->in_ports[i]);
-	}
-	j_client_close(cself->client);
-	xfree(cself->in_ports);
-	xfree(cself);
-	rb_raise(eJackFailure, "Overall operation failed");
-    }
-
-    int r = jack_set_process_callback(cself->client, jmix_process, cself);
-    if(r != 0) {
-	j_client_port_unregister(cself->client, cself->out_port);
-	for(i = nports; i >= 0; i--) {
-	    j_client_port_unregister(cself->client, cself->in_ports[i]);
-	}
-	j_client_close(cself->client);
-	xfree(cself->in_ports);
-	xfree(cself);
-	rb_raise(eJackFailure, "Could not set process callback");
-    }
-
-    cself->in_ports_size = nports;
-
-    r = j_client_activate(cself->client);
-    if(r != 0) {
-	j_client_port_unregister(cself->client, cself->out_port);
-	for(i = nports; i >= 0; i--) {
-	    j_client_port_unregister(cself->client, cself->in_ports[i]);
-	}
-	j_client_close(cself->client);
-	xfree(cself->in_ports);
-	xfree(cself);
-	rb_raise(eJackFailure, "Could not set process callback");
-    }
-
-    VALUE self = Data_Wrap_Struct(klass, 0, jmix_free, cself);
-    VALUE rin_ports = rb_ary_new2(nports);
-    for(i = 0; i < nports; i++) {
-	rb_ary_push(rin_ports, Data_Wrap_Struct(cJackPort, 0, fake_free, cself->in_ports[i]));
-    }
-    rb_iv_set(self, "@in", rin_ports);
-    rb_iv_set(self, "@out", Data_Wrap_Struct(cJackPort, 0, fake_free, cself->out_port));
-    return self;
-}
-
-static VALUE jmix_in(VALUE self) {
-    return rb_iv_get(self, "@in");
-}
-
-static VALUE jmix_set_in(VALUE self, VALUE port) {
-    jmix_t *cself;
-    Data_Get_Struct(self, jmix_t, cself);
-    int i;
-    for(i = 0; i < cself->in_ports_size; i++) {
-	if(!jack_port_connected(cself->in_ports[i])) {
-	    return jclient_connect(self, port, rb_ary_entry(rb_iv_get(self, "@in"), i));
-	}
-    }
-    return rb_iv_get(self, "@in");
-}
-
-static VALUE jmix_out(VALUE self) {
-    return rb_iv_get(self, "@out");
+    cs_mix_t *cself = ALLOC(cs_mix_t);
+    int r = cs_mix_init(cself, name, 0, NULL);
+    JR_CHECK_INIT_ERROR(cself, r);
+    return Data_Wrap_Struct(klass, 0, cs_mix_free, cself);
 }
 
 void Init_mixer() {
-    cJMixer = rb_define_class_under(mJack, "Mixer", cJackClient);
-    
-    rb_define_singleton_method(cJMixer, "new", jmix_new, -1);
-    rb_define_method(cJMixer, "in", jmix_in, 0);
-    rb_define_method(cJMixer, "in=", jmix_set_in, 1);
-    rb_define_method(cJMixer, "out", jmix_out, 0);
+    cCSMixer = rb_define_class("Mixer", cJackClient);
+
+    rb_define_singleton_method(cCSMixer, "new", rbcs_mix_new, -1);
+    rb_define_method(cCSMixer, "in1", rbcs_mix_in1, 0);
+    rb_define_method(cCSMixer, "in1=", rbcs_mix_set_in1, 1);
+    rb_define_method(cCSMixer, "in2", rbcs_mix_in2, 0);
+    rb_define_method(cCSMixer, "in2=", rbcs_mix_set_in2, 1);
+    rb_define_method(cCSMixer, "out", rbcs_mix_out, 0);
 }

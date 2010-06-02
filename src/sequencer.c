@@ -1,8 +1,8 @@
 #include <jack/jack.h>
 #include <math.h>
 #include <malloc.h>
-#include "sequencer.h"
-#include "controller.h"
+#include "cshellsynth/sequencer.h"
+#include "cshellsynth/controller.h"
 
 static void cs_seq_sequence_free(void *mem) {
     cs_seq_sequence_t *seq = mem;

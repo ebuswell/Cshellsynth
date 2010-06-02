@@ -1,8 +1,8 @@
 #include <jack/jack.h>
 #include <math.h>
-#include "sine.h"
-#include "synth.h"
-#include "jclient.h"
+#include "cshellsynth/sine.h"
+#include "cshellsynth/synth.h"
+#include "cshellsynth/jclient.h"
 
 static int cs_sine_process(jack_nframes_t nframes, void *arg) {
     cs_sine_t *self = (cs_sine_t *) arg;

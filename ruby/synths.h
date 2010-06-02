@@ -3,6 +3,8 @@
 
 #include <ruby.h>
 
-VALUE mJSynths;
+extern VALUE mCSSynths;
+
+void Init_synths();
 
 #endif

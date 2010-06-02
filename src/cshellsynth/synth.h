@@ -1,7 +1,9 @@
-#ifndef SYNTH_H
-#define SYNTH_H 1
+#ifndef CSHELLSYNTH_SYNTH_H
+#define CSHELLSYNTH_SYNTH_H 1
 
 #include <jack/jack.h>
+#include <pthread.h>
+#include <cshellsynth/jclient.h>
 
 typedef struct cs_synth_struct {
     jack_client_t *client;

@@ -1,9 +1,9 @@
-#ifndef KEY_H
-#define KEY_H 1
+#ifndef CSHELLSYNTH_KEY_H
+#define CSHELLSYNTH_KEY_H 1
 
 #include <jack/jack.h>
 #include <pthread.h>
-#include "jclient.h"
+#include <cshellsynth/jclient.h>
 
 typedef struct cs_key_struct {
     jack_client_t *client;
@@ -46,15 +46,15 @@ int cs_key_set_note(cs_key_t *self, jack_default_audio_sample_t note);
 #define CS_A_FLAT 415.304697579945
 
 extern const jack_default_audio_sample_t CS_MAJOR_TUNING[];
-#define CS_MAJOR_TUNING_SIZE 7
+#define CS_MAJOR_TUNING_LENGTH 7
 
 extern const jack_default_audio_sample_t CS_MINOR_TUNING[];
-#define CS_MINOR_TUNING_SIZE 7
+#define CS_MINOR_TUNING_LENGTH 7
 
 extern const jack_default_audio_sample_t CS_PYTHAGOREAN_TUNING[];
-#define CS_PYTHAGOREAN_TUNING_SIZE 12
+#define CS_PYTHAGOREAN_TUNING_LENGTH 12
 
 #define CS_EQUAL_TUNING ((jack_default_audio_sample_t *) -1)
-#define CS_EQUAL_TUNING_SIZE 12
+#define CS_EQUAL_TUNING_LENGTH 12
 
 #endif

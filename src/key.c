@@ -2,8 +2,8 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
-#include "jclient.h"
-#include "key.h"
+#include "cshellsynth/jclient.h"
+#include "cshellsynth/key.h"
 
 const jack_default_audio_sample_t CS_MAJOR_TUNING[] = {
     1.0f,
@@ -198,7 +198,7 @@ int cs_key_init(cs_key_t *self, const char *client_name, jack_options_t flags, c
 	return r;
     }
 
-    self->tuning_length = CS_EQUAL_TUNING_SIZE;
+    self->tuning_length = CS_EQUAL_TUNING_LENGTH;
     self->tuning = CS_EQUAL_TUNING;
     self->root = CS_C;
     self->note = NAN;

@@ -1,7 +1,7 @@
 #include <jack/jack.h>
 #include <math.h>
-#include "mixer.h"
-#include "jclient.h"
+#include "cshellsynth/mixer.h"
+#include "cshellsynth/jclient.h"
 
 int cs_mix_set_in1(cs_mix_t *self, jack_default_audio_sample_t in1) {
     int r = pthread_mutex_lock(&self->lock);
@@ -68,7 +68,7 @@ static int cs_mix_process(jack_nframes_t nframes, void *arg) {
     return 0;
 }
 
-int cs_mix_init(cs_mix_t *self, const char *client_name, jack_options_t flags, char *server_name) {
+int cs_mix_subclass_init(cs_mix_t *self, const char *client_name, jack_options_t flags, char *server_name) {
     int r = jclient_locking_init((jclient_locking_t *) self, client_name, flags, server_name);
     if(r != 0) {
 	return r;
@@ -94,6 +94,15 @@ int cs_mix_init(cs_mix_t *self, const char *client_name, jack_options_t flags, c
 
     self->in1 = NAN;
     self->in2 = NAN;
+    
+    return 0;
+}
+
+int cs_mix_init(cs_mix_t *self, const char *client_name, jack_options_t flags, char *server_name) {
+    int r = cs_mix_subclass_init(self, client_name, flags, server_name);
+    if(r != 0) {
+	return r;
+    }
 
     r = jack_set_process_callback(self->client, cs_mix_process, self);
     if(r != 0) {

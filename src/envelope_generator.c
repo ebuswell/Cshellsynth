@@ -1,7 +1,7 @@
 #include <jack/jack.h>
 #include <math.h>
-#include "envelope_generator.h"
-#include "jclient.h"
+#include "cshellsynth/envelope_generator.h"
+#include "cshellsynth/jclient.h"
 
 static int cs_envg_process(jack_nframes_t nframes, void *arg) {
     cs_envg_t *self = (cs_envg_t *) arg;

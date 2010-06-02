@@ -1,6 +1,6 @@
 #include <jack/jack.h>
 #include <pthread.h>
-#include "jclient.h"
+#include "cshellsynth/jclient.h"
 
 int jclient_init(jclient_t *self, const char *client_name, jack_options_t flags, char *server_name) {
     jack_status_t status;

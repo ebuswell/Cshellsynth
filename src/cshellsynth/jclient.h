@@ -1,5 +1,5 @@
-#ifndef JCLIENT_H
-#define JCLIENT_H 1
+#ifndef CSHELLSYNTH_JCLIENT_H
+#define CSHELLSYNTH_JCLIENT_H 1
 
 #include <jack/jack.h>
 #include <pthread.h>

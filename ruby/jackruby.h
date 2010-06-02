@@ -4,6 +4,7 @@
 #include <bits/wordsize.h>
 #include <ruby.h>
 #include <jack/jack.h>
+#include <cshellsynth/jclient.h>
 
 #ifndef rb_str_new2 // if it's not a definition, not if it doesn't exist
 #define rb_str_new_cstr rb_str_new2
@@ -57,45 +58,40 @@ inline int is_true(VALUE t);
 
 #define KIND_OF(v,klass) (rb_obj_is_kind_of(v,klass) == Qtrue)
 
-void jclient_free(void *mem);
 void fake_free(void *mem);
+VALUE jr_client_connect(VALUE self, VALUE rsource_port, VALUE rdestination_port);
 
-#ifdef RUBY_THREADS
+#define JR_CHECK_INIT_ERROR(cself, r)					\
+    do {								\
+    if(r != 0) {							\
+	xfree(cself);							\
+	if(r & JackServerFailed) {					\
+	    rb_raise(eJackServerFailed, "Unable to connect to the JACK server"); \
+	} else if(r & JackServerError) {				\
+	    rb_raise(eJackServerError, "Communication error with the JACK server"); \
+	} else if(r & JackNoSuchClient) {				\
+	    rb_raise(eJackNoSuchClient, "Requested client does not exist"); \
+	} else if(r & JackLoadFailure) {				\
+	    rb_raise(eJackLoadFailure, "Unable to load internal client"); \
+	} else if(r & JackInitFailure) {				\
+	    rb_raise(eJackInitFailure, "Unable to initialize client");	\
+	} else if(r & JackShmFailure) {					\
+	    rb_raise(eJackShmFailure, "Unable to access shared memory"); \
+	} else if(r & JackVersionError) {				\
+	    rb_raise(eJackVersionError, "Client's protocol version does not match"); \
+	} else if(r & JackBackendError) {				\
+	    rb_raise(eJackBackendError, "Backend error");		\
+	} else if(r & JackClientZombie) {				\
+	    rb_raise(eJackClientZombie, "Client zombie");		\
+	} else if(r & JackInvalidOption) {				\
+	    rb_raise(eJackInvalidOption, "The operation contained an invalid or unsupported option"); \
+	} else if(r & JackNameNotUnique) {				\
+	    rb_raise(eJackNameNotUnique, "The desired client name was not unique"); \
+	} else {							\
+	    rb_raise(eJackFailure, "Overall operation failed: %d", r);	\
+	}								\
+    }									\
+    } while(0)
 
-jack_port_t *j_client_port_register(jack_client_t *client, char *port_name, char *port_type, unsigned long flags, unsigned long buffer_size);
-int j_client_port_unregister(jack_client_t *client, jack_port_t *port);
-int j_mutex_lock(pthread_mutex_t *mutex);
-
-#else
-
-#define j_client_port_register(client, port_name, port_type, flags, buffer_size) \
-    jack_port_register(client, port_name, port_type, flags, buffer_size)
-#define j_mutex_lock(x) pthread_mutex_lock(x)
-#define j_client_port_unregister(client, port) jack_port_unregister(client, port)
-
-#endif // #ifdef RUBY_THREADS
-
-#define j_mutex_unlock(x) pthread_mutex_unlock(x)
-int j_mutex_init(pthread_mutex_t *mutex);
-
-typedef struct jclient_struct {
-    jack_client_t *client;
-    int closed;
-} jclient_t;
-
-void jclient_init(char *name, jack_options_t flags, char *servername, jclient_t *cself);
-
-#ifdef RUBY_THREAD
-
-// FIXME: These functions block, need to create RUBY_THREADS versions
-
-#else
-
-#define j_client_close(client) jack_client_close(client)
-#define j_client_activate(client) jack_activate(client)
-
-#endif // #ifdef RUBY_THREAD
-
-VALUE jclient_connect(VALUE self, VALUE source_port, VALUE destination_port);
 
 #endif

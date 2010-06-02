@@ -1,6 +1,8 @@
+#include <ruby.h>
 #include "synths.h"
-#include "jackruby.h"
+
+VALUE mCSSynths;
 
 void Init_synths() {
-    mJSynths = rb_define_module_under(mJack, "Synths");	
+    mCSSynths = rb_define_module("Synths");	
 }

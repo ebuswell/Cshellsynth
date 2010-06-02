@@ -1,8 +1,9 @@
-#ifndef RISING_SAW_H
-#define RISING_SAW_H 1
+#ifndef CSHELLSYNTH_RISING_SAW_H
+#define CSHELLSYNTH_RISING_SAW_H 1
 
 #include <jack/jack.h>
-#include "synth.h"
+#include <pthread.h>
+#include <cshellsynth/synth.h>
 
 typedef struct cs_rsaw_struct {
     jack_client_t *client;

@@ -1,7 +1,7 @@
 #include <jack/jack.h>
 #include <math.h>
-#include "instrument.h"
-#include "controller.h"
+#include "cshellsynth/instrument.h"
+#include "cshellsynth/controller.h"
 
 static int cs_inst_process(jack_nframes_t nframes, void *arg) {
     cs_inst_t *self = (cs_inst_t *) arg;
@@ -21,18 +21,9 @@ static int cs_inst_process(jack_nframes_t nframes, void *arg) {
 	}
 	int i;
 	for(i = 0; i < nframes; i++) {
-	    if((self->value != self->last_value)
-	       && !(isnanf(self->value) && isnanf(self->last_value))) {
-		if(isnanf(self->value)) {
-		    ctl_buffer[i] = -1.0f;
-		} else {
-		    ctl_buffer[i] = 1.0f;
-		}
-	    } else {
-		ctl_buffer[i] = 0.0f;
-	    }
-	    self->last_value = self->value;
 	    out_buffer[i] = self->value;
+	    ctl_buffer[i] = self->ctl;
+	    self->ctl = 0.0;
 	}
     }
     r = pthread_mutex_unlock(&self->lock);
@@ -50,7 +41,7 @@ int cs_inst_init(cs_inst_t *self, const char *client_name, jack_options_t flags,
     }
 
     self->value = NAN;
-    self->last_value = NAN;
+    self->ctl = 0.0;
 
     r = jack_set_process_callback(self->client, cs_inst_process, self);
     if(r != 0) {
@@ -74,6 +65,7 @@ int cs_inst_play(cs_inst_t *self, jack_default_audio_sample_t value) {
 	    return r;
 	}
 	self->value = value;
+	self->ctl = 1.0;
     }
     r = pthread_mutex_unlock(&self->lock);
     if(r != 0) {
@@ -84,5 +76,17 @@ int cs_inst_play(cs_inst_t *self, jack_default_audio_sample_t value) {
 }
 
 int cs_inst_stop(cs_inst_t *self) {
-    return cs_inst_play(self, NAN);
+    int r = pthread_mutex_lock(&self->lock);
+    {
+	if(r != 0) {
+	    return r;
+	}
+	self->ctl = -1.0;
+    }
+    r = pthread_mutex_unlock(&self->lock);
+    if(r != 0) {
+	return r;
+    }
+
+    return 0;
 }

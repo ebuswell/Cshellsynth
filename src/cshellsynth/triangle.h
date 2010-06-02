@@ -1,8 +1,9 @@
-#ifndef TRIANGLE_H
-#define TRIANGLE_H 1
+#ifndef CSHELLSYNTH_TRIANGLE_H
+#define CSHELLSYNTH_TRIANGLE_H 1
 
 #include <jack/jack.h>
-#include "synth.h"
+#include <pthread.h>
+#include <cshellsynth/synth.h>
 
 typedef struct cs_triangle_struct {
     jack_client_t *client;

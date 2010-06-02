@@ -1,7 +1,7 @@
 #include <jack/jack.h>
 #include <math.h>
-#include "clock.h"
-#include "jclient.h"
+#include "cshellsynth/clock.h"
+#include "cshellsynth/jclient.h"
 
 int cs_clock_set_meter(cs_clock_t *self, double meter) {
     int r = pthread_mutex_lock(&self->lock);

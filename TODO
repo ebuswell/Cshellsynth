@@ -1,3 +1,2 @@
-* Add velocity to controllers and envelope generator
-* Add aftertouch to controllers
+* Add support for an arbitrary number of output parameters to controllers.
 * Create portamento (time-smoothed value changes)

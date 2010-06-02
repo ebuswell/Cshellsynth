@@ -4,7 +4,7 @@
 AC_PREREQ([2.65])
 AC_INIT([cshellsynth], [0.01], [ebuswell@gmail.com])
 AM_INIT_AUTOMAKE([-Wall foreign])
-AC_CONFIG_SRCDIR([src/instrument.h])
+AC_CONFIG_SRCDIR([src/instrument.c])
 AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.

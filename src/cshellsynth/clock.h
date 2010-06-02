@@ -1,8 +1,9 @@
-#ifndef CLOCK_H
-#define CLOCK_H 1
+#ifndef CSHELLSYNTH_CLOCK_H
+#define CSHELLSYNTH_CLOCK_H 1
 
 #include <jack/jack.h>
-#include "jclient.h"
+#include <pthread.h>
+#include <cshellsynth/jclient.h>
 
 typedef struct cs_clock_struct {
     jack_client_t *client;

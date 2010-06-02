@@ -1,8 +1,8 @@
 #include <jack/jack.h>
 #include <math.h>
-#include "square.h"
-#include "synth.h"
-#include "jclient.h"
+#include "cshellsynth/square.h"
+#include "cshellsynth/synth.h"
+#include "cshellsynth/jclient.h"
 
 static int cs_square_process(jack_nframes_t nframes, void *arg) {
     cs_square_t *self = (cs_square_t *) arg;

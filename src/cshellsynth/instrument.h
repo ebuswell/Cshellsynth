@@ -1,16 +1,17 @@
-#ifndef INSTRUMENT_H
-#define INSTRUMENT_H 1
+#ifndef CSHELLSYNTH_INSTRUMENT_H
+#define CSHELLSYNTH_INSTRUMENT_H 1
 
 #include <jack/jack.h>
-#include "controller.h"
+#include <pthread.h>
+#include <cshellsynth/controller.h>
 
 typedef struct cs_inst_struct {
     jack_client_t *client;
     pthread_mutex_t lock;
     jack_port_t *ctl_port;
     jack_port_t *out_port;
-    volatile jack_default_audio_sample_t value;
-    jack_default_audio_sample_t last_value;
+    jack_default_audio_sample_t value;
+    jack_default_audio_sample_t ctl;
 } cs_inst_t;
 
 #define cs_inst_destroy(cs_inst) cs_ctlr_destroy((cs_ctlr_t *) (cs_inst))
