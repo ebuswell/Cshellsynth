@@ -26,6 +26,13 @@ int main(int argc, char **argv) {
 //    cs_convol_t reverb;
     cs_lin2exp_t lin2exp;
     cs_ampeg_vt22_t vt22;
+    cs_envg_t filter_envg;
+    cs_modu_t filter_envg_invert1;
+    cs_mix_t filter_envg_invert2;
+    cs_lin2exp_t filter_lin2exp;
+    cs_lowpass_t filter;
+    cs_modu_t filter_envm;
+    cs_modu_t filter_relative_m;
     int r = cs_inst_init(&inst, "inst", 0, NULL);
     if(r != 0) {
 	perror("Could not initialize instrument");
@@ -146,25 +153,25 @@ int main(int argc, char **argv) {
 	exit(r);
     }
 
-    r = cs_envg_set_attack_t(&envg, 0.015625);
+    r = cs_envg_set_attack_t(&envg, 0.1);
     if(r != 0) {
 	perror("Could not set attack_t");
 	exit(r);
     }
 
-    r = cs_envg_set_decay_t(&envg, 1.0);
+    r = cs_envg_set_decay_t(&envg, 0.25);
     if(r != 0) {
 	perror("Could not set decay_t");
 	exit(r);
     }
 
-    r = cs_envg_set_sustain_a(&envg, 0.0f);
+    r = cs_envg_set_sustain_a(&envg, 0.65f);
     if(r != 0) {
 	perror("Could not set sustain_a");
 	exit(r);
     }
 
-    r = cs_envg_set_release_t(&envg, 0.0);
+    r = cs_envg_set_release_t(&envg, 0.5);
     if(r != 0) {
 	perror("Could not set release_t");
 	exit(r);
@@ -212,22 +219,52 @@ int main(int argc, char **argv) {
 
     r = cs_ampeg_vt22_init(&vt22, "vt22", 0, NULL);
     if(r != 0) {
-	perror("Could not initialize vt22");
-	exit(r);
+    	perror("Could not initialize vt22");
+    	exit(r);
     }
     r = cs_ampeg_vt22_set_gain(&vt22, 0.125);
     if(r != 0) {
-	perror("Could not initialize vt22");
+    	perror("Could not initialize vt22");
+    	exit(r);
+    }
+
+    r = cs_lowpass_init(&filter, "filter", 0, NULL);
+    if(r != 0) {
+	perror("Could not initialize filter");
 	exit(r);
     }
+
+    cs_envg_init(&filter_envg, "filter_envg", 0, NULL);
+    cs_lin2exp_init(&filter_lin2exp, "filter_lin2exp", 0, NULL);
+    cs_envg_set_attack_t(&filter_envg, 0.0);
+    cs_envg_set_decay_t(&filter_envg, 0.5);
+    cs_envg_set_sustain_a(&filter_envg, 0.0);
+    cs_envg_set_release_t(&filter_envg, 0.0);
+    cs_modu_init(&filter_envm, "filter_envm", 0, NULL);
+    cs_modu_set_in2(&filter_envm, 10.0f);
+    cs_lin2exp_set_zero(&filter_lin2exp, 0.25);
+    cs_modu_init(&filter_envg_invert1, "filter_envg_invert1", 0, NULL);
+    cs_mix_init(&filter_envg_invert2, "filter_envg_invert2", 0, NULL);
+    cs_modu_set_in2(&filter_envg_invert1, -1.0f);
+    cs_mix_set_in2(&filter_envg_invert2, 2.0f);
+    cs_modu_init(&filter_relative_m, "filter_relative_m", 0, NULL);
+
 
     jack_connect(vib.client, "vib:out", "viba:in1");
     jack_connect(viba.client, "viba:out", "vibm:in1");
     jack_connect(inst.client, "inst:out", "vibm:in2");
     jack_connect(vibm.client, "vibm:out", "key:note");
+    jack_connect(key.client, "key:freq", "filter_relative_m:in2");
     jack_connect(inst.client, "inst:ctl", "envg:ctl");
     jack_connect(envg.client, "envg:out", "lin2exp:in");
     jack_connect(lin2exp.client, "lin2exp:out", "envm:in2");
+    jack_connect(inst.client, "inst:ctl", "filter_envg:ctl");
+    jack_connect(filter_envg.client, "filter_envg:out", "filter_envg_invert1:in1");
+    jack_connect(filter_envg_invert1.client, "filter_envg_invert1:out", "filter_envg_invert2:in1");
+    jack_connect(filter_envg_invert2.client, "filter_envg_invert2:out", "filter_lin2exp:in");
+    jack_connect(filter_lin2exp.client, "filter_lin2exp:out", "filter_envm:in1");
+    jack_connect(filter_envm.client, "filter_envm:out", "filter_relative_m:in1");
+    jack_connect(filter_relative_m.client, "filter_relative_m:out", "filter:freq");
     jack_connect(rsawrm1.client, "rsawrm1:out", "modu:in1");
     jack_connect(rsawrm1.client, "sinerm2:out", "modu:in2");
     jack_connect(sinerm2.client, "modu:out", "envm:in1");
@@ -237,12 +274,17 @@ int main(int argc, char **argv) {
     jack_connect(fsaw.client, "fsaw:out", "envm:in1");
     jack_connect(square.client, "square:out", "envm:in1");
     jack_connect(infh.client, "infh:out", "envm:in1");
-    jack_connect(envm.client, "envm:out", "vt22:in");
-    jack_connect(vt22.client, "vt22:out", "system:playback_1");
-    jack_connect(vt22.client, "vt22:out", "system:playback_2");
-    /* jack_connect(vt22.client, "vt22:out", "reverb:in"); */
+    jack_connect(envm.client, "envm:out", "filter:in");
+    jack_connect(filter.client, "filter:out", "system:playback_1");
+    jack_connect(filter.client, "filter:out", "system:playback_2");
+    /* jack_connect(envm.client, "envm:out", "filter:in"); */
+    /* jack_connect(filter.client, "filter:out", "system:playback_1"); */
+    /* jack_connect(filter.client, "filter:out", "system:playback_2"); */
+    /* jack_connect(envm.client, "envm:out", "reverb:in"); */
     /* jack_connect(reverb.client, "reverb:out1", "system:playback_1"); */
     /* jack_connect(reverb.client, "reverb:out2", "system:playback_2"); */
+    /* jack_connect(envm.client, "envm:out", "system:playback_1"); */
+    /* jack_connect(envm.client, "envm:out", "system:playback_2"); */
 
     jack_connect(key.client, "key:freq", "sine:freq");
     r = cs_inst_play(&inst, 4.0f);
@@ -294,11 +336,19 @@ int main(int argc, char **argv) {
     }
     jack_connect(key.client, "key:freq", "infh:freq");
     jack_disconnect(key.client, "key:freq", "fsaw:freq");
+    jack_connect(envm.client, "envm:out", "system:playback_1");
+    jack_connect(envm.client, "envm:out", "system:playback_2");
+    jack_disconnect(filter.client, "filter:out", "system:playback_1");
+    jack_disconnect(filter.client, "filter:out", "system:playback_2");
+
     jack_connect(clock.client, "clock:clock", "seq:clock");
     jack_disconnect(inst.client, "inst:out", "vibm:in2");
     jack_disconnect(inst.client, "inst:ctl", "envg:ctl");
+    jack_disconnect(inst.client, "inst:ctl", "filter_envg:ctl");
     jack_connect(seq.client, "seq:out", "vibm:in2");
     jack_connect(seq.client, "seq:ctl", "envg:ctl");
+    jack_connect(seq.client, "seq:ctl", "filter_envg:ctl");
+
     jack_default_audio_sample_t **second_verse = alloca(11 * sizeof(jack_default_audio_sample_t *));
     jack_default_audio_sample_t **ptr = second_verse;
     *ptr = alloca(3 * sizeof(jack_default_audio_sample_t));
@@ -455,9 +505,19 @@ int main(int argc, char **argv) {
     }
     r = cs_ampeg_vt22_destroy(&vt22);
     if(r != 0) {
-	perror("Could not destroy vt22");
+    	perror("Could not destroy vt22");
+    	exit(r);
+    }
+    r = cs_lowpass_destroy(&filter);
+    if(r != 0) {
+	perror("Could not destroy filter");
 	exit(r);
     }
+    cs_envg_destroy(&filter_envg);
+    cs_lin2exp_destroy(&filter_lin2exp);
+    cs_modu_destroy(&filter_envm);
+    cs_modu_destroy(&filter_envg_invert1);
+    cs_mix_destroy(&filter_envg_invert2);
     /* r = cs_convol_destroy(&reverb); */
     /* if(r != 0) { */
     /* 	perror("Could not destroy reverb"); */

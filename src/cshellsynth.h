@@ -13,6 +13,7 @@
 #include <cshellsynth/jclient.h>
 #include <cshellsynth/key.h>
 #include <cshellsynth/lin2exp.h>
+#include <cshellsynth/lowpass.h>
 #include <cshellsynth/mixer.h>
 #include <cshellsynth/modulator.h>
 #include <cshellsynth/rising_saw.h>
