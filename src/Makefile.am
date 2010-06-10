@@ -1,10 +1,11 @@
 lib_LTLIBRARIES = libcshellsynth.la
-libcshellsynth_la_SOURCES = clock.c controller.c envelope_generator.c falling_saw.c infh.c instrument.c jclient.c key.c mixer.c modulator.c rising_saw.c sequencer.c sine.c square.c synth.c triangle.c
-libcshellsynth_la_LDFLAGS = $(JACK_LIBS) -module -export-dynamic $(LDFLAGS)
-libcshellsynth_la_CFLAGS = $(JACK_CFLAGS) $(CFLAGS)
-nobase_include_HEADERS = cshellsynth/clock.h cshellsynth/controller.h cshellsynth/envelope_generator.h cshellsynth/falling_saw.h cshellsynth/infh.h cshellsynth/instrument.h cshellsynth/jclient.h cshellsynth/key.h cshellsynth/mixer.h cshellsynth/modulator.h cshellsynth/rising_saw.h cshellsynth/sequencer.h cshellsynth/sine.h cshellsynth/square.h cshellsynth/synth.h cshellsynth/triangle.h cshellsynth.h
+libcshellsynth_la_SOURCES = ampeg_vt22.c clock.c controller.c convolution.c convolution_freeverb.cpp envelope_generator.c falling_saw.c filter.c infh.c instrument.c jclient.c key.c lin2exp.c mixer.c modulator.c rising_saw.c sequencer.c sine.c square.c synth.c triangle.c
+libcshellsynth_la_LDFLAGS = $(JACK_LIBS) $(SNDFILE_LIBS) $(FREEVERB3_LIBS) -module -export-dynamic $(LDFLAGS)
+libcshellsynth_la_CFLAGS = $(JACK_CFLAGS) $(SNDFILE_CFLAGS) $(FREEVERB3_CFLAGS) $(CFLAGS) 
+libcshellsynth_la_CXXFLAGS = $(JACK_CFLAGS) $(SNDFILE_CFLAGS) $(FREEVERB3_CFLAGS) $(CXXFLAGS)
+nobase_include_HEADERS = cshellsynth/clock.h cshellsynth/controller.h cshellsynth/convolution.h cshellsynth/envelope_generator.h cshellsynth/falling_saw.h cshellsynth/filter.h cshellsynth/infh.h cshellsynth/instrument.h cshellsynth/jclient.h cshellsynth/key.h cshellsynth/lin2exp.h cshellsynth/mixer.h cshellsynth/modulator.h cshellsynth/rising_saw.h cshellsynth/sequencer.h cshellsynth/sine.h cshellsynth/square.h cshellsynth/synth.h cshellsynth/triangle.h cshellsynth.h
 check_PROGRAMS = test
-test_LDFLAGS = $(JACK_LIBS) -lcshellsynth
-test_CFLAGS = $(JACK_CFLAGS) $(CFLAGS)
+test_LDFLAGS = $(JACK_LIBS) $(SNDFILE_LIBS) $(FREEVERB3_LIBS) -lcshellsynth
+test_CFLAGS = $(JACK_CFLAGS) $(SNDFILE_CFLAGS) $(FREEVERB3_CFLAGS) $(CFLAGS)
 TESTS = test
 MAINTAINERCLEANFILES = Makefile.in

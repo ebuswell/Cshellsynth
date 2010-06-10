@@ -14,16 +14,19 @@ static int cs_inst_process(jack_nframes_t nframes, void *arg) {
 	return -1;
     }
 
+    memset(ctl_buffer, 0, sizeof(jack_default_audio_sample_t) * nframes);
     int r = pthread_mutex_lock(&self->lock);
     {
 	if(r != 0) {
 	    return r;
 	}
+	if(self->ctl != 0.0) {
+	    ctl_buffer[0] = self->ctl;
+	    self->ctl = 0.0;
+	}
 	int i;
 	for(i = 0; i < nframes; i++) {
 	    out_buffer[i] = self->value;
-	    ctl_buffer[i] = self->ctl;
-	    self->ctl = 0.0;
 	}
     }
     r = pthread_mutex_unlock(&self->lock);

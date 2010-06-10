@@ -49,12 +49,13 @@ static inline jack_default_audio_sample_t cs_key_note2freq_nolock(cs_key_t *self
     } else {
 	int tuning_length = self->tuning_length;
 	jack_default_audio_sample_t f = note;
-	int n = floorf(f);
-	f -= (jack_default_audio_sample_t) n;
+	jack_default_audio_sample_t n_f = floorf(f);
+	f -= n_f;
+	int n = (int) n_f;
 	int m = n % tuning_length;
 	int e = n / tuning_length;
 	if(m < 0) {
-	    e -= 1;
+	    e--;
 	    m = tuning_length + m;
 	}
 	jack_default_audio_sample_t freq = self->tuning[m];
@@ -133,6 +134,8 @@ int cs_key_set_tuning(cs_key_t *self, const jack_default_audio_sample_t *tuning,
     if(tuning != CS_EQUAL_TUNING) {
 	tuning_cpy = malloc(tuning_length * sizeof(jack_default_audio_sample_t));
 	memcpy(tuning_cpy, tuning, tuning_length * sizeof(jack_default_audio_sample_t));
+    } else {
+	tuning_cpy = tuning;
     }
     int r = pthread_mutex_lock(&self->lock);
     {
@@ -143,13 +146,8 @@ int cs_key_set_tuning(cs_key_t *self, const jack_default_audio_sample_t *tuning,
 	   && (self->tuning != CS_EQUAL_TUNING)) {
 	    free(self->tuning);
 	}
-	if(tuning == CS_EQUAL_TUNING) {
-	    self->tuning_length = tuning_length;
-	    self->tuning = CS_EQUAL_TUNING;
-	} else {
-	    self->tuning_length = tuning_length;
-	    self->tuning = tuning_cpy;
-	}
+	self->tuning_length = tuning_length;
+	self->tuning = tuning_cpy;
     }
     r = pthread_mutex_unlock(&self->lock);
     if(r != 0) {

@@ -44,11 +44,11 @@ static int cs_clock_process(jack_nframes_t nframes, void *arg) {
 	}
 	int i;
 	for(i = 0; i < nframes; i++) {
-	    clock_buffer[i] = (jack_default_audio_sample_t) self->current;
-	    self->current += self->step;
 	    while(self->current >= self->max) {
 		self->current -= self->max;
 	    }
+	    clock_buffer[i] = (jack_default_audio_sample_t) self->current;
+	    self->current += self->step;
 	}
     }
     r = pthread_mutex_unlock(&self->lock);

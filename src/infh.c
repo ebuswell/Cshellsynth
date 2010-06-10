@@ -30,7 +30,8 @@ static int cs_infh_process(jack_nframes_t nframes, void *arg) {
 		self->offset = 0.0;
 		out_buffer[i] = 0.0f;
 	    } else {
-		double period = sample_rate / f;
+		f /= sample_rate;
+		double period = 1 / f;
 		double n = floor(period / 2.0); // floor((sample_rate/2) / f)
 		n *= 2.0;
 
@@ -42,10 +43,10 @@ static int cs_infh_process(jack_nframes_t nframes, void *arg) {
                 // - (------------------------------  -  1 )
 		// n (      sin((w/2)t + 3pi/4)            )
 
-		double wt = M_PI * f * self->offset / sample_rate;
+		double wt = M_PI * f * self->offset;
 
-		out_buffer[i] = (jack_default_audio_sample_t) (1.0/n)*((sin((n + 1.0)*(wt + (3.0*M_PI)/4.0))// + (3.0*n - 1.0)*M_PI_4
-									/ sin(wt + ((3.0*M_PI)/4.0)))
+		out_buffer[i] = (jack_default_audio_sample_t) (1.0/n)*(sin((n + 1.0)*(wt + 3.0*M_PI_4))
+								       / sin(wt + 3.0*M_PI_4)
 								       - 1.0);
 //		out_buffer[i] = sin(M_2_PI*f*self->offset);//(1./(2.*n))*(sin((2.*n + 1)*M_PI*f*self->offset)/sin(M_PI*f*self->offset) - 1.);
 		self->offset += 1.0;

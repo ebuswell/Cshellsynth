@@ -30,11 +30,12 @@ static int cs_sine_process(jack_nframes_t nframes, void *arg) {
 		self->offset = 0.0;
 		out_buffer[i] = 0.0f;
 	    } else {
-		double period = sample_rate / f;
+		f /= sample_rate;
+		double period = 1 / f;
 		while(self->offset >= period) {
 		    self->offset -= period;
 		}
-		out_buffer[i] = sinf((2.0 * M_PI * f * self->offset) / sample_rate);
+		out_buffer[i] = sinf(M_2_PI * f * self->offset);
 		self->offset += 1.0;
 	    }
 	}

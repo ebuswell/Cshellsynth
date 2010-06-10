@@ -36,7 +36,7 @@ static int cs_envg_process(jack_nframes_t nframes, void *arg) {
 	    switch(self->state) {
 	    case ATTACK:
 		if(self->offset < self->attack_t) {
-		    out_buffer[i] = ((jack_default_audio_sample_t) self->offset / self->attack_t);
+		    out_buffer[i] = (jack_default_audio_sample_t) (self->offset / self->attack_t);
 		    self->offset += 1.0;
 		    break;
 		} else {

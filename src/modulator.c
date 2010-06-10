@@ -2,7 +2,6 @@
 #include <math.h>
 #include "cshellsynth/modulator.h"
 #include "cshellsynth/mixer.h"
-#include "cshellsynth/jclient.h"
 
 static int cs_modu_process(jack_nframes_t nframes, void *arg) {
     cs_modu_t *self = (cs_modu_t *) arg;
@@ -49,13 +48,13 @@ int cs_modu_init(cs_modu_t *self, const char *client_name, jack_options_t flags,
 
     r = jack_set_process_callback(self->client, cs_modu_process, self);
     if(r != 0) {
-	jclient_locking_destroy((jclient_locking_t *) self);
+	cs_mix_destroy((cs_mix_t *) self);
 	return r;
     }
 
     r = jack_activate(self->client);
     if(r != 0) {
-	jclient_locking_destroy((jclient_locking_t *) self);
+	cs_mix_destroy((cs_mix_t *) self);
 	return r;
     }
 

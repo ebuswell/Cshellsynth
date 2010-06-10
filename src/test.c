@@ -23,6 +23,9 @@ int main(int argc, char **argv) {
     cs_modu_t envm;
     cs_seq_t seq;
     cs_clock_t clock;
+//    cs_convol_t reverb;
+    cs_lin2exp_t lin2exp;
+    cs_ampeg_vt22_t vt22;
     int r = cs_inst_init(&inst, "inst", 0, NULL);
     if(r != 0) {
 	perror("Could not initialize instrument");
@@ -34,7 +37,7 @@ int main(int argc, char **argv) {
 	perror("Could not initialize key");
 	exit(r);
     }
-    r = cs_key_set_tuning(&key, CS_MAJOR_TUNING, CS_MAJOR_TUNING_SIZE);
+    r = cs_key_set_tuning(&key, CS_MAJOR_TUNING, CS_MAJOR_TUNING_LENGTH);
     if(r != 0) {
 	perror("Could not set tuning");
     }
@@ -126,19 +129,30 @@ int main(int argc, char **argv) {
 	exit(r);
     }
 
+    /* r = cs_convol_init(&reverb, "reverb", 0, NULL); */
+    /* if(r != 0) { */
+    /* 	perror("Could not initialize reverb"); */
+    /* 	exit(r); */
+    /* } */
+
+    /* r = cs_convol_load_ir(&reverb, "cathedral.wav"); */
+    /* if(r != 0) { */
+    /* 	perror("Could not load ir"); */
+    /* } */
+
     r = cs_envg_init(&envg, "envg", 0, NULL);
     if(r != 0) {
 	perror("Could not initialize envg");
 	exit(r);
     }
 
-    r = cs_envg_set_attack_t(&envg, 0.25);
+    r = cs_envg_set_attack_t(&envg, 0.015625);
     if(r != 0) {
 	perror("Could not set attack_t");
 	exit(r);
     }
 
-    r = cs_envg_set_decay_t(&envg, 0.75);
+    r = cs_envg_set_decay_t(&envg, 1.0);
     if(r != 0) {
 	perror("Could not set decay_t");
 	exit(r);
@@ -153,6 +167,18 @@ int main(int argc, char **argv) {
     r = cs_envg_set_release_t(&envg, 0.0);
     if(r != 0) {
 	perror("Could not set release_t");
+	exit(r);
+    }
+
+    r = cs_lin2exp_init(&lin2exp, "lin2exp", 0, NULL);
+    if(r != 0) {
+	perror("Could not initialize lin2exp");
+	exit(r);
+    }
+
+    r = cs_lin2exp_set_zero(&lin2exp, 0.25);
+    if(r != 0) {
+	perror("Could not set zero");
 	exit(r);
     }
 
@@ -184,12 +210,24 @@ int main(int argc, char **argv) {
 	exit(r);
     }
 
+    r = cs_ampeg_vt22_init(&vt22, "vt22", 0, NULL);
+    if(r != 0) {
+	perror("Could not initialize vt22");
+	exit(r);
+    }
+    r = cs_ampeg_vt22_set_gain(&vt22, 0.125);
+    if(r != 0) {
+	perror("Could not initialize vt22");
+	exit(r);
+    }
+
     jack_connect(vib.client, "vib:out", "viba:in1");
     jack_connect(viba.client, "viba:out", "vibm:in1");
     jack_connect(inst.client, "inst:out", "vibm:in2");
     jack_connect(vibm.client, "vibm:out", "key:note");
     jack_connect(inst.client, "inst:ctl", "envg:ctl");
-    jack_connect(envg.client, "envg:out", "envm:in2");
+    jack_connect(envg.client, "envg:out", "lin2exp:in");
+    jack_connect(lin2exp.client, "lin2exp:out", "envm:in2");
     jack_connect(rsawrm1.client, "rsawrm1:out", "modu:in1");
     jack_connect(rsawrm1.client, "sinerm2:out", "modu:in2");
     jack_connect(sinerm2.client, "modu:out", "envm:in1");
@@ -199,8 +237,12 @@ int main(int argc, char **argv) {
     jack_connect(fsaw.client, "fsaw:out", "envm:in1");
     jack_connect(square.client, "square:out", "envm:in1");
     jack_connect(infh.client, "infh:out", "envm:in1");
-    jack_connect(envm.client, "envm:out", "system:playback_1");
-    jack_connect(envm.client, "envm:out", "system:playback_2");
+    jack_connect(envm.client, "envm:out", "vt22:in");
+    jack_connect(vt22.client, "vt22:out", "system:playback_1");
+    jack_connect(vt22.client, "vt22:out", "system:playback_2");
+    /* jack_connect(vt22.client, "vt22:out", "reverb:in"); */
+    /* jack_connect(reverb.client, "reverb:out1", "system:playback_1"); */
+    /* jack_connect(reverb.client, "reverb:out2", "system:playback_2"); */
 
     jack_connect(key.client, "key:freq", "sine:freq");
     r = cs_inst_play(&inst, 4.0f);
@@ -383,7 +425,12 @@ int main(int argc, char **argv) {
     }
     r = cs_envg_destroy(&envg);
     if(r != 0) {
-	perror("Could not destroy square");
+	perror("Could not destroy envg");
+	exit(r);
+    }
+    r = cs_lin2exp_destroy(&lin2exp);
+    if(r != 0) {
+	perror("Could not destroy lin2exp");
 	exit(r);
     }
     r = cs_modu_destroy(&envm);
@@ -406,5 +453,15 @@ int main(int argc, char **argv) {
 	perror("Could not destroy vibm");
 	exit(r);
     }
+    r = cs_ampeg_vt22_destroy(&vt22);
+    if(r != 0) {
+	perror("Could not destroy vt22");
+	exit(r);
+    }
+    /* r = cs_convol_destroy(&reverb); */
+    /* if(r != 0) { */
+    /* 	perror("Could not destroy reverb"); */
+    /* 	exit(r); */
+    /* } */
     return 0;
 }
