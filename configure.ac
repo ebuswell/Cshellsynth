@@ -18,7 +18,7 @@ AC_PROG_LIBTOOL
 
 # Checks for libraries.
 PKG_CHECK_MODULES([JACK], [jack], [HAVE_JACK=true], [HAVE_JACK=false])
-PKG_CHECK_MODULES([FREEVERB3], [freeverb3], [HAVE_FREEVERB3=true], [HAVE_FREEVERB3=false])
+# PKG_CHECK_MODULES([FREEVERB3], [freeverb3], [HAVE_FREEVERB3=true], [HAVE_FREEVERB3=false])
 PKG_CHECK_MODULES([SNDFILE], [sndfile >= 1.0.2], [HAVE_SNDFILE=true], [HAVE_SNDFILE=false])
 
 # Checks for header files.

@@ -5,52 +5,41 @@
 #include <math.h>
 
 int main(int argc, char **argv) {
-    cs_inst_t inst;
-    cs_key_t key;
+    cs_seq_t seq1;
+    cs_key_t key1;
+    cs_seq_t seq2;
+    cs_key_t key2;
     cs_sine_t sine;
-    cs_sine_t vib;
-    cs_modu_t viba;
-    cs_mix_t vibm;
-    cs_rsaw_t rsawrm1;
-    cs_sine_t sinerm2;
-    cs_modu_t modu;
-    cs_triangle_t triangle;
-    cs_rsaw_t rsaw;
-    cs_fsaw_t fsaw;
-    cs_square_t square;
-    cs_infh_t infh;
-    cs_envg_t envg;
-    cs_modu_t envm;
-    cs_seq_t seq;
+    cs_cot_t cot;
+    cs_envg_t envg1;
+    cs_modu_t envm1;
+    cs_envg_t envg2;
+    cs_modu_t envm2;
+    cs_lin2exp_t lin2exp1;
+    cs_lin2exp_t lin2exp2;
     cs_clock_t clock;
-//    cs_convol_t reverb;
-    cs_lin2exp_t lin2exp;
-    cs_ampeg_vt22_t vt22;
-    cs_envg_t filter_envg;
-    cs_modu_t filter_envg_invert1;
-    cs_mix_t filter_envg_invert2;
-    cs_lin2exp_t filter_lin2exp;
-    cs_lowpass_t filter;
-    cs_modu_t filter_envm;
-    cs_modu_t filter_relative_m;
-    int r = cs_inst_init(&inst, "inst", 0, NULL);
+    cs_mix_t mixer;
+
+    int r = cs_key_init(&key1, "key1", 0, NULL);
+    r |= cs_key_set_tuning(&key1, CS_MAJOR_TUNING, CS_MAJOR_TUNING_LENGTH);
+    r |= cs_key_set_root(&key1, CS_G);
     if(r != 0) {
-	perror("Could not initialize instrument");
+	perror("Could not initialize key1");
 	exit(r);
     }
 
-    r = cs_key_init(&key, "key", 0, NULL);
+    r = cs_key_init(&key2, "key2", 0, NULL);
+    r |= cs_key_set_tuning(&key2, CS_MAJOR_TUNING, CS_MAJOR_TUNING_LENGTH);
+    r |= cs_key_set_root(&key2, CS_G);
     if(r != 0) {
-	perror("Could not initialize key");
+	perror("Could not initialize key2");
 	exit(r);
     }
-    r = cs_key_set_tuning(&key, CS_MAJOR_TUNING, CS_MAJOR_TUNING_LENGTH);
+
+    r = cs_mix_init(&mixer, "mixer", 0, NULL);
     if(r != 0) {
-	perror("Could not set tuning");
-    }
-    r = cs_key_set_root(&key, CS_G);
-    if(r != 0) {
-	perror("Could not set root");
+	perror("Could not initialize mixer");
+	exit(r);
     }
 
     r = cs_sine_init(&sine, "sine", 0, NULL);
@@ -58,374 +47,161 @@ int main(int argc, char **argv) {
 	perror("Could not initialize sine");
 	exit(r);
     }
-
-    r = cs_sine_init(&vib, "vib", 0, NULL);
+    r = cs_cot_init(&cot, "cot", 0, NULL);
     if(r != 0) {
-	perror("Could not initialize vib");
-	exit(r);
-    }
-    r = cs_sine_set_freq(&vib, 8.0f);
-    if(r != 0) {
-	perror("Could not set freq");
-    }
-
-    r = cs_modu_init(&viba, "viba", 0, NULL);
-    if(r != 0) {
-	perror("Could not initialize viba");
+	perror("Could not initialize cot");
 	exit(r);
     }
 
-    r = cs_modu_set_in2(&viba, 0.125);
+    r = cs_envg_init(&envg1, "envg1", 0, NULL);
+    r |= cs_envg_set_attack_t(&envg1, 0.1);
+    r |= cs_envg_set_decay_t(&envg1, 0.25);
+    r |= cs_envg_set_sustain_a(&envg1, 0.65f);
+    r |= cs_envg_set_release_t(&envg1, 0.5);
     if(r != 0) {
-	perror("Could not set in2");
+	perror("Could not initialize envg1");
+	exit(r);
+    }
+    r = cs_envg_init(&envg2, "envg2", 0, NULL);
+    r |= cs_envg_set_attack_t(&envg2, 0.1);
+    r |= cs_envg_set_decay_t(&envg2, 0.25);
+    r |= cs_envg_set_sustain_a(&envg2, 0.65f);
+    r |= cs_envg_set_release_t(&envg2, 0.5);
+    if(r != 0) {
+	perror("Could not initialize envg2");
 	exit(r);
     }
 
-    r = cs_mix_init(&vibm, "vibm", 0, NULL);
+    r = cs_lin2exp_init(&lin2exp1, "lin2exp1", 0, NULL);
+    r |= cs_lin2exp_set_zero(&lin2exp1, 0.25);
     if(r != 0) {
-	perror("Could not initialize vibm");
+	perror("Could not initialize lin2exp1");
+	exit(r);
+    }
+    r = cs_lin2exp_init(&lin2exp2, "lin2exp2", 0, NULL);
+    r |= cs_lin2exp_set_zero(&lin2exp2, 0.25);
+    if(r != 0) {
+	perror("Could not initialize lin2exp2");
+	exit(r);
+    }
+    r = cs_modu_init(&envm1, "envm1", 0, NULL);
+    if(r != 0) {
+	perror("Could not initialize envm1");
+	exit(r);
+    }
+    r = cs_modu_init(&envm2, "envm2", 0, NULL);
+    if(r != 0) {
+	perror("Could not initialize envm2");
 	exit(r);
     }
 
-    r = cs_rsaw_init(&rsawrm1, "rsawrm1", 0, NULL);
+    r = cs_seq_init(&seq1, "seq1", 0, NULL);
     if(r != 0) {
-	perror("Could not initialize rsawrm1");
+	perror("Could not initialize seq1");
 	exit(r);
     }
 
-    r = cs_sine_init(&sinerm2, "sinerm2", 0, NULL);
+    r = cs_seq_init(&seq2, "seq2", 0, NULL);
     if(r != 0) {
-	perror("Could not initialize sinerm2");
-	exit(r);
-    }
-    r = cs_sine_set_freq(&sinerm2, 2500);
-
-    r = cs_modu_init(&modu, "modu", 0, NULL);
-    if(r != 0) {
-	perror("Could not initialize modu");
-	exit(r);
-    }
-
-    r = cs_triangle_init(&triangle, "triangle", 0, NULL);
-    if(r != 0) {
-	perror("Could not initialize triangle");
-	exit(r);
-    }
-
-    r = cs_rsaw_init(&rsaw, "rsaw", 0, NULL);
-    if(r != 0) {
-	perror("Could not initialize rsaw");
-	exit(r);
-    }
-
-    r = cs_fsaw_init(&fsaw, "fsaw", 0, NULL);
-    if(r != 0) {
-	perror("Could not initialize fsaw");
-	exit(r);
-    }
-
-    r = cs_square_init(&square, "square", 0, NULL);
-    if(r != 0) {
-	perror("Could not initialize square");
-	exit(r);
-    }
-
-    r = cs_infh_init(&infh, "infh", 0, NULL);
-    if(r != 0) {
-	perror("Could not initialize infh");
-	exit(r);
-    }
-
-    /* r = cs_convol_init(&reverb, "reverb", 0, NULL); */
-    /* if(r != 0) { */
-    /* 	perror("Could not initialize reverb"); */
-    /* 	exit(r); */
-    /* } */
-
-    /* r = cs_convol_load_ir(&reverb, "cathedral.wav"); */
-    /* if(r != 0) { */
-    /* 	perror("Could not load ir"); */
-    /* } */
-
-    r = cs_envg_init(&envg, "envg", 0, NULL);
-    if(r != 0) {
-	perror("Could not initialize envg");
-	exit(r);
-    }
-
-    r = cs_envg_set_attack_t(&envg, 0.1);
-    if(r != 0) {
-	perror("Could not set attack_t");
-	exit(r);
-    }
-
-    r = cs_envg_set_decay_t(&envg, 0.25);
-    if(r != 0) {
-	perror("Could not set decay_t");
-	exit(r);
-    }
-
-    r = cs_envg_set_sustain_a(&envg, 0.65f);
-    if(r != 0) {
-	perror("Could not set sustain_a");
-	exit(r);
-    }
-
-    r = cs_envg_set_release_t(&envg, 0.5);
-    if(r != 0) {
-	perror("Could not set release_t");
-	exit(r);
-    }
-
-    r = cs_lin2exp_init(&lin2exp, "lin2exp", 0, NULL);
-    if(r != 0) {
-	perror("Could not initialize lin2exp");
-	exit(r);
-    }
-
-    r = cs_lin2exp_set_zero(&lin2exp, 0.25);
-    if(r != 0) {
-	perror("Could not set zero");
-	exit(r);
-    }
-
-    r = cs_modu_init(&envm, "envm", 0, NULL);
-    if(r != 0) {
-	perror("Could not initialize envm");
-	exit(r);
-    }
-
-    r = cs_seq_init(&seq, "seq", 0, NULL);
-    if(r != 0) {
-	perror("Could not initialize seq");
+	perror("Could not initialize seq2");
 	exit(r);
     }
 
     r = cs_clock_init(&clock, "clock", 0, NULL);
-    if(r != 0) {
-	perror("Could not initialize clock");
-	exit(r);
-    }
-    r = cs_clock_set_bpm(&clock, 240.0);
-    if(r != 0) {
-	perror("Could not initialize clock");
-	exit(r);
-    }
-    r = cs_clock_set_meter(&clock, 3.0);
+    r |= cs_clock_set_bpm(&clock, 240.0);
+    r |= cs_clock_set_meter(&clock, 3.0);
     if(r != 0) {
 	perror("Could not initialize clock");
 	exit(r);
     }
 
-    r = cs_ampeg_vt22_init(&vt22, "vt22", 0, NULL);
-    if(r != 0) {
-    	perror("Could not initialize vt22");
-    	exit(r);
+    jack_connect(clock.client, "clock:clock", "seq1:clock");
+    jack_connect(clock.client, "clock:clock", "seq2:clock");
+    jack_connect(seq1.client, "seq1:out", "key1:note");
+    jack_connect(seq1.client, "seq1:ctl", "envg1:ctl");
+    jack_connect(seq2.client, "seq2:out", "key2:note");
+    jack_connect(seq2.client, "seq2:ctl", "envg2:ctl");
+    jack_connect(envg1.client, "envg1:out", "lin2exp1:in");
+    jack_connect(lin2exp1.client, "lin2exp1:out", "envm1:in2");
+    jack_connect(envg2.client, "envg2:out", "lin2exp2:in");
+    jack_connect(lin2exp2.client, "lin2exp2:out", "envm2:in2");
+
+    jack_connect(key1.client, "key1:freq", "sine:freq");
+    jack_connect(sine.client, "sine:out", "envm1:in1");
+
+    jack_connect(key2.client, "key2:freq", "cot:freq");
+    jack_connect(cot.client, "cot:out", "envm2:in1");
+
+    jack_connect(envm1.client, "envm1:out", "mixer:in1");
+    jack_connect(envm2.client, "envm2:out", "mixer:in2");
+
+    jack_connect(mixer.client, "mixer:out", "system:playback_1");
+    jack_connect(mixer.client, "mixer:out", "system:playback_2");
+
+    jack_default_audio_sample_t first_verse[10][3] = {
+	{0.0f, 2.75f, 4.0f},
+	{3.0f, 5.75f, 2.0f},
+	{6.0f, 8.75f, 0.0f},
+	{9.0f, 11.75f,-3.0f},
+	{12.0f, 12.95f, -2.0f},
+	{13.0f, 13.95f, -1.0f},
+	{14.0f, 14.95f, 0.0f},
+	{15.0f, 16.95f, -2.0f},
+	{17.0f, 17.95f, 0.0f},
+	{18.0f, 20.75f, -3.0f},
+    };
+    jack_default_audio_sample_t second_verse[10][3] = {
+	{24.0f + 0.0f, 24.0f + 2.75f, 1.0f},
+	{24.0f + 3.0f, 24.0f + 5.75f, 4.0f},
+	{24.0f + 6.0f, 24.0f + 8.75f, 2.0f},
+	{24.0f + 9.0f, 24.0f + 11.75f, 0.0f},
+	{24.0f + 12.0f, 24.0f + 12.95f, -2.0},
+	{24.0f + 13.0f, 24.0f + 13.95f, -1.0},
+	{24.0f + 14.0f, 24.0f + 14.95f, 0.0f},
+	{24.0f + 15.0f, 24.0f + 16.95f, 1.0f},
+	{24.0f + 17.0f, 24.0f + 17.95f, 2.0f},
+	{24.0f + 18.0f, 24.0f + 20.75f, 1.0f}
+    };
+
+    jack_default_audio_sample_t **first_verse_p = alloca(11 * sizeof(jack_default_audio_sample_t *));
+    first_verse_p[10] = NULL;
+    int i;
+    for(i = 0; i < 10; i++) {
+	first_verse_p[i] = alloca(3*sizeof(jack_default_audio_sample_t));
+	int j;
+	for(j = 0; j < 3; j++) {
+	    first_verse_p[i][j] = first_verse[i][j];
+	}
     }
-    r = cs_ampeg_vt22_set_gain(&vt22, 0.125);
-    if(r != 0) {
-    	perror("Could not initialize vt22");
-    	exit(r);
+
+    jack_default_audio_sample_t **second_verse_p = alloca(11 * sizeof(jack_default_audio_sample_t *));
+    second_verse_p[10] = NULL;
+    for(i = 0; i < 10; i++) {
+	second_verse_p[i] = alloca(3*sizeof(jack_default_audio_sample_t));
+	int j;
+	for(j = 0; j < 3; j++) {
+	    second_verse_p[i][j] = second_verse[i][j];
+	}
     }
 
-    r = cs_lowpass_init(&filter, "filter", 0, NULL);
-    if(r != 0) {
-	perror("Could not initialize filter");
-	exit(r);
-    }
-
-    cs_envg_init(&filter_envg, "filter_envg", 0, NULL);
-    cs_lin2exp_init(&filter_lin2exp, "filter_lin2exp", 0, NULL);
-    cs_envg_set_attack_t(&filter_envg, 0.0);
-    cs_envg_set_decay_t(&filter_envg, 0.5);
-    cs_envg_set_sustain_a(&filter_envg, 0.0);
-    cs_envg_set_release_t(&filter_envg, 0.0);
-    cs_modu_init(&filter_envm, "filter_envm", 0, NULL);
-    cs_modu_set_in2(&filter_envm, 10.0f);
-    cs_lin2exp_set_zero(&filter_lin2exp, 0.25);
-    cs_modu_init(&filter_envg_invert1, "filter_envg_invert1", 0, NULL);
-    cs_mix_init(&filter_envg_invert2, "filter_envg_invert2", 0, NULL);
-    cs_modu_set_in2(&filter_envg_invert1, -1.0f);
-    cs_mix_set_in2(&filter_envg_invert2, 2.0f);
-    cs_modu_init(&filter_relative_m, "filter_relative_m", 0, NULL);
-
-
-    jack_connect(vib.client, "vib:out", "viba:in1");
-    jack_connect(viba.client, "viba:out", "vibm:in1");
-    jack_connect(inst.client, "inst:out", "vibm:in2");
-    jack_connect(vibm.client, "vibm:out", "key:note");
-    jack_connect(key.client, "key:freq", "filter_relative_m:in2");
-    jack_connect(inst.client, "inst:ctl", "envg:ctl");
-    jack_connect(envg.client, "envg:out", "lin2exp:in");
-    jack_connect(lin2exp.client, "lin2exp:out", "envm:in2");
-    jack_connect(inst.client, "inst:ctl", "filter_envg:ctl");
-    jack_connect(filter_envg.client, "filter_envg:out", "filter_envg_invert1:in1");
-    jack_connect(filter_envg_invert1.client, "filter_envg_invert1:out", "filter_envg_invert2:in1");
-    jack_connect(filter_envg_invert2.client, "filter_envg_invert2:out", "filter_lin2exp:in");
-    jack_connect(filter_lin2exp.client, "filter_lin2exp:out", "filter_envm:in1");
-    jack_connect(filter_envm.client, "filter_envm:out", "filter_relative_m:in1");
-    jack_connect(filter_relative_m.client, "filter_relative_m:out", "filter:freq");
-    jack_connect(rsawrm1.client, "rsawrm1:out", "modu:in1");
-    jack_connect(rsawrm1.client, "sinerm2:out", "modu:in2");
-    jack_connect(sinerm2.client, "modu:out", "envm:in1");
-    jack_connect(sine.client, "sine:out", "envm:in1");
-    jack_connect(triangle.client, "triangle:out", "envm:in1");
-    jack_connect(rsaw.client, "rsaw:out", "envm:in1");
-    jack_connect(fsaw.client, "fsaw:out", "envm:in1");
-    jack_connect(square.client, "square:out", "envm:in1");
-    jack_connect(infh.client, "infh:out", "envm:in1");
-    jack_connect(envm.client, "envm:out", "filter:in");
-    jack_connect(filter.client, "filter:out", "system:playback_1");
-    jack_connect(filter.client, "filter:out", "system:playback_2");
-    /* jack_connect(envm.client, "envm:out", "filter:in"); */
-    /* jack_connect(filter.client, "filter:out", "system:playback_1"); */
-    /* jack_connect(filter.client, "filter:out", "system:playback_2"); */
-    /* jack_connect(envm.client, "envm:out", "reverb:in"); */
-    /* jack_connect(reverb.client, "reverb:out1", "system:playback_1"); */
-    /* jack_connect(reverb.client, "reverb:out2", "system:playback_2"); */
-    /* jack_connect(envm.client, "envm:out", "system:playback_1"); */
-    /* jack_connect(envm.client, "envm:out", "system:playback_2"); */
-
-    jack_connect(key.client, "key:freq", "sine:freq");
-    r = cs_inst_play(&inst, 4.0f);
-    if(r != 0) {
-    	perror("Could not play instrument");
-    	exit(r);
-    }
-    usleep(750000);
-    jack_connect(key.client, "key:freq", "triangle:freq");
-    jack_disconnect(key.client, "key:freq", "sine:freq");
-    r = cs_inst_play(&inst, 2.0f);
-    usleep(750000);
-    jack_connect(key.client, "key:freq", "rsaw:freq");
-    jack_disconnect(key.client, "key:freq", "triangle:freq");
-    r = cs_inst_play(&inst, 0.0f);
-    usleep(750000);
-    jack_connect(key.client, "key:freq", "fsaw:freq");
-    jack_disconnect(key.client, "key:freq", "rsaw:freq");
-    r = cs_inst_play(&inst, -3.0f);
-    usleep(750000);
-    jack_connect(key.client, "key:freq", "square:freq");
-    jack_disconnect(key.client, "key:freq", "fsaw:freq");
-    r = cs_inst_play(&inst, -2);
-    usleep(250000);
-    jack_connect(key.client, "key:freq", "rsawrm1:freq");
-    jack_disconnect(key.client, "key:freq", "square:freq");
-    r = cs_inst_play(&inst, -1);
-    usleep(250000);
-    jack_connect(key.client, "key:freq", "sine:freq");
-    jack_disconnect(key.client, "key:freq", "rsawrm1:freq");
-    r = cs_inst_play(&inst, 0);
-    usleep(250000);
-    jack_connect(key.client, "key:freq", "triangle:freq");
-    jack_disconnect(key.client, "key:freq", "sine:freq");
-    r = cs_inst_play(&inst, -2);
-    usleep(500000);
-    jack_connect(key.client, "key:freq", "rsaw:freq");
-    jack_disconnect(key.client, "key:freq", "triangle:freq");
-    r = cs_inst_play(&inst, 0);
-    usleep(250000);
-    jack_connect(key.client, "key:freq", "fsaw:freq");
-    jack_disconnect(key.client, "key:freq", "rsaw:freq");
-    r = cs_inst_play(&inst, -3);
-    usleep(1250000);
-    r = cs_inst_stop(&inst);
-    if(r != 0) {
-    	perror("Could not stop instrument");
-    	exit(r);
-    }
-    jack_connect(key.client, "key:freq", "infh:freq");
-    jack_disconnect(key.client, "key:freq", "fsaw:freq");
-    jack_connect(envm.client, "envm:out", "system:playback_1");
-    jack_connect(envm.client, "envm:out", "system:playback_2");
-    jack_disconnect(filter.client, "filter:out", "system:playback_1");
-    jack_disconnect(filter.client, "filter:out", "system:playback_2");
-
-    jack_connect(clock.client, "clock:clock", "seq:clock");
-    jack_disconnect(inst.client, "inst:out", "vibm:in2");
-    jack_disconnect(inst.client, "inst:ctl", "envg:ctl");
-    jack_disconnect(inst.client, "inst:ctl", "filter_envg:ctl");
-    jack_connect(seq.client, "seq:out", "vibm:in2");
-    jack_connect(seq.client, "seq:ctl", "envg:ctl");
-    jack_connect(seq.client, "seq:ctl", "filter_envg:ctl");
-
-    jack_default_audio_sample_t **second_verse = alloca(11 * sizeof(jack_default_audio_sample_t *));
-    jack_default_audio_sample_t **ptr = second_verse;
-    *ptr = alloca(3 * sizeof(jack_default_audio_sample_t));
-    (*ptr)[0] = 0.0f;
-    (*ptr)[1] = 2.75f;
-    (*ptr)[2] = 1.0f;
-    ptr++;
-    *ptr = alloca(3 * sizeof(jack_default_audio_sample_t));
-    (*ptr)[0] = 3.0f;
-    (*ptr)[1] = 5.75f;
-    (*ptr)[2] = 4.0f;
-    ptr++;
-    *ptr = alloca(3 * sizeof(jack_default_audio_sample_t));
-    (*ptr)[0] = 6.0f;
-    (*ptr)[1] = 8.75f;
-    (*ptr)[2] = 2.0f;
-    ptr++;
-    *ptr = alloca(3 * sizeof(jack_default_audio_sample_t));
-    (*ptr)[0] = 9.0f;
-    (*ptr)[1] = 11.75f;
-    (*ptr)[2] = 0.0f;
-    ptr++;
-    *ptr = alloca(3 * sizeof(jack_default_audio_sample_t));
-    (*ptr)[0] = 12.0f;
-    (*ptr)[1] = 12.95f;
-    (*ptr)[2] = -2.0;
-    ptr++;
-    *ptr = alloca(3 * sizeof(jack_default_audio_sample_t));
-    (*ptr)[0] = 13.0f;
-    (*ptr)[1] = 13.95f;
-    (*ptr)[2] = -1.0;
-    ptr++;
-    *ptr = alloca(3 * sizeof(jack_default_audio_sample_t));
-    (*ptr)[0] = 14.0f;
-    (*ptr)[1] = 14.95f;
-    (*ptr)[2] = 0.0f;
-    ptr++;
-    *ptr = alloca(3 * sizeof(jack_default_audio_sample_t));
-    (*ptr)[0] = 15.0f;
-    (*ptr)[1] = 16.95f;
-    (*ptr)[2] = 1.0f;
-    ptr++;
-    *ptr = alloca(3 * sizeof(jack_default_audio_sample_t));
-    (*ptr)[0] = 17.0f;
-    (*ptr)[1] = 17.95f;
-    (*ptr)[2] = 2.0f;
-    ptr++;
-    *ptr = alloca(3 * sizeof(jack_default_audio_sample_t));
-    (*ptr)[0] = 18.0f;
-    (*ptr)[1] = 20.75f;
-    (*ptr)[2] = 1.0f;
-    ptr++;
-    *ptr = NULL;
-    cs_seq_sequence_once(&seq, 0.0f, 21.0f, second_verse);
+    r = cs_seq_sequence_once(&seq1, 0.0f, 21.0f, first_verse_p);
+    r |= cs_seq_sequence_once(&seq2, 0.0f, 45.0f, second_verse_p);
     if(r != 0) {
     	perror("Could not create sequence");
     	exit(r);
     }
-    sleep(9);
-    r = cs_clock_destroy(&clock);
+
+    printf("Hit return to quit");
+    getchar();
+
+    r = cs_key_destroy(&key1);
     if(r != 0) {
-	perror("Could not destroy clock");
+	perror("Could not destroy key1");
 	exit(r);
     }
-    r = cs_seq_destroy(&seq);
+    r = cs_key_destroy(&key2);
     if(r != 0) {
-	perror("Could not destroy sequencer");
-	exit(r);
-    }
-    r = cs_inst_destroy(&inst);
-    if(r != 0) {
-	perror("Could not destroy instrument");
-	exit(r);
-    }
-    r = cs_key_destroy(&key);
-    if(r != 0) {
-	perror("Could not destroy key");
+	perror("Could not destroy key2");
 	exit(r);
     }
     r = cs_sine_destroy(&sine);
@@ -433,95 +209,64 @@ int main(int argc, char **argv) {
 	perror("Could not destroy sine");
 	exit(r);
     }
-    r = cs_sine_destroy(&rsawrm1);
+    r = cs_cot_destroy(&cot);
     if(r != 0) {
-	perror("Could not destroy rsawrm1");
+	perror("Could not destroy cot");
 	exit(r);
     }
-    r = cs_sine_destroy(&sinerm2);
+
+    r = cs_envg_destroy(&envg1);
     if(r != 0) {
-	perror("Could not destroy sinerm2");
+	perror("Could not destroy envg1");
 	exit(r);
     }
-    r = cs_modu_destroy(&modu);
+    r = cs_lin2exp_destroy(&lin2exp1);
     if(r != 0) {
-	perror("Could not destroy modu");
+	perror("Could not destroy lin2exp1");
 	exit(r);
     }
-    r = cs_triangle_destroy(&triangle);
+    r = cs_modu_destroy(&envm1);
     if(r != 0) {
-	perror("Could not destroy triangle");
+	perror("Could not destroy envm1");
 	exit(r);
     }
-    r = cs_rsaw_destroy(&rsaw);
+    r = cs_envg_destroy(&envg2);
     if(r != 0) {
-	perror("Could not destroy rsaw");
+	perror("Could not destroy envg2");
 	exit(r);
     }
-    r = cs_fsaw_destroy(&fsaw);
+    r = cs_lin2exp_destroy(&lin2exp2);
     if(r != 0) {
-	perror("Could not destroy fsaw");
+	perror("Could not destroy lin2exp2");
 	exit(r);
     }
-    r = cs_square_destroy(&square);
+    r = cs_modu_destroy(&envm2);
     if(r != 0) {
-	perror("Could not destroy square");
+	perror("Could not destroy envm2");
 	exit(r);
     }
-    r = cs_infh_destroy(&infh);
+
+    r = cs_seq_destroy(&seq1);
     if(r != 0) {
-	perror("Could not destroy infh");
+	perror("Could not destroy seq1");
 	exit(r);
     }
-    r = cs_envg_destroy(&envg);
+
+    r = cs_seq_destroy(&seq2);
     if(r != 0) {
-	perror("Could not destroy envg");
+	perror("Could not destroy seq2");
 	exit(r);
     }
-    r = cs_lin2exp_destroy(&lin2exp);
+
+    r = cs_clock_destroy(&clock);
     if(r != 0) {
-	perror("Could not destroy lin2exp");
+	perror("Could not destroy clock");
 	exit(r);
     }
-    r = cs_modu_destroy(&envm);
+    r = cs_mix_destroy(&mixer);
     if(r != 0) {
-	perror("Could not destroy envm");
+	perror("Could not destroy mixer");
 	exit(r);
     }
-    r = cs_sine_destroy(&vib);
-    if(r != 0) {
-	perror("Could not destroy vib");
-	exit(r);
-    }
-    r = cs_modu_destroy(&viba);
-    if(r != 0) {
-	perror("Could not destroy viba");
-	exit(r);
-    }
-    r = cs_mix_destroy(&vibm);
-    if(r != 0) {
-	perror("Could not destroy vibm");
-	exit(r);
-    }
-    r = cs_ampeg_vt22_destroy(&vt22);
-    if(r != 0) {
-    	perror("Could not destroy vt22");
-    	exit(r);
-    }
-    r = cs_lowpass_destroy(&filter);
-    if(r != 0) {
-	perror("Could not destroy filter");
-	exit(r);
-    }
-    cs_envg_destroy(&filter_envg);
-    cs_lin2exp_destroy(&filter_lin2exp);
-    cs_modu_destroy(&filter_envm);
-    cs_modu_destroy(&filter_envg_invert1);
-    cs_mix_destroy(&filter_envg_invert2);
-    /* r = cs_convol_destroy(&reverb); */
-    /* if(r != 0) { */
-    /* 	perror("Could not destroy reverb"); */
-    /* 	exit(r); */
-    /* } */
     return 0;
 }

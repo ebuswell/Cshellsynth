@@ -159,7 +159,7 @@ int cs_seq_init(cs_seq_t *self, const char *client_name, jack_options_t flags, c
     self->last = 0.0f;
     self->offset = 0.0f;
     self->current = NULL;
-    self->out = NAN;
+    self->out = 0.0f;
     self->playing = false;
     self->curr_seq = NULL;
     self->next_seq = NULL;

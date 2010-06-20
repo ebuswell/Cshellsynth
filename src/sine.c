@@ -30,12 +30,12 @@ static int cs_sine_process(jack_nframes_t nframes, void *arg) {
 		self->offset = 0.0;
 		out_buffer[i] = 0.0f;
 	    } else {
-		f /= sample_rate;
-		double period = 1 / f;
+		double period = sample_rate / f;
 		while(self->offset >= period) {
 		    self->offset -= period;
 		}
-		out_buffer[i] = sinf(M_2_PI * f * self->offset);
+		double c = sample_rate*(cos((2.0 * M_PI * f * self->offset) / sample_rate) - cos((2.0 * M_PI * f * (self->offset + 1)) / sample_rate))/(2.0 * M_PI * f);
+		out_buffer[i] = (jack_default_audio_sample_t) c;
 		self->offset += 1.0;
 	    }
 	}

@@ -43,7 +43,7 @@ int cs_inst_init(cs_inst_t *self, const char *client_name, jack_options_t flags,
 	return r;
     }
 
-    self->value = NAN;
+    self->value = 0.0;
     self->ctl = 0.0;
 
     r = jack_set_process_callback(self->client, cs_inst_process, self);

@@ -7,7 +7,7 @@
 #include <cshellsynth/envelope_generator.h>
 #include <cshellsynth/falling_saw.h>
 #include <cshellsynth/filter.h>
-#include <cshellsynth/infh.h>
+#include <cshellsynth/cot.h>
 #include <cshellsynth/instrument.h>
 #include <cshellsynth/jclient.h>
 #include <cshellsynth/key.h>
