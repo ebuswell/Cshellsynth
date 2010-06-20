@@ -4,7 +4,6 @@
 #include <cshellsynth/ampeg_vt22.h>
 #include <cshellsynth/clock.h>
 #include <cshellsynth/controller.h>
-#include <cshellsynth/convolution.h>
 #include <cshellsynth/envelope_generator.h>
 #include <cshellsynth/falling_saw.h>
 #include <cshellsynth/filter.h>
