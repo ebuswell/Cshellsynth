@@ -2,6 +2,7 @@
 #include <math.h>
 #include "cshellsynth/ampeg_vt22.h"
 #include "cshellsynth/filter.h"
+#include "atomic-float.h"
 
 /*
       o v
@@ -178,54 +179,34 @@ static inline double stage_4(double x) {
 
 static int cs_ampeg_vt22_process(jack_nframes_t nframes, void *arg) {
     cs_ampeg_vt22_t *self = (cs_ampeg_vt22_t *) arg;
-    jack_default_audio_sample_t *in_buffer;
-    jack_default_audio_sample_t *out_buffer = (jack_default_audio_sample_t *)jack_port_get_buffer(self->out_port, nframes);
+    float *in_buffer;
+    float *out_buffer = (float *)jack_port_get_buffer(self->out_port, nframes);
     if(out_buffer == NULL) {
 	return -1;
     }
-    int r = pthread_mutex_lock(&self->lock);
-    {
-	if(r != 0) {
-	    return r;
-	}
-	if(isnanf(self->in)) {
-	    in_buffer = (jack_default_audio_sample_t *)jack_port_get_buffer(self->in_port, nframes);
-	    if(in_buffer == NULL) {
-		pthread_mutex_unlock(&self->lock);
-		return -1;
-	    }
-	}
-	int i;
-	for(i = 0; i < nframes; i++) {
-	    float f = stage_1(0.05*(isnanf(self->in) ? in_buffer[i] : self->in));
-	    f *= self->gain;
-	    f = stage_2(f);
-	    f = stage_3(f);
-	    f = stage_4(f);
-	    f *= (1.0f/250.0f);
-	    out_buffer[i] =  f;
+    float in = atomic_float_read(&self->in);
+    if(isnanf(in)) {
+	in_buffer = (float *)jack_port_get_buffer(self->in_port, nframes);
+	if(in_buffer == NULL) {
+	    return -1;
 	}
     }
-    r = pthread_mutex_unlock(&self->lock);
-    if(r != 0) {
-	return r;
+    float gain = atomic_float_read(&self->gain);
+    int i;
+    for(i = 0; i < nframes; i++) {
+	float f = stage_1(0.05*(isnanf(in) ? in_buffer[i] : in));
+	f *= gain;
+	f = stage_2(f);
+	f = stage_3(f);
+	f = stage_4(f);
+	f *= (1.0f/250.0f);
+	out_buffer[i] =  f;
     }
     return 0;
 }
 
-int cs_ampeg_vt22_set_gain(cs_ampeg_vt22_t *self, jack_default_audio_sample_t gain) {
-    int r = pthread_mutex_lock(&self->lock);
-    {
-	if(r != 0) {
-	    return r;
-	}
-	self->gain = gain;
-    }
-    r = pthread_mutex_unlock(&self->lock);
-    if(r != 0) {
-	return r;
-    }
-    return 0;
+void cs_ampeg_vt22_set_gain(cs_ampeg_vt22_t *self, float gain) {
+    atomic_float_set(&self->gain, gain);
 }
 
 int cs_ampeg_vt22_init(cs_ampeg_vt22_t *self, const char *client_name, jack_options_t flags, char *server_name) {
@@ -234,7 +215,7 @@ int cs_ampeg_vt22_init(cs_ampeg_vt22_t *self, const char *client_name, jack_opti
 	return r;
     }
 
-    self->gain = 0.125f;
+    atomic_float_set(&self->gain, 0.125f);
 
     r = jack_set_process_callback(self->client, cs_ampeg_vt22_process, self);
     if(r != 0) {

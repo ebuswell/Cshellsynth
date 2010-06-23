@@ -2,40 +2,33 @@
 #include <math.h>
 #include "cshellsynth/modulator.h"
 #include "cshellsynth/mixer.h"
+#include "atomic-float.h"
 
 static int cs_modu_process(jack_nframes_t nframes, void *arg) {
     cs_modu_t *self = (cs_modu_t *) arg;
-    jack_default_audio_sample_t *in1_buffer;
-    jack_default_audio_sample_t *in2_buffer;
-    jack_default_audio_sample_t *out_buffer = (jack_default_audio_sample_t *)jack_port_get_buffer(self->out_port, nframes);
+    float *in1_buffer;
+    float *in2_buffer;
+    float *out_buffer = (float *)jack_port_get_buffer(self->out_port, nframes);
     if(out_buffer == NULL) {
 	return -1;
     }
-    int r = pthread_mutex_lock(&self->lock);
-    {
-	if(r != 0) {
-	    return r;
-	}
-	if(isnanf(self->in1)) {
-	    in1_buffer = (jack_default_audio_sample_t *)jack_port_get_buffer(self->in1_port, nframes);
-	    if(in1_buffer == NULL) {
-		return -1;
-	    }
-	}
-	if(isnanf(self->in2)) {
-	    in2_buffer = (jack_default_audio_sample_t *)jack_port_get_buffer(self->in2_port, nframes);
-	    if(in2_buffer == NULL) {
-		return -1;
-	    }
-	}
-	int i;
-	for(i = 0; i < nframes; i++) {
-	    out_buffer[i] = (isnanf(self->in1) ? in1_buffer[i] : self->in1) * (isnanf(self->in2) ? in2_buffer[i] : self->in2);
+    float in1 = atomic_float_read(&self->in1);
+    if(isnanf(in1)) {
+	in1_buffer = (float *)jack_port_get_buffer(self->in1_port, nframes);
+	if(in1_buffer == NULL) {
+	    return -1;
 	}
     }
-    r = pthread_mutex_unlock(&self->lock);
-    if(r != 0) {
-	return r;
+    float in2 = atomic_float_read(&self->in2);
+    if(isnanf(in2)) {
+	in2_buffer = (float *)jack_port_get_buffer(self->in2_port, nframes);
+	if(in2_buffer == NULL) {
+	    return -1;
+	}
+    }
+    int i;
+    for(i = 0; i < nframes; i++) {
+	out_buffer[i] = (isnanf(in1) ? in1_buffer[i] : in1) * (isnanf(in2) ? in2_buffer[i] : in2);
     }
     return 0;
 }

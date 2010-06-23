@@ -2,26 +2,29 @@
 #define CSHELLSYNTH_KEY_H 1
 
 #include <jack/jack.h>
-#include <pthread.h>
+#include <cshellsynth/atomic-types.h>
 #include <cshellsynth/jclient.h>
+
+typedef struct cs_key_tuning_struct {
+    size_t tuning_length;
+    const float *tuning;
+} cs_key_tuning_t;
 
 typedef struct cs_key_struct {
     jack_client_t *client;
-    pthread_mutex_t lock;
     jack_port_t *note_port;
-    jack_default_audio_sample_t note;
+    atomic_float_t note;
     jack_port_t *freq_port;
-    size_t tuning_length;
-    jack_default_audio_sample_t *tuning;
-    jack_default_audio_sample_t root;
+    atomic_ptr_t tuning; // cs_key_tuning_t *
+    atomic_float_t root;
 } cs_key_t;
 
-#define cs_key_destroy(cs_key) jclient_locking_destroy((jclient_locking_t *) (cs_key))
+int cs_key_destroy(cs_key_t *cs_key);
 int cs_key_init(cs_key_t *self, const char *client_name, jack_options_t flags, char *server_name);
-int cs_key_set_root(cs_key_t *self, jack_default_audio_sample_t root);
-int cs_key_set_tuning(cs_key_t *self, const jack_default_audio_sample_t *tuning, size_t tuning_length);
-jack_default_audio_sample_t cs_key_note2freq(cs_key_t *self, jack_default_audio_sample_t note);
-int cs_key_set_note(cs_key_t *self, jack_default_audio_sample_t note);
+void cs_key_set_root(cs_key_t *self, float root);
+void cs_key_set_tuning(cs_key_t *self, const float *tuning, size_t tuning_length);
+float cs_key_note2freq(cs_key_t *self, float note);
+void cs_key_set_note(cs_key_t *self, float note);
 
 #define CS_A 220.0
 #define CS_A_SHARP 233.081880759045
@@ -45,16 +48,16 @@ int cs_key_set_note(cs_key_t *self, jack_default_audio_sample_t note);
 #define CS_G_SHARP 415.304697579945
 #define CS_A_FLAT 415.304697579945
 
-extern const jack_default_audio_sample_t CS_MAJOR_TUNING[];
+extern const float CS_MAJOR_TUNING[];
 #define CS_MAJOR_TUNING_LENGTH 7
 
-extern const jack_default_audio_sample_t CS_MINOR_TUNING[];
+extern const float CS_MINOR_TUNING[];
 #define CS_MINOR_TUNING_LENGTH 7
 
-extern const jack_default_audio_sample_t CS_PYTHAGOREAN_TUNING[];
+extern const float CS_PYTHAGOREAN_TUNING[];
 #define CS_PYTHAGOREAN_TUNING_LENGTH 12
 
-#define CS_EQUAL_TUNING ((jack_default_audio_sample_t *) -1)
+#define CS_EQUAL_TUNING ((float *) -1)
 #define CS_EQUAL_TUNING_LENGTH 12
 
 #endif

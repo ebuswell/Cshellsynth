@@ -2,14 +2,13 @@
 #define CSHELLSYNTH_SINE_H 1
 
 #include <jack/jack.h>
-#include <pthread.h>
+#include <cshellsynth/atomic-types.h>
 #include <cshellsynth/synth.h>
 
 typedef struct cs_sine_struct {
     jack_client_t *client;
-    pthread_mutex_t lock;
     jack_port_t *freq_port;
-    jack_default_audio_sample_t freq;
+    atomic_float_t freq;
     jack_port_t *out_port;
     double offset;
 } cs_sine_t;

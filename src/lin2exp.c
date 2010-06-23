@@ -2,51 +2,33 @@
 #include <math.h>
 #include "cshellsynth/lin2exp.h"
 #include "cshellsynth/filter.h"
+#include "atomic-float.h"
 
 static int cs_lin2exp_process(jack_nframes_t nframes, void *arg) {
     cs_lin2exp_t *self = (cs_lin2exp_t *) arg;
-    jack_default_audio_sample_t *in_buffer;
-    jack_default_audio_sample_t *out_buffer = (jack_default_audio_sample_t *)jack_port_get_buffer(self->out_port, nframes);
+    float *in_buffer;
+    float *out_buffer = (float *)jack_port_get_buffer(self->out_port, nframes);
     if(out_buffer == NULL) {
 	return -1;
     }
-    int r = pthread_mutex_lock(&self->lock);
-    {
-	if(r != 0) {
-	    return r;
-	}
-	if(isnanf(self->in)) {
-	    in_buffer = (jack_default_audio_sample_t *)jack_port_get_buffer(self->in_port, nframes);
-	    if(in_buffer == NULL) {
-		pthread_mutex_unlock(&self->lock);
-		return -1;
-	    }
-	}
-	int i;
-	for(i = 0; i < nframes; i++) {
-	    out_buffer[i] = (powf(self->zero, 1.0f - (isnanf(self->in) ? in_buffer[i] : self->in)) - self->zero) / (1.0f - self->zero);
+    float in = atomic_float_read(&self->in);
+    if(isnanf(in)) {
+	in_buffer = (float *)jack_port_get_buffer(self->in_port, nframes);
+	if(in_buffer == NULL) {
+	    return -1;
 	}
     }
-    r = pthread_mutex_unlock(&self->lock);
-    if(r != 0) {
-	return r;
+    float zero = atomic_float_read(&self->zero);
+    int i;
+    for(i = 0; i < nframes; i++) {
+	float x = isnanf(in) ? in_buffer[i] : in;
+	out_buffer[i] = (powf(zero, 1.0f - x) - zero) / (1.0f - zero);
     }
     return 0;
 }
 
-int cs_lin2exp_set_zero(cs_lin2exp_t *self, jack_default_audio_sample_t zero) {
-    int r = pthread_mutex_lock(&self->lock);
-    {
-	if(r != 0) {
-	    return r;
-	}
-	self->zero = zero;
-    }
-    r = pthread_mutex_unlock(&self->lock);
-    if(r != 0) {
-	return r;
-    }
-    return 0;
+void cs_lin2exp_set_zero(cs_lin2exp_t *self, float zero) {
+    atomic_float_set(&self->zero, zero);
 }
 
 int cs_lin2exp_init(cs_lin2exp_t *self, const char *client_name, jack_options_t flags, char *server_name) {
@@ -55,7 +37,7 @@ int cs_lin2exp_init(cs_lin2exp_t *self, const char *client_name, jack_options_t 
 	return r;
     }
 
-    self->zero = 0.0625;
+    atomic_float_set(&self->zero, 0.0625);
 
     r = jack_set_process_callback(self->client, cs_lin2exp_process, self);
     if(r != 0) {

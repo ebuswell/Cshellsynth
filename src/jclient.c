@@ -16,26 +16,6 @@ int jclient_init(jclient_t *self, const char *client_name, jack_options_t flags,
     }
 }
 
-int jclient_locking_init(jclient_locking_t *self, const char *client_name, jack_options_t flags, char *server_name) {
-    int r = jclient_init((jclient_t *) self, client_name, flags, server_name);
-    if(r != 0) {
-	return r;
-    }
-    r = pthread_mutex_init(&self->lock, NULL);
-    if(r != 0) {
-	return r;
-    }
-    return 0;
-}
-
 int jclient_destroy(jclient_t *self) {
     return jack_client_close(self->client);
-}
-
-int jclient_locking_destroy(jclient_locking_t *self) {
-    int r = pthread_mutex_destroy(&self->lock);
-    if(r != 0) {
-	return r;
-    }
-    return jclient_destroy((jclient_t *) self);
 }

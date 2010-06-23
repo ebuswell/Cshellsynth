@@ -19,22 +19,23 @@ int main(int argc, char **argv) {
     cs_lin2exp_t lin2exp2;
     cs_clock_t clock;
     cs_mix_t mixer;
+    int r;
 
-    int r = cs_key_init(&key1, "key1", 0, NULL);
-    r |= cs_key_set_tuning(&key1, CS_MAJOR_TUNING, CS_MAJOR_TUNING_LENGTH);
-    r |= cs_key_set_root(&key1, CS_G);
+    r = cs_key_init(&key1, "key1", 0, NULL);
     if(r != 0) {
 	perror("Could not initialize key1");
 	exit(r);
     }
+    cs_key_set_tuning(&key1, CS_MAJOR_TUNING, CS_MAJOR_TUNING_LENGTH);
+    cs_key_set_root(&key1, CS_G);
 
     r = cs_key_init(&key2, "key2", 0, NULL);
-    r |= cs_key_set_tuning(&key2, CS_MAJOR_TUNING, CS_MAJOR_TUNING_LENGTH);
-    r |= cs_key_set_root(&key2, CS_G);
     if(r != 0) {
 	perror("Could not initialize key2");
 	exit(r);
     }
+    cs_key_set_tuning(&key2, CS_MAJOR_TUNING, CS_MAJOR_TUNING_LENGTH);
+    cs_key_set_root(&key2, CS_G);
 
     r = cs_mix_init(&mixer, "mixer", 0, NULL);
     if(r != 0) {
@@ -54,36 +55,36 @@ int main(int argc, char **argv) {
     }
 
     r = cs_envg_init(&envg1, "envg1", 0, NULL);
-    r |= cs_envg_set_attack_t(&envg1, 0.1);
-    r |= cs_envg_set_decay_t(&envg1, 0.25);
-    r |= cs_envg_set_sustain_a(&envg1, 0.65f);
-    r |= cs_envg_set_release_t(&envg1, 0.5);
     if(r != 0) {
 	perror("Could not initialize envg1");
 	exit(r);
     }
+    cs_envg_set_attack_t(&envg1, 0.1);
+    cs_envg_set_decay_t(&envg1, 0.25);
+    cs_envg_set_sustain_a(&envg1, 0.65f);
+    cs_envg_set_release_t(&envg1, 0.5);
     r = cs_envg_init(&envg2, "envg2", 0, NULL);
-    r |= cs_envg_set_attack_t(&envg2, 0.1);
-    r |= cs_envg_set_decay_t(&envg2, 0.25);
-    r |= cs_envg_set_sustain_a(&envg2, 0.65f);
-    r |= cs_envg_set_release_t(&envg2, 0.5);
     if(r != 0) {
 	perror("Could not initialize envg2");
 	exit(r);
     }
+    cs_envg_set_attack_t(&envg2, 0.1);
+    cs_envg_set_decay_t(&envg2, 0.25);
+    cs_envg_set_sustain_a(&envg2, 0.64f);
+    cs_envg_set_release_t(&envg2, 0.5);
 
     r = cs_lin2exp_init(&lin2exp1, "lin2exp1", 0, NULL);
-    r |= cs_lin2exp_set_zero(&lin2exp1, 0.25);
     if(r != 0) {
 	perror("Could not initialize lin2exp1");
 	exit(r);
     }
+    cs_lin2exp_set_zero(&lin2exp1, 0.25);
     r = cs_lin2exp_init(&lin2exp2, "lin2exp2", 0, NULL);
-    r |= cs_lin2exp_set_zero(&lin2exp2, 0.25);
     if(r != 0) {
 	perror("Could not initialize lin2exp2");
 	exit(r);
     }
+    cs_lin2exp_set_zero(&lin2exp2, 0.25);
     r = cs_modu_init(&envm1, "envm1", 0, NULL);
     if(r != 0) {
 	perror("Could not initialize envm1");
@@ -108,12 +109,12 @@ int main(int argc, char **argv) {
     }
 
     r = cs_clock_init(&clock, "clock", 0, NULL);
-    r |= cs_clock_set_bpm(&clock, 240.0);
-    r |= cs_clock_set_meter(&clock, 3.0);
     if(r != 0) {
 	perror("Could not initialize clock");
 	exit(r);
     }
+    cs_clock_set_bpm(&clock, 240.0);
+    cs_clock_set_meter(&clock, 3.0);
 
     jack_connect(clock.client, "clock:clock", "seq1:clock");
     jack_connect(clock.client, "clock:clock", "seq2:clock");
@@ -138,7 +139,7 @@ int main(int argc, char **argv) {
     jack_connect(mixer.client, "mixer:out", "system:playback_1");
     jack_connect(mixer.client, "mixer:out", "system:playback_2");
 
-    jack_default_audio_sample_t first_verse[10][3] = {
+    float first_verse[10][3] = {
 	{0.0f, 2.75f, 4.0f},
 	{3.0f, 5.75f, 2.0f},
 	{6.0f, 8.75f, 0.0f},
@@ -150,7 +151,7 @@ int main(int argc, char **argv) {
 	{17.0f, 17.95f, 0.0f},
 	{18.0f, 20.75f, -3.0f},
     };
-    jack_default_audio_sample_t second_verse[10][3] = {
+    float second_verse[10][3] = {
 	{24.0f + 0.0f, 24.0f + 2.75f, 1.0f},
 	{24.0f + 3.0f, 24.0f + 5.75f, 4.0f},
 	{24.0f + 6.0f, 24.0f + 8.75f, 2.0f},
@@ -163,33 +164,29 @@ int main(int argc, char **argv) {
 	{24.0f + 18.0f, 24.0f + 20.75f, 1.0f}
     };
 
-    jack_default_audio_sample_t **first_verse_p = alloca(11 * sizeof(jack_default_audio_sample_t *));
+    float **first_verse_p = alloca(11 * sizeof(float *));
     first_verse_p[10] = NULL;
     int i;
     for(i = 0; i < 10; i++) {
-	first_verse_p[i] = alloca(3*sizeof(jack_default_audio_sample_t));
+	first_verse_p[i] = alloca(3*sizeof(float));
 	int j;
 	for(j = 0; j < 3; j++) {
 	    first_verse_p[i][j] = first_verse[i][j];
 	}
     }
 
-    jack_default_audio_sample_t **second_verse_p = alloca(11 * sizeof(jack_default_audio_sample_t *));
+    float **second_verse_p = alloca(11 * sizeof(float *));
     second_verse_p[10] = NULL;
     for(i = 0; i < 10; i++) {
-	second_verse_p[i] = alloca(3*sizeof(jack_default_audio_sample_t));
+	second_verse_p[i] = alloca(3*sizeof(float));
 	int j;
 	for(j = 0; j < 3; j++) {
 	    second_verse_p[i][j] = second_verse[i][j];
 	}
     }
 
-    r = cs_seq_sequence_once(&seq1, 0.0f, 21.0f, first_verse_p);
-    r |= cs_seq_sequence_once(&seq2, 0.0f, 45.0f, second_verse_p);
-    if(r != 0) {
-    	perror("Could not create sequence");
-    	exit(r);
-    }
+    cs_seq_sequence_once(&seq1, 0.0f, 21.0f, first_verse_p);
+    cs_seq_sequence_once(&seq2, 0.0f, 45.0f, second_verse_p);
 
     printf("Hit return to quit");
     getchar();

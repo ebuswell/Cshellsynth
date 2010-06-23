@@ -2,64 +2,43 @@
 #include <math.h>
 #include "cshellsynth/lowpass.h"
 #include "cshellsynth/filter.h"
+#include "atomic-float.h"
 
 static int cs_lowpass_process(jack_nframes_t nframes, void *arg) {
     cs_lowpass_t *self = (cs_lowpass_t *) arg;
-    jack_default_audio_sample_t *in_buffer;
-    jack_default_audio_sample_t *freq_buffer;
-    jack_default_audio_sample_t *out_buffer = (jack_default_audio_sample_t *)jack_port_get_buffer(self->out_port, nframes);
+    float *in_buffer;
+    float *freq_buffer;
+    float *out_buffer = (float *)jack_port_get_buffer(self->out_port, nframes);
     if(out_buffer == NULL) {
 	return -1;
     }
-    int r = pthread_mutex_lock(&self->lock);
-    {
-	if(r != 0) {
-	    return r;
-	}
-	if(isnanf(self->in)) {
-	    in_buffer = (jack_default_audio_sample_t *)jack_port_get_buffer(self->in_port, nframes);
-	    if(in_buffer == NULL) {
-		pthread_mutex_unlock(&self->lock);
-		return -1;
-	    }
-	}
-	if(isnanf(self->freq)) {
-	    freq_buffer = (jack_default_audio_sample_t *)jack_port_get_buffer(self->freq_port, nframes);
-	    if(freq_buffer == NULL) {
-		pthread_mutex_unlock(&self->lock);
-		return -1;
-	    }
-	}
-	float sample_rate_adjust = (float) (-M_2_PI / (float) jack_get_sample_rate(self->client));
-	int i;
-	for(i = 0; i < nframes; i++) {
-	    float in = (isnanf(self->in) ? in_buffer[i] : self->in);
-	    if(isnanf(in)) in = 0.0f;
-	    float x = expf(sample_rate_adjust*(isnanf(self->freq) ? freq_buffer[i] : self->freq));
-	    self->last_out = (1.0f - x)*in + x*self->last_out;
-	    out_buffer[i] = self->last_out;
+    float in = atomic_float_read(&self->in);
+    if(isnanf(in)) {
+	in_buffer = (float *)jack_port_get_buffer(self->in_port, nframes);
+	if(in_buffer == NULL) {
+	    return -1;
 	}
     }
-    r = pthread_mutex_unlock(&self->lock);
-    if(r != 0) {
-	return r;
+    float freq = atomic_float_read(&self->freq);
+    if(isnanf(freq)) {
+	freq_buffer = (float *)jack_port_get_buffer(self->freq_port, nframes);
+	if(freq_buffer == NULL) {
+	    return -1;
+	}
+    }
+    double sample_rate = (double) jack_get_sample_rate(self->client);
+    int i;
+    for(i = 0; i < nframes; i++) {
+	double x = exp(-2.0 * M_PI * ((double) (isnanf(freq) ? freq_buffer[i] : freq)) / sample_rate);
+	self->last_out = (1.0 - x) * ((double) (isnanf(in) ? in_buffer[i] : in))
+	    + x * self->last_out;
+	out_buffer[i] = (float) self->last_out;
     }
     return 0;
 }
 
-int cs_lowpass_set_freq(cs_lowpass_t *self, jack_default_audio_sample_t freq) {
-    int r = pthread_mutex_lock(&self->lock);
-    {
-	if(r != 0) {
-	    return r;
-	}
-	self->freq = freq;
-    }
-    r = pthread_mutex_unlock(&self->lock);
-    if(r != 0) {
-	return r;
-    }
-    return 0;
+void cs_lowpass_set_freq(cs_lowpass_t *self, float freq) {
+    atomic_float_set(&self->freq, freq);
 }
 
 int cs_lowpass_init(cs_lowpass_t *self, const char *client_name, jack_options_t flags, char *server_name) {
@@ -74,7 +53,7 @@ int cs_lowpass_init(cs_lowpass_t *self, const char *client_name, jack_options_t 
 	return -1;
     };
 
-    self->freq = NAN;
+    atomic_float_set(&self->freq, NAN);
     self->last_out = 0.0;
 
     r = jack_set_process_callback(self->client, cs_lowpass_process, self);
