@@ -21,6 +21,26 @@ int main(int argc, char **argv) {
     cs_mix_t mixer;
     int r;
 
+    cs_bandpass_t bandpass;
+    r = cs_bandpass_init(&bandpass, "bandpass", 0, NULL);
+    if(r != 0) {
+	perror("could not initialize bandpass");
+	exit(r);
+    }
+    cs_modu_t lp_modu;
+    r = cs_modu_init(&lp_modu, "lp_modu", 0, NULL);
+    if(r != 0) {
+	perror("could not initialize lp_modu");
+	exit(r);
+    }
+    cs_modu_t lp_modu_scale;
+    r = cs_modu_init(&lp_modu_scale, "lp_modu_scale", 0, NULL);
+    if(r != 0) {
+	perror("could not initialize lp_modu_scale");
+	exit(r);
+    }
+    cs_modu_set_in2(&lp_modu_scale, 50.0);
+
     r = cs_key_init(&key1, "key1", 0, NULL);
     if(r != 0) {
 	perror("Could not initialize key1");
@@ -68,9 +88,9 @@ int main(int argc, char **argv) {
 	perror("Could not initialize envg2");
 	exit(r);
     }
-    cs_envg_set_attack_t(&envg2, 0.1);
-    cs_envg_set_decay_t(&envg2, 0.25);
-    cs_envg_set_sustain_a(&envg2, 0.64f);
+    cs_envg_set_attack_t(&envg2, 0.0);
+    cs_envg_set_decay_t(&envg2, 0.5);
+    cs_envg_set_sustain_a(&envg2, 0.05f);
     cs_envg_set_release_t(&envg2, 0.5);
 
     r = cs_lin2exp_init(&lin2exp1, "lin2exp1", 0, NULL);
@@ -78,13 +98,13 @@ int main(int argc, char **argv) {
 	perror("Could not initialize lin2exp1");
 	exit(r);
     }
-    cs_lin2exp_set_zero(&lin2exp1, 0.25);
+    cs_lin2exp_set_zero(&lin2exp1, 0.0625);
     r = cs_lin2exp_init(&lin2exp2, "lin2exp2", 0, NULL);
     if(r != 0) {
 	perror("Could not initialize lin2exp2");
 	exit(r);
     }
-    cs_lin2exp_set_zero(&lin2exp2, 0.25);
+    cs_lin2exp_set_zero(&lin2exp2, 0.0625);
     r = cs_modu_init(&envm1, "envm1", 0, NULL);
     if(r != 0) {
 	perror("Could not initialize envm1");
@@ -126,15 +146,20 @@ int main(int argc, char **argv) {
     jack_connect(lin2exp1.client, "lin2exp1:out", "envm1:in2");
     jack_connect(envg2.client, "envg2:out", "lin2exp2:in");
     jack_connect(lin2exp2.client, "lin2exp2:out", "envm2:in2");
+    jack_connect(lin2exp2.client, "lin2exp2:out", "lp_modu_scale:in1");
+    jack_connect(lp_modu_scale.client, "lp_modu_scale:out", "lp_modu:in2");
 
     jack_connect(key1.client, "key1:freq", "sine:freq");
     jack_connect(sine.client, "sine:out", "envm1:in1");
 
     jack_connect(key2.client, "key2:freq", "cot:freq");
-    jack_connect(cot.client, "cot:out", "envm2:in1");
+    jack_connect(key2.client, "key2:freq", "lp_modu:in1");
+    jack_connect(lp_modu.client, "lp_modu:out", "bandpass:freq");
+    jack_connect(cot.client, "cot:out", /* "envm2:in1"); */
+    /* jack_connect(envm2.client, "envm2:out", */ "bandpass:in");
 
     jack_connect(envm1.client, "envm1:out", "mixer:in1");
-    jack_connect(envm2.client, "envm2:out", "mixer:in2");
+    jack_connect(bandpass.client, "bandpass:out", "mixer:in2");
 
     jack_connect(mixer.client, "mixer:out", "system:playback_1");
     jack_connect(mixer.client, "mixer:out", "system:playback_2");
@@ -265,5 +290,22 @@ int main(int argc, char **argv) {
 	perror("Could not destroy mixer");
 	exit(r);
     }
+
+    r = cs_bandpass_destroy(&bandpass);
+    if(r != 0) {
+	perror("could not destroy bandpass");
+	exit(r);
+    }
+    r = cs_modu_destroy(&lp_modu);
+    if(r != 0) {
+	perror("could not destroy lp_modu");
+	exit(r);
+    }
+    r = cs_modu_destroy(&lp_modu_scale);
+    if(r != 0) {
+	perror("could not destroy lp_modu_scale");
+	exit(r);
+    }
+
     return 0;
 }

@@ -10,6 +10,7 @@ typedef struct cs_lin2exp_struct {
     jack_port_t *in_port;
     atomic_float_t in;
     jack_port_t *out_port;
+    jack_port_t *zero_port;
     atomic_float_t zero;
 } cs_lin2exp_t;
 
