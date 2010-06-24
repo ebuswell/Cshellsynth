@@ -41,6 +41,15 @@ int main(int argc, char **argv) {
     }
     cs_modu_set_in2(&lp_modu_scale, 50.0);
 
+    cs_distort_t distortion;
+    r = cs_distort_init(&distortion, "distortion", 0, NULL);
+    if(r != 0) {
+	perror("could not initialize distortion");
+	exit(r);
+    }
+    cs_distort_set_gain(&distortion, 20.0);
+    cs_distort_set_sharpness(&distortion, 1.0);
+
     r = cs_key_init(&key1, "key1", 0, NULL);
     if(r != 0) {
 	perror("Could not initialize key1");
@@ -151,6 +160,7 @@ int main(int argc, char **argv) {
 
     jack_connect(key1.client, "key1:freq", "sine:freq");
     jack_connect(sine.client, "sine:out", "envm1:in1");
+    jack_connect(envm1.client, "envm1:out", "distortion:in");
 
     jack_connect(key2.client, "key2:freq", "cot:freq");
     jack_connect(key2.client, "key2:freq", "lp_modu:in1");
@@ -158,7 +168,7 @@ int main(int argc, char **argv) {
     jack_connect(cot.client, "cot:out", /* "envm2:in1"); */
     /* jack_connect(envm2.client, "envm2:out", */ "bandpass:in");
 
-    jack_connect(envm1.client, "envm1:out", "mixer:in1");
+    jack_connect(distortion.client, "distortion:out", "mixer:in1");
     jack_connect(bandpass.client, "bandpass:out", "mixer:in2");
 
     jack_connect(mixer.client, "mixer:out", "system:playback_1");

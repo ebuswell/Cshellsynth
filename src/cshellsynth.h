@@ -5,6 +5,7 @@
 #include <cshellsynth/bandpass.h>
 #include <cshellsynth/clock.h>
 #include <cshellsynth/controller.h>
+#include <cshellsynth/distortion.h>
 #include <cshellsynth/envelope_generator.h>
 #include <cshellsynth/falling_saw.h>
 #include <cshellsynth/filter.h>
