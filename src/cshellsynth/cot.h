@@ -10,7 +10,7 @@ typedef struct cs_cot_struct {
     jack_port_t *freq_port;
     atomic_float_t freq;
     jack_port_t *out_port;
-    double offset;
+    double ft_1;
 } cs_cot_t;
 
 #define cs_cot_destroy(cs_cot) cs_synth_destroy((cs_synth_t *) (cs_cot))

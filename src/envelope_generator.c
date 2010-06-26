@@ -29,15 +29,17 @@ static int cs_envg_process(jack_nframes_t nframes, void *arg) {
 	    // attack event
 	    self->offset = 0.0;
 	    self->state = ATTACK;
+	    self->start_a = self->last_a;
 	} else if(ctl < 0.0f) {
 	    // release event
 	    self->offset = 0.0;
 	    self->state = RELEASE;
+	    self->start_a = self->last_a;
 	}
 	switch(self->state) {
 	case ATTACK:
 	    if(self->offset < attack_t) {
-		out_buffer[i] = (float) (self->offset / attack_t);
+		out_buffer[i] = self->last_a = ((float) (self->offset / attack_t)) * (1.0f - self->start_a) + self->start_a;
 		self->offset += 1.0;
 		break;
 	    } else {
@@ -47,7 +49,7 @@ static int cs_envg_process(jack_nframes_t nframes, void *arg) {
 	    }
 	case DECAY:
 	    if(self->offset < decay_t) {
-		out_buffer[i] = ((float) (1.0 - (self->offset / decay_t))) * (1.0f - sustain_a) + sustain_a;
+		out_buffer[i] = self->last_a = ((float) (1.0 - (self->offset / decay_t))) * (1.0f - sustain_a) + sustain_a;
 		self->offset += 1.0;
 		break;
 	    } else {
@@ -55,11 +57,11 @@ static int cs_envg_process(jack_nframes_t nframes, void *arg) {
 		// fall through
 	    }
 	case SUSTAIN:
-	    out_buffer[i] = sustain_a;
+	    out_buffer[i] = self->last_a = sustain_a;
 	    break;
 	case RELEASE:
 	    if(self->offset < release_t) {
-		out_buffer[i] = ((float) (1.0 - (self->offset / release_t))) * sustain_a;
+		out_buffer[i] = self->last_a = ((float) (1.0 - (self->offset / release_t))) * self->start_a;
 		self->offset += 1.0;
 		break;
 	    } else {
@@ -68,7 +70,7 @@ static int cs_envg_process(jack_nframes_t nframes, void *arg) {
 	    }
 	case FINISHED:
 	default:
-	    out_buffer[i] = 0.0f;
+	    out_buffer[i] = self->last_a = 0.0f;
 	}
     }
     return 0;
@@ -104,6 +106,8 @@ int cs_envg_init(cs_envg_t *self, const char *client_name, jack_options_t flags,
 	return r;
     }
     self->offset = 0.0;
+    self->start_a = 0.0f;
+    self->last_a = 0.0f;
     r = jack_activate(self->client);
     if(r != 0) {
 	jclient_destroy((jclient_t *) self);

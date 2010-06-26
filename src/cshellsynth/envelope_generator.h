@@ -23,6 +23,8 @@ typedef struct cs_envg_struct {
     atomic_double_t release_t;
     double offset;
     enum cs_envg_state state;
+    float last_a;
+    float start_a;
 } cs_envg_t;
 
 #define cs_envg_destroy(cs_envg) jclient_destroy((jclient_t *) (cs_envg))

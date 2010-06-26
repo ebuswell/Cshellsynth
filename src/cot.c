@@ -5,9 +5,6 @@
 #include "cshellsynth/jclient.h"
 #include "atomic-float.h"
 
-#define COT_SCALE 32
-#define COT_HARDNESS (4)
-
 static int cs_cot_process(jack_nframes_t nframes, void *arg) {
     cs_cot_t *self = (cs_cot_t *) arg;
     float *freq_buffer;
@@ -27,22 +24,14 @@ static int cs_cot_process(jack_nframes_t nframes, void *arg) {
     for(i = 0; i < nframes; i++) {
 	double f = (double) (isnanf(freq) ? freq_buffer[i] : freq);
 	if(f == 0.0 || isnan(f)) {
-	    self->offset = 0.0;
+	    self->ft_1 = 1.0;
 	    out_buffer[i] = 0.0f;
 	} else {
-	    double period = sample_rate / f;
-	    while(self->offset >= period) {
-		self->offset -= period;
-	    }
-	    double c = sample_rate * 
-		(log(fabs(sin((M_PI * f * (self->offset + 1)) / sample_rate)))
-		 - log(fabs(sin((M_PI * f * self->offset) / sample_rate))))
-		/ (M_PI * f);
-	    c /= COT_SCALE;
-	    c = c >= 0 ? 1 - (1/(log(exp(COT_HARDNESS) + 1)))*log(exp(-COT_HARDNESS*(c - 1)) + 1)
-		: (1/(log(exp(COT_HARDNESS) + 1)))*log(exp(COT_HARDNESS*(c + 1)) + 1) - 1;
-	    out_buffer[i] = (float) c;
-	    self->offset += 1.0;
+	    double ft;
+	    double x = self->ft_1;
+	    ft = 2*cos(M_PI*f/sample_rate) - 1/self->ft_1;
+	    self->ft_1 = ft;
+	    out_buffer[i] = (float) (sample_rate*log(fabs(ft))/(2.0*M_PI*f));
 	}
     }
     return 0;
@@ -58,7 +47,7 @@ int cs_cot_init(cs_cot_t *self, const char *client_name, jack_options_t flags, c
 	cs_synth_destroy((cs_synth_t *) self);
 	return r;
     }
-    self->offset = 0.0;
+    self->ft_1 = 1.0;
     r = jack_activate(self->client);
     if(r != 0) {
 	cs_synth_destroy((cs_synth_t *) self);

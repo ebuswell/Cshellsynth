@@ -3,150 +3,119 @@
 #include "cshellsynth.h"
 #include <time.h>
 #include <math.h>
+#include <stdlib.h>
+
+#define destroy_func(x, t)			\
+    void destroy_ ## x() {			\
+	int r = cs_ ## t ## _destroy(&x);	\
+	if(r != 0) {				\
+	    perror("Could not destroy " #x);	\
+	}					\
+    }
+cs_seq_t seq1;
+destroy_func(seq1, seq);
+cs_key_t key1;
+destroy_func(key1, key);
+cs_seq_t seq2;
+destroy_func(seq2, seq);
+cs_key_t key2;
+destroy_func(key2, key);
+cs_sine_t sine;
+destroy_func(sine, sine);
+cs_cot_t cot;
+destroy_func(cot, cot);
+cs_envg_t envg1;
+destroy_func(envg1, envg);
+cs_modu_t envm1;
+destroy_func(envm1, modu);
+cs_envg_t envg2;
+destroy_func(envg2, envg);
+cs_modu_t envm2;
+destroy_func(envm2, modu);
+cs_lin2exp_t lin2exp1;
+destroy_func(lin2exp1, lin2exp);
+cs_lin2exp_t lin2exp2;
+destroy_func(lin2exp2, lin2exp);
+cs_clock_t clock1;
+destroy_func(clock1, clock);
+cs_mix_t mixer;
+destroy_func(mixer, mix);
+cs_bandpass_t bandpass;
+destroy_func(bandpass, bandpass);
+cs_modu_t lp_modu;
+destroy_func(lp_modu, modu);
+cs_modu_t lp_modu_scale;
+destroy_func(lp_modu_scale, modu);
+cs_distort_t distortion1;
+destroy_func(distortion1, distort);
+cs_distort_t distortion2;
+destroy_func(distortion2, distort);
 
 int main(int argc, char **argv) {
-    cs_seq_t seq1;
-    cs_key_t key1;
-    cs_seq_t seq2;
-    cs_key_t key2;
-    cs_sine_t sine;
-    cs_cot_t cot;
-    cs_envg_t envg1;
-    cs_modu_t envm1;
-    cs_envg_t envg2;
-    cs_modu_t envm2;
-    cs_lin2exp_t lin2exp1;
-    cs_lin2exp_t lin2exp2;
-    cs_clock_t clock;
-    cs_mix_t mixer;
     int r;
 
-    cs_bandpass_t bandpass;
-    r = cs_bandpass_init(&bandpass, "bandpass", 0, NULL);
-    if(r != 0) {
-	perror("could not initialize bandpass");
-	exit(r);
-    }
-    cs_modu_t lp_modu;
-    r = cs_modu_init(&lp_modu, "lp_modu", 0, NULL);
-    if(r != 0) {
-	perror("could not initialize lp_modu");
-	exit(r);
-    }
-    cs_modu_t lp_modu_scale;
-    r = cs_modu_init(&lp_modu_scale, "lp_modu_scale", 0, NULL);
-    if(r != 0) {
-	perror("could not initialize lp_modu_scale");
-	exit(r);
-    }
+#define init_and_check(x, t)					\
+    r = cs_ ## t ## _init(&x, #x, 0, NULL);			\
+    if(r != 0) {						\
+	perror("could not initialize " #x);			\
+	exit(r);						\
+    }								\
+    atexit(destroy_ ## x);
+
+    init_and_check(bandpass, bandpass);
+    init_and_check(lp_modu, modu);
+    init_and_check(lp_modu_scale, modu);
     cs_modu_set_in2(&lp_modu_scale, 50.0);
 
-    cs_distort_t distortion;
-    r = cs_distort_init(&distortion, "distortion", 0, NULL);
-    if(r != 0) {
-	perror("could not initialize distortion");
-	exit(r);
-    }
-    cs_distort_set_gain(&distortion, 20.0);
-    cs_distort_set_sharpness(&distortion, 1.0);
+    init_and_check(distortion1, distort);
+    cs_distort_set_gain(&distortion1, 0.9);
+    cs_distort_set_sharpness(&distortion1, 4.0);
 
-    r = cs_key_init(&key1, "key1", 0, NULL);
-    if(r != 0) {
-	perror("Could not initialize key1");
-	exit(r);
-    }
+    init_and_check(distortion2, distort);
+    cs_distort_set_gain(&distortion2, 0.9);
+    cs_distort_set_sharpness(&distortion2, 4.0);
+
+    init_and_check(key1, key);
     cs_key_set_tuning(&key1, CS_MAJOR_TUNING, CS_MAJOR_TUNING_LENGTH);
     cs_key_set_root(&key1, CS_G);
 
-    r = cs_key_init(&key2, "key2", 0, NULL);
-    if(r != 0) {
-	perror("Could not initialize key2");
-	exit(r);
-    }
+    init_and_check(key2, key);
     cs_key_set_tuning(&key2, CS_MAJOR_TUNING, CS_MAJOR_TUNING_LENGTH);
     cs_key_set_root(&key2, CS_G);
 
-    r = cs_mix_init(&mixer, "mixer", 0, NULL);
-    if(r != 0) {
-	perror("Could not initialize mixer");
-	exit(r);
-    }
+    init_and_check(mixer, mix);
 
-    r = cs_sine_init(&sine, "sine", 0, NULL);
-    if(r != 0) {
-	perror("Could not initialize sine");
-	exit(r);
-    }
-    r = cs_cot_init(&cot, "cot", 0, NULL);
-    if(r != 0) {
-	perror("Could not initialize cot");
-	exit(r);
-    }
+    init_and_check(sine, sine);
+    init_and_check(cot, cot);
 
-    r = cs_envg_init(&envg1, "envg1", 0, NULL);
-    if(r != 0) {
-	perror("Could not initialize envg1");
-	exit(r);
-    }
-    cs_envg_set_attack_t(&envg1, 0.1);
+    init_and_check(envg1, envg);
+    cs_envg_set_attack_t(&envg1, 0.5);
     cs_envg_set_decay_t(&envg1, 0.25);
     cs_envg_set_sustain_a(&envg1, 0.65f);
-    cs_envg_set_release_t(&envg1, 0.5);
-    r = cs_envg_init(&envg2, "envg2", 0, NULL);
-    if(r != 0) {
-	perror("Could not initialize envg2");
-	exit(r);
-    }
-    cs_envg_set_attack_t(&envg2, 0.0);
+    cs_envg_set_release_t(&envg1, 0.25);
+    init_and_check(envg2, envg);
+    cs_envg_set_attack_t(&envg2, 0.25);
     cs_envg_set_decay_t(&envg2, 0.5);
     cs_envg_set_sustain_a(&envg2, 0.05f);
     cs_envg_set_release_t(&envg2, 0.5);
 
-    r = cs_lin2exp_init(&lin2exp1, "lin2exp1", 0, NULL);
-    if(r != 0) {
-	perror("Could not initialize lin2exp1");
-	exit(r);
-    }
+    init_and_check(lin2exp1, lin2exp);
     cs_lin2exp_set_zero(&lin2exp1, 0.0625);
-    r = cs_lin2exp_init(&lin2exp2, "lin2exp2", 0, NULL);
-    if(r != 0) {
-	perror("Could not initialize lin2exp2");
-	exit(r);
-    }
+    init_and_check(lin2exp2, lin2exp);
     cs_lin2exp_set_zero(&lin2exp2, 0.0625);
-    r = cs_modu_init(&envm1, "envm1", 0, NULL);
-    if(r != 0) {
-	perror("Could not initialize envm1");
-	exit(r);
-    }
-    r = cs_modu_init(&envm2, "envm2", 0, NULL);
-    if(r != 0) {
-	perror("Could not initialize envm2");
-	exit(r);
-    }
+    init_and_check(envm1, modu);
+    init_and_check(envm2, modu);
 
-    r = cs_seq_init(&seq1, "seq1", 0, NULL);
-    if(r != 0) {
-	perror("Could not initialize seq1");
-	exit(r);
-    }
+    init_and_check(seq1, seq);
 
-    r = cs_seq_init(&seq2, "seq2", 0, NULL);
-    if(r != 0) {
-	perror("Could not initialize seq2");
-	exit(r);
-    }
+    init_and_check(seq2, seq);
 
-    r = cs_clock_init(&clock, "clock", 0, NULL);
-    if(r != 0) {
-	perror("Could not initialize clock");
-	exit(r);
-    }
-    cs_clock_set_bpm(&clock, 240.0);
-    cs_clock_set_meter(&clock, 3.0);
+    init_and_check(clock1, clock);
+    cs_clock_set_bpm(&clock1, 240.0);
+    cs_clock_set_meter(&clock1, 3.0);
 
-    jack_connect(clock.client, "clock:clock", "seq1:clock");
-    jack_connect(clock.client, "clock:clock", "seq2:clock");
+    jack_connect(clock1.client, "clock1:clock", "seq1:clock");
+    jack_connect(clock1.client, "clock1:clock", "seq2:clock");
     jack_connect(seq1.client, "seq1:out", "key1:note");
     jack_connect(seq1.client, "seq1:ctl", "envg1:ctl");
     jack_connect(seq2.client, "seq2:out", "key2:note");
@@ -160,16 +129,17 @@ int main(int argc, char **argv) {
 
     jack_connect(key1.client, "key1:freq", "sine:freq");
     jack_connect(sine.client, "sine:out", "envm1:in1");
-    jack_connect(envm1.client, "envm1:out", "distortion:in");
+    jack_connect(envm1.client, "envm1:out", "distortion1:in");
 
     jack_connect(key2.client, "key2:freq", "cot:freq");
     jack_connect(key2.client, "key2:freq", "lp_modu:in1");
     jack_connect(lp_modu.client, "lp_modu:out", "bandpass:freq");
     jack_connect(cot.client, "cot:out", /* "envm2:in1"); */
     /* jack_connect(envm2.client, "envm2:out", */ "bandpass:in");
+    jack_connect(bandpass.client, "bandpass:out", "distortion2:in");
 
-    jack_connect(distortion.client, "distortion:out", "mixer:in1");
-    jack_connect(bandpass.client, "bandpass:out", "mixer:in2");
+    jack_connect(distortion1.client, "distortion1:out", "mixer:in1");
+    jack_connect(distortion2.client, "distortion2:out", "mixer:in2");
 
     jack_connect(mixer.client, "mixer:out", "system:playback_1");
     jack_connect(mixer.client, "mixer:out", "system:playback_2");
@@ -225,97 +195,6 @@ int main(int argc, char **argv) {
 
     printf("Hit return to quit");
     getchar();
-
-    r = cs_key_destroy(&key1);
-    if(r != 0) {
-	perror("Could not destroy key1");
-	exit(r);
-    }
-    r = cs_key_destroy(&key2);
-    if(r != 0) {
-	perror("Could not destroy key2");
-	exit(r);
-    }
-    r = cs_sine_destroy(&sine);
-    if(r != 0) {
-	perror("Could not destroy sine");
-	exit(r);
-    }
-    r = cs_cot_destroy(&cot);
-    if(r != 0) {
-	perror("Could not destroy cot");
-	exit(r);
-    }
-
-    r = cs_envg_destroy(&envg1);
-    if(r != 0) {
-	perror("Could not destroy envg1");
-	exit(r);
-    }
-    r = cs_lin2exp_destroy(&lin2exp1);
-    if(r != 0) {
-	perror("Could not destroy lin2exp1");
-	exit(r);
-    }
-    r = cs_modu_destroy(&envm1);
-    if(r != 0) {
-	perror("Could not destroy envm1");
-	exit(r);
-    }
-    r = cs_envg_destroy(&envg2);
-    if(r != 0) {
-	perror("Could not destroy envg2");
-	exit(r);
-    }
-    r = cs_lin2exp_destroy(&lin2exp2);
-    if(r != 0) {
-	perror("Could not destroy lin2exp2");
-	exit(r);
-    }
-    r = cs_modu_destroy(&envm2);
-    if(r != 0) {
-	perror("Could not destroy envm2");
-	exit(r);
-    }
-
-    r = cs_seq_destroy(&seq1);
-    if(r != 0) {
-	perror("Could not destroy seq1");
-	exit(r);
-    }
-
-    r = cs_seq_destroy(&seq2);
-    if(r != 0) {
-	perror("Could not destroy seq2");
-	exit(r);
-    }
-
-    r = cs_clock_destroy(&clock);
-    if(r != 0) {
-	perror("Could not destroy clock");
-	exit(r);
-    }
-    r = cs_mix_destroy(&mixer);
-    if(r != 0) {
-	perror("Could not destroy mixer");
-	exit(r);
-    }
-
-    r = cs_bandpass_destroy(&bandpass);
-    if(r != 0) {
-	perror("could not destroy bandpass");
-	exit(r);
-    }
-    r = cs_modu_destroy(&lp_modu);
-    if(r != 0) {
-	perror("could not destroy lp_modu");
-	exit(r);
-    }
-    r = cs_modu_destroy(&lp_modu_scale);
-    if(r != 0) {
-	perror("could not destroy lp_modu_scale");
-	exit(r);
-    }
 
     return 0;
 }

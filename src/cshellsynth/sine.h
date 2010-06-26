@@ -4,13 +4,15 @@
 #include <jack/jack.h>
 #include <cshellsynth/atomic-types.h>
 #include <cshellsynth/synth.h>
+#include <stdbool.h>
 
 typedef struct cs_sine_struct {
     jack_client_t *client;
     jack_port_t *freq_port;
     atomic_float_t freq;
     jack_port_t *out_port;
-    double offset;
+    double f_t_1;
+    double f_t_2;
 } cs_sine_t;
 
 #define cs_sine_destroy(cs_sine) cs_synth_destroy((cs_synth_t *) (cs_sine))
