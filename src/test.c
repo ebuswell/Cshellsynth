@@ -63,6 +63,7 @@ int main(int argc, char **argv) {
     atexit(destroy_ ## x);
 
     init_and_check(bandpass, bandpass);
+    cs_bandpass_set_Q(&bandpass, 10.0);
     init_and_check(lp_modu, modu);
     init_and_check(lp_modu_scale, modu);
     cs_modu_set_in2(&lp_modu_scale, 50.0);

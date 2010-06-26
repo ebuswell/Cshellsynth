@@ -3,6 +3,7 @@
 #include "cshellsynth/bandpass.h"
 #include "cshellsynth/filter.h"
 #include "atomic-float.h"
+#include "atomic-double.h"
 
 static int cs_bandpass_process(jack_nframes_t nframes, void *arg) {
     cs_bandpass_t *self = (cs_bandpass_t *) arg;
@@ -26,13 +27,15 @@ static int cs_bandpass_process(jack_nframes_t nframes, void *arg) {
 	    return -1;
 	}
     }
+    double Q = atomic_double_read(&self->Q);
     double sample_rate = (double) jack_get_sample_rate(self->client);
     int i;
     for(i = 0; i < nframes; i++) {
-	double a = 1.0 / (2.0 * M_PI * ((double) (isnanf(freq) ? freq_buffer[i] : freq)) / sample_rate + 1.0);
-	self->last_out = 2.0 * a * (1.0 - a) * ((double) (isnanf(in) ? in_buffer[i] : in))
-	    + a * a * self->last_out
-	    - (1.0 - a) * (1.0 - a) * self->out_accumulator;
+	double wdt = 2.0 * M_PI * ((double) (isnanf(freq) ? freq_buffer[i] : freq)) / sample_rate;
+	double denom = (wdt * (1.0 + Q * wdt) + Q);
+	self->last_out = ((double) (isnanf(in) ? in_buffer[i] : in)) * wdt / denom
+	    + self->last_out * Q / denom
+	    - self->out_accumulator * Q * wdt * wdt / denom;
 	self->out_accumulator += self->last_out;
 	out_buffer[i] = (float) self->last_out;
     }
@@ -41,6 +44,10 @@ static int cs_bandpass_process(jack_nframes_t nframes, void *arg) {
 
 void cs_bandpass_set_freq(cs_bandpass_t *self, float freq) {
     atomic_float_set(&self->freq, freq);
+}
+
+void cs_bandpass_set_Q(cs_bandpass_t *self, double Q) {
+    atomic_double_set(&self->Q, Q);
 }
 
 int cs_bandpass_init(cs_bandpass_t *self, const char *client_name, jack_options_t flags, char *server_name) {
@@ -56,6 +63,7 @@ int cs_bandpass_init(cs_bandpass_t *self, const char *client_name, jack_options_
     };
 
     atomic_float_set(&self->freq, NAN);
+    atomic_double_set(&self->Q, 0.5);
     self->last_out = 0.0;
     self->out_accumulator = 0.0;
 
