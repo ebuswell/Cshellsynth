@@ -22,7 +22,11 @@ static inline double atomic_double_read(const atomic_double_t *v)
 #ifdef __LP64__
 	return v->counter;
 #else
-	return v->d;
+	// spinlock
+	while(unlikely(atomic_cmpxchg((atomic_t) v, 0, 1)));
+	double ret = v->d;
+	atomic_set((atomic_t) v, 0);
+	return ret;
 #endif
 }
 
@@ -38,7 +42,10 @@ static inline void atomic_double_set(atomic_double_t *v, double d)
 #ifdef __LP64__
 	v->counter = d;
 #else
+	// spinlock
+	while(unlikely(atomic_cmpxchg((atomic_t) v, 0, 1)));
 	v->d = d;
+	atomic_set((atomic_t) v, 0);
 #endif
 }
 

@@ -14,9 +14,10 @@ typedef struct cs_key_struct {
     jack_client_t *client;
     jack_port_t *note_port;
     atomic_float_t note;
+    jack_port_t *root_port;
+    atomic_float_t root;
     jack_port_t *freq_port;
     atomic_ptr_t tuning; // cs_key_tuning_t *
-    atomic_float_t root;
 } cs_key_t;
 
 int cs_key_destroy(cs_key_t *cs_key);

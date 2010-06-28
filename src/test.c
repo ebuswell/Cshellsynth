@@ -32,20 +32,18 @@ cs_envg_t envg2;
 destroy_func(envg2, envg);
 cs_modu_t envm2;
 destroy_func(envm2, modu);
-cs_lin2exp_t lin2exp1;
-destroy_func(lin2exp1, lin2exp);
-cs_lin2exp_t lin2exp2;
-destroy_func(lin2exp2, lin2exp);
 cs_clock_t clock1;
 destroy_func(clock1, clock);
 cs_mix_t mixer;
 destroy_func(mixer, mix);
 cs_bandpass_t bandpass;
 destroy_func(bandpass, bandpass);
-cs_modu_t lp_modu;
-destroy_func(lp_modu, modu);
-cs_modu_t lp_modu_scale;
-destroy_func(lp_modu_scale, modu);
+cs_key_t sweep;
+destroy_func(sweep, key);
+cs_envg_t sweep_envg;
+destroy_func(sweep_envg, envg);
+cs_modu_t sweep_scale;
+destroy_func(sweep_scale, modu);
 cs_distort_t distortion1;
 destroy_func(distortion1, distort);
 cs_distort_t distortion2;
@@ -63,10 +61,17 @@ int main(int argc, char **argv) {
     atexit(destroy_ ## x);
 
     init_and_check(bandpass, bandpass);
-    cs_bandpass_set_Q(&bandpass, 10.0);
-    init_and_check(lp_modu, modu);
-    init_and_check(lp_modu_scale, modu);
-    cs_modu_set_in2(&lp_modu_scale, 50.0);
+    cs_bandpass_set_Q(&bandpass, 0.5);
+    init_and_check(sweep, key);
+    cs_key_set_tuning(&sweep, CS_EQUAL_TUNING, CS_EQUAL_TUNING_LENGTH);
+    cs_key_set_root(&sweep, NAN);
+    init_and_check(sweep_scale, modu);
+    cs_modu_set_in2(&sweep_scale, 4*12.0);
+    init_and_check(sweep_envg, envg);
+    cs_envg_set_attack_t(&sweep_envg, 0.25);
+    cs_envg_set_decay_t(&sweep_envg, 0.5);
+    cs_envg_set_sustain_a(&sweep_envg, 0.0f);
+    cs_envg_set_linear(&sweep_envg, 1);
 
     init_and_check(distortion1, distort);
     cs_distort_set_gain(&distortion1, 0.9);
@@ -90,20 +95,16 @@ int main(int argc, char **argv) {
     init_and_check(cot, cot);
 
     init_and_check(envg1, envg);
-    cs_envg_set_attack_t(&envg1, 0.5);
-    cs_envg_set_decay_t(&envg1, 0.25);
+    cs_envg_set_attack_t(&envg1, 0.125);
+    cs_envg_set_decay_t(&envg1, 0.5);
     cs_envg_set_sustain_a(&envg1, 0.65f);
-    cs_envg_set_release_t(&envg1, 0.25);
+    cs_envg_set_release_t(&envg1, 0.125);
     init_and_check(envg2, envg);
-    cs_envg_set_attack_t(&envg2, 0.25);
+    cs_envg_set_attack_t(&envg2, 0.125);
     cs_envg_set_decay_t(&envg2, 0.5);
-    cs_envg_set_sustain_a(&envg2, 0.05f);
-    cs_envg_set_release_t(&envg2, 0.5);
+    cs_envg_set_sustain_a(&envg2, 0.65f);
+    cs_envg_set_release_t(&envg2, 0.125f);
 
-    init_and_check(lin2exp1, lin2exp);
-    cs_lin2exp_set_zero(&lin2exp1, 0.0625);
-    init_and_check(lin2exp2, lin2exp);
-    cs_lin2exp_set_zero(&lin2exp2, 0.0625);
     init_and_check(envm1, modu);
     init_and_check(envm2, modu);
 
@@ -121,26 +122,26 @@ int main(int argc, char **argv) {
     jack_connect(seq1.client, "seq1:ctl", "envg1:ctl");
     jack_connect(seq2.client, "seq2:out", "key2:note");
     jack_connect(seq2.client, "seq2:ctl", "envg2:ctl");
-    jack_connect(envg1.client, "envg1:out", "lin2exp1:in");
-    jack_connect(lin2exp1.client, "lin2exp1:out", "envm1:in2");
-    jack_connect(envg2.client, "envg2:out", "lin2exp2:in");
-    jack_connect(lin2exp2.client, "lin2exp2:out", "envm2:in2");
-    jack_connect(lin2exp2.client, "lin2exp2:out", "lp_modu_scale:in1");
-    jack_connect(lp_modu_scale.client, "lp_modu_scale:out", "lp_modu:in2");
+    jack_connect(envg1.client, "envg1:out", "envm1:in2");
+    jack_connect(envg2.client, "envg2:out", "envm2:in2");
 
     jack_connect(key1.client, "key1:freq", "sine:freq");
     jack_connect(sine.client, "sine:out", "envm1:in1");
     jack_connect(envm1.client, "envm1:out", "distortion1:in");
 
     jack_connect(key2.client, "key2:freq", "cot:freq");
-    jack_connect(key2.client, "key2:freq", "lp_modu:in1");
-    jack_connect(lp_modu.client, "lp_modu:out", "bandpass:freq");
-    jack_connect(cot.client, "cot:out", /* "envm2:in1"); */
-    /* jack_connect(envm2.client, "envm2:out", */ "bandpass:in");
+    jack_connect(sine.client, "cot:out", "bandpass:in");
     jack_connect(bandpass.client, "bandpass:out", "distortion2:in");
+    jack_connect(distortion2.client, "distortion2:out", "envm2:in1");
+
+    jack_connect(key2.client, "key2:freq", "sweep:root");
+    jack_connect(seq2.client, "seq2:ctl", "sweep_envg:ctl");
+    jack_connect(sweep_envg.client, "sweep_envg:out", "sweep_scale:in1");
+    jack_connect(sweep_scale.client, "sweep_scale:out", "sweep:note");
+    jack_connect(sweep.client, "sweep:freq", "bandpass:freq");
 
     jack_connect(distortion1.client, "distortion1:out", "mixer:in1");
-    jack_connect(distortion2.client, "distortion2:out", "mixer:in2");
+    jack_connect(envm2.client, "envm2:out", "mixer:in2");
 
     jack_connect(mixer.client, "mixer:out", "system:playback_1");
     jack_connect(mixer.client, "mixer:out", "system:playback_2");

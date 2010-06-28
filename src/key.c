@@ -99,22 +99,31 @@ static int cs_key_process(jack_nframes_t nframes, void *arg) {
     cs_key_t *self = (cs_key_t *) arg;
 
     float *note_buffer;
+    float *root_buffer;
     float *freq_buffer = (float *) jack_port_get_buffer(self->freq_port, nframes);
     if(freq_buffer == NULL) {
 	return -1;
     }
 
     float note = atomic_float_read(&self->note);
-    float root = atomic_float_read(&self->root);
-    cs_key_tuning_t *tuning = atomic_ptr_read(&self->tuning);
     if(isnanf(note)) {
 	note_buffer = (float *) jack_port_get_buffer(self->note_port, nframes);
 	if(note_buffer == NULL) {
 	    return -1;
 	}
+    }
+    float root = atomic_float_read(&self->root);
+    if(isnanf(root)) {
+	root_buffer = (float *) jack_port_get_buffer(self->root_port, nframes);
+	if(root_buffer == NULL) {
+	    return -1;
+	}
+    }
+    cs_key_tuning_t *tuning = atomic_ptr_read(&self->tuning);
+    if(isnanf(note) || isnanf(root)) {
 	int i;
 	for(i = 0; i < nframes; i++) {
-	    freq_buffer[i] = cs_key_note2freq_param(note_buffer[i], root, tuning);
+	    freq_buffer[i] = cs_key_note2freq_param((isnanf(note) ? note_buffer[i] : note), (isnanf(root) ? root_buffer[i] : root), tuning);
 	}
     } else {
 	int i;
@@ -204,6 +213,12 @@ int cs_key_init(cs_key_t *self, const char *client_name, jack_options_t flags, c
 
     self->note_port = jack_port_register(self->client, "note", JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
     if(self->note_port == NULL) {
+	jclient_destroy((jclient_t *) self);
+	return r;
+    }
+
+    self->root_port = jack_port_register(self->client, "root", JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
+    if(self->root_port == NULL) {
 	jclient_destroy((jclient_t *) self);
 	return r;
     }

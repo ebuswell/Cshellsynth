@@ -21,6 +21,7 @@ typedef struct cs_envg_struct {
     atomic_double_t decay_t;
     atomic_float_t sustain_a;
     atomic_double_t release_t;
+    atomic_t linear;
     double offset;
     enum cs_envg_state state;
     float last_a;
@@ -33,5 +34,6 @@ void cs_envg_set_attack_t(cs_envg_t *self, double attack_t);
 void cs_envg_set_decay_t(cs_envg_t *self, double decay_t);
 void cs_envg_set_sustain_a(cs_envg_t *self, float sustain_a);
 void cs_envg_set_release_t(cs_envg_t *self, double release_t);
+void cs_envg_set_linear(cs_envg_t *self, int linear);
 
 #endif
