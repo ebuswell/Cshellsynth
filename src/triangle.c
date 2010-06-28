@@ -24,7 +24,7 @@ static int cs_triangle_process(jack_nframes_t nframes, void *arg) {
     for(i = 0; i < nframes; i++) {
 	float f = isnanf(freq) ? freq_buffer[i] : freq;
 	if(f == 0.0f || isnanf(f)) {
-	    self->offset = 0.0;
+	    self->offset = 0.25;
 	    out_buffer[i] = 0.0f;
 	} else {
 	    // /\
@@ -33,20 +33,15 @@ static int cs_triangle_process(jack_nframes_t nframes, void *arg) {
 	    //  /\
 	    // /  \
 	    // 3012
-	    double period = sample_rate / f;
-	    while(self->offset >= period) {
-		self->offset -= period;
+	    while(self->offset >= 1.0) {
+		self->offset -= 1.0;
 	    }
-	    double offset = self->offset + (period / 4);
-	    if(offset >= period) {
-		offset -= period;
-	    }
-	    float a = 4.0 * (offset / period);
+	    float a = 4.0 * self->offset;
 	    if(a > 2.0f) {
 		a = 4.0f - a;
 	    }
 	    out_buffer[i] = a - 1.0f;
-	    self->offset += 1.0f;
+	    self->offset += f / sample_rate;
 	}
     }
     return 0;
@@ -62,7 +57,7 @@ int cs_triangle_init(cs_triangle_t *self, const char *client_name, jack_options_
 	cs_synth_destroy((cs_synth_t *) self);
 	return r;
     }
-    self->offset = 0.0;
+    self->offset = 0.25;
     r = jack_activate(self->client);
     if(r != 0) {
 	cs_synth_destroy((cs_synth_t *) self);

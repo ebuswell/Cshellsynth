@@ -24,14 +24,13 @@ static int cs_cot_process(jack_nframes_t nframes, void *arg) {
     for(i = 0; i < nframes; i++) {
 	double f = (double) (isnanf(freq) ? freq_buffer[i] : freq);
 	if(f == 0.0 || isnan(f)) {
-	    self->ft_1 = 1.0;
+	    self->offset = 0.0;
 	    out_buffer[i] = 0.0f;
 	} else {
-	    double ft;
-	    double x = self->ft_1;
-	    ft = 2*cos(M_PI*f/sample_rate) - 1/self->ft_1;
-	    self->ft_1 = ft;
-	    out_buffer[i] = (float) (sample_rate*log(fabs(ft))/(2.0*M_PI*f));
+	    double step = f / sample_rate;
+	    out_buffer[i] = (float) (log(fabs(sin(M_PI * f * (self->offset + step))
+					      / sin(M_PI * f * self->offset))) * sample_rate / (2.0 * M_PI * f));
+	    self->offset += step;
 	}
     }
     return 0;
@@ -47,7 +46,7 @@ int cs_cot_init(cs_cot_t *self, const char *client_name, jack_options_t flags, c
 	cs_synth_destroy((cs_synth_t *) self);
 	return r;
     }
-    self->ft_1 = 1.0;
+    self->offset = 0.0;
     r = jack_activate(self->client);
     if(r != 0) {
 	cs_synth_destroy((cs_synth_t *) self);

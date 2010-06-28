@@ -22,8 +22,8 @@ cs_key_t key2;
 destroy_func(key2, key);
 cs_sine_t sine;
 destroy_func(sine, sine);
-cs_cot_t cot;
-destroy_func(cot, cot);
+cs_fsaw_t fsaw;
+destroy_func(fsaw, fsaw);
 cs_envg_t envg1;
 destroy_func(envg1, envg);
 cs_modu_t envm1;
@@ -92,7 +92,7 @@ int main(int argc, char **argv) {
     init_and_check(mixer, mix);
 
     init_and_check(sine, sine);
-    init_and_check(cot, cot);
+    init_and_check(fsaw, fsaw);
 
     init_and_check(envg1, envg);
     cs_envg_set_attack_t(&envg1, 0.125);
@@ -129,8 +129,8 @@ int main(int argc, char **argv) {
     jack_connect(sine.client, "sine:out", "envm1:in1");
     jack_connect(envm1.client, "envm1:out", "distortion1:in");
 
-    jack_connect(key2.client, "key2:freq", "cot:freq");
-    jack_connect(sine.client, "cot:out", "bandpass:in");
+    jack_connect(key2.client, "key2:freq", "fsaw:freq");
+    jack_connect(fsaw.client, "fsaw:out", "bandpass:in");
     jack_connect(bandpass.client, "bandpass:out", "distortion2:in");
     jack_connect(distortion2.client, "distortion2:out", "envm2:in1");
 

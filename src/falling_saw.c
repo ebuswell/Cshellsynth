@@ -24,7 +24,7 @@ static int cs_fsaw_process(jack_nframes_t nframes, void *arg) {
     for(i = 0; i < nframes; i++) {
 	float f = isnanf(freq) ? freq_buffer[i] : freq;
 	if(f == 0.0f || isnanf(f)) {
-	    self->offset = 0.0;
+	    self->offset = 0.5;
 	    out_buffer[i] = 0.0f;
 	} else {
 	    //  |\
@@ -33,17 +33,11 @@ static int cs_fsaw_process(jack_nframes_t nframes, void *arg) {
 	    // \ |
 	    //  \|
 	    // 10
-	    double period = sample_rate / f;
-	    while(self->offset >= period) {
-		self->offset -= period;
+	    while(self->offset >= 1.0) {
+		self->offset -= 1.0;
 	    }
-	    double offset = self->offset + (period / 2);
-	    if(offset >= period) {
-		offset -= period;
-	    }
-	    float a = 2.0 * (offset / period);
-	    out_buffer[i] = 1.0f - a;
-	    self->offset += 1.0f;
+	    out_buffer[i] = 1.0f - ((float) 2.0 * self->offset);
+	    self->offset += f / sample_rate;
 	}
     }
     return 0;
@@ -59,7 +53,7 @@ int cs_fsaw_init(cs_fsaw_t *self, const char *client_name, jack_options_t flags,
 	cs_synth_destroy((cs_synth_t *) self);
 	return r;
     }
-    self->offset = 0.0;
+    self->offset = 0.5;
     r = jack_activate(self->client);
     if(r != 0) {
 	cs_synth_destroy((cs_synth_t *) self);

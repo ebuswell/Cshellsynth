@@ -11,8 +11,7 @@ typedef struct cs_sine_struct {
     jack_port_t *freq_port;
     atomic_float_t freq;
     jack_port_t *out_port;
-    double f_t_1;
-    double f_t_2;
+    double offset;
 } cs_sine_t;
 
 #define cs_sine_destroy(cs_sine) cs_synth_destroy((cs_synth_t *) (cs_sine))
