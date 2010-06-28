@@ -146,55 +146,82 @@ int main(int argc, char **argv) {
     jack_connect(mixer.client, "mixer:out", "system:playback_1");
     jack_connect(mixer.client, "mixer:out", "system:playback_2");
 
-    float first_verse[10][3] = {
-	{0.0f, 2.75f, 4.0f},
-	{3.0f, 5.75f, 2.0f},
-	{6.0f, 8.75f, 0.0f},
-	{9.0f, 11.75f,-3.0f},
-	{12.0f, 12.95f, -2.0f},
-	{13.0f, 13.95f, -1.0f},
-	{14.0f, 14.95f, 0.0f},
-	{15.0f, 16.95f, -2.0f},
-	{17.0f, 17.95f, 0.0f},
-	{18.0f, 20.75f, -3.0f},
+    /* float first_verse[10][3] = { */
+    /* 	{0.0f, 2.75f, 4.0f}, */
+    /* 	{3.0f, 5.75f, 2.0f}, */
+    /* 	{6.0f, 8.75f, 0.0f}, */
+    /* 	{9.0f, 11.75f,-3.0f}, */
+    /* 	{12.0f, 12.95f, -2.0f}, */
+    /* 	{13.0f, 13.95f, -1.0f}, */
+    /* 	{14.0f, 14.95f, 0.0f}, */
+    /* 	{15.0f, 16.95f, -2.0f}, */
+    /* 	{17.0f, 17.95f, 0.0f}, */
+    /* 	{18.0f, 20.75f, -3.0f}, */
+    /* }; */
+    /* float second_verse[10][3] = { */
+    /* 	{24.0f + 0.0f, 24.0f + 2.75f, 1.0f}, */
+    /* 	{24.0f + 3.0f, 24.0f + 5.75f, 4.0f}, */
+    /* 	{24.0f + 6.0f, 24.0f + 8.75f, 2.0f}, */
+    /* 	{24.0f + 9.0f, 24.0f + 11.75f, 0.0f}, */
+    /* 	{24.0f + 12.0f, 24.0f + 12.95f, -2.0}, */
+    /* 	{24.0f + 13.0f, 24.0f + 13.95f, -1.0}, */
+    /* 	{24.0f + 14.0f, 24.0f + 14.95f, 0.0f}, */
+    /* 	{24.0f + 15.0f, 24.0f + 16.95f, 1.0f}, */
+    /* 	{24.0f + 17.0f, 24.0f + 17.95f, 2.0f}, */
+    /* 	{24.0f + 18.0f, 24.0f + 20.75f, 1.0f} */
+    /* }; */
+
+    /* float **first_verse_p = alloca(11 * sizeof(float *)); */
+    /* first_verse_p[10] = NULL; */
+    /* int i; */
+    /* for(i = 0; i < 10; i++) { */
+    /* 	first_verse_p[i] = alloca(3*sizeof(float)); */
+    /* 	int j; */
+    /* 	for(j = 0; j < 3; j++) { */
+    /* 	    first_verse_p[i][j] = first_verse[i][j]; */
+    /* 	} */
+    /* } */
+
+    /* float **second_verse_p = alloca(11 * sizeof(float *)); */
+    /* second_verse_p[10] = NULL; */
+    /* for(i = 0; i < 10; i++) { */
+    /* 	second_verse_p[i] = alloca(3*sizeof(float)); */
+    /* 	int j; */
+    /* 	for(j = 0; j < 3; j++) { */
+    /* 	    second_verse_p[i][j] = second_verse[i][j]; */
+    /* 	} */
+    /* } */
+
+    /* cs_seq_sequence_once(&seq1, 0.0f, 21.0f, first_verse_p); */
+    /* cs_seq_sequence_once(&seq2, 0.0f, 45.0f, second_verse_p); */
+
+    const float first_verse[10][3] = {
+    	{0.0f, 2.75f, 4.0f},
+    	{3.0f, 5.75f, 2.0f},
+    	{6.0f, 8.75f, 0.0f},
+    	{9.0f, 11.75f,-3.0f},
+    	{12.0f, 12.95f, -2.0f},
+    	{13.0f, 13.95f, -1.0f},
+    	{14.0f, 14.95f, 0.0f},
+    	{15.0f, 16.95f, -2.0f},
+    	{17.0f, 17.95f, 0.0f},
+    	{18.0f, 20.75f, -3.0f},
     };
-    float second_verse[10][3] = {
-	{24.0f + 0.0f, 24.0f + 2.75f, 1.0f},
-	{24.0f + 3.0f, 24.0f + 5.75f, 4.0f},
-	{24.0f + 6.0f, 24.0f + 8.75f, 2.0f},
-	{24.0f + 9.0f, 24.0f + 11.75f, 0.0f},
-	{24.0f + 12.0f, 24.0f + 12.95f, -2.0},
-	{24.0f + 13.0f, 24.0f + 13.95f, -1.0},
-	{24.0f + 14.0f, 24.0f + 14.95f, 0.0f},
-	{24.0f + 15.0f, 24.0f + 16.95f, 1.0f},
-	{24.0f + 17.0f, 24.0f + 17.95f, 2.0f},
-	{24.0f + 18.0f, 24.0f + 20.75f, 1.0f}
+    const float second_verse[10][3] = {
+    	{24.0f + 0.0f, 24.0f + 2.75f, 1.0f},
+    	{24.0f + 3.0f, 24.0f + 5.75f, 4.0f},
+    	{24.0f + 6.0f, 24.0f + 8.75f, 2.0f},
+    	{24.0f + 9.0f, 24.0f + 11.75f, 0.0f},
+    	{24.0f + 12.0f, 24.0f + 12.95f, -2.0},
+    	{24.0f + 13.0f, 24.0f + 13.95f, -1.0},
+    	{24.0f + 14.0f, 24.0f + 14.95f, 0.0f},
+    	{24.0f + 15.0f, 24.0f + 16.95f, 1.0f},
+    	{24.0f + 17.0f, 24.0f + 17.95f, 2.0f},
+    	{24.0f + 18.0f, 24.0f + 20.75f, 1.0f}
     };
-
-    float **first_verse_p = alloca(11 * sizeof(float *));
-    first_verse_p[10] = NULL;
-    int i;
-    for(i = 0; i < 10; i++) {
-	first_verse_p[i] = alloca(3*sizeof(float));
-	int j;
-	for(j = 0; j < 3; j++) {
-	    first_verse_p[i][j] = first_verse[i][j];
-	}
-    }
-
-    float **second_verse_p = alloca(11 * sizeof(float *));
-    second_verse_p[10] = NULL;
-    for(i = 0; i < 10; i++) {
-	second_verse_p[i] = alloca(3*sizeof(float));
-	int j;
-	for(j = 0; j < 3; j++) {
-	    second_verse_p[i][j] = second_verse[i][j];
-	}
-    }
-
-    cs_seq_sequence_once(&seq1, 0.0f, 21.0f, first_verse_p);
-    cs_seq_sequence_once(&seq2, 0.0f, 45.0f, second_verse_p);
-
+    cs_seq_sequence_once(&seq1, 0.0f, 21.0f, 10, first_verse);
+    cs_seq_sequence_once(&seq2, 0.0f, 45.0f, 10, second_verse);
+    
     printf("Hit return to quit");
     getchar();
 

@@ -1,16 +1,12 @@
 #include <jack/jack.h>
 #include <math.h>
 #include <malloc.h>
+#include <string.h>
 #include "cshellsynth/sequencer.h"
 #include "cshellsynth/controller.h"
 #include "atomic-ptr.h"
 
-static void cs_seq_sequence_free(void *mem) {
-    cs_seq_sequence_t *seq = mem;
-    float **ptr;
-    for(ptr = seq->seq; *ptr != NULL; ptr++) {
-	free(*ptr);
-    }
+static void cs_seq_sequence_free(cs_seq_sequence_t *seq) {
     free(seq->seq);
     free(seq);
 }
@@ -173,23 +169,24 @@ int cs_seq_init(cs_seq_t *self, const char *client_name, jack_options_t flags, c
     return 0;
 }
 
-void cs_seq_make_sequence(cs_seq_t *self, float offset, float length, float **sequence, bool repeat) {
+void cs_seq_make_sequence(cs_seq_t *self, float offset, float length, size_t sequence_length, const float sequence[][3], bool repeat) {
+    void *sequence_p = malloc(sizeof(float *) * (sequence_length + 1) + sizeof(float) * 3 * sequence_length);
+    memcpy(sequence_p + sizeof(float *) * (sequence_length + 1), sequence, sizeof(float) * 3 * sequence_length);
+    ((float **) sequence_p)[sequence_length] = NULL;
+    int i;
+    for(i = 0; i < sequence_length; i++) {
+	((float **) sequence_p)[i] = (float *) (sequence_p + sizeof(float *) * (sequence_length + 1) + sizeof(float) * 3 * i);
+    }
+    cs_seq_make_sequence_ll(self, offset, length, sequence_p, repeat);
+}
+
+void cs_seq_make_sequence_ll(cs_seq_t *self, float offset, float length, float **sequence, bool repeat) {
     cs_seq_sequence_t *seq = malloc(sizeof(cs_seq_sequence_t));
     seq->offset = offset;
     seq->length = length;
     seq->started = false;
     seq->repeat = repeat;
-    int i;
-    for(i = 0; sequence[i] != NULL; i++); // just detect length
-    float **sequence_cpy = malloc(sizeof(float *) * (i + 1));
-    sequence_cpy[i] = NULL;
-    for(i = 0; sequence[i] != NULL; i++) {
-	sequence_cpy[i] = malloc(sizeof(float) * 3);
-	sequence_cpy[i][0] = sequence[i][0];
-	sequence_cpy[i][1] = sequence[i][1];
-	sequence_cpy[i][2] = sequence[i][2];
-    }
-    seq->seq = sequence_cpy;
+    seq->seq = sequence;
     cs_seq_sequence_t *oldseq = atomic_ptr_xchg(&self->next_seq, seq);
     if(oldseq != NULL) {
 	cs_seq_sequence_free(oldseq);

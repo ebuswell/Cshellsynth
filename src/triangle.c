@@ -32,10 +32,10 @@ static int cs_triangle_process(jack_nframes_t nframes, void *arg) {
 	    //  /\
 	    // /  \
 	    // 3012
-	    while(self->offset >= 1.0) {
+	    if(self->offset >= 1.0) {
 		self->offset -= 1.0;
 	    }
-	    float a = 4.0 * self->offset;
+	    float a = (float) (4.0 * self->offset);
 	    if(a > 2.0f) {
 		a = 4.0f - a;
 	    }
