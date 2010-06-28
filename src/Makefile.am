@@ -1,5 +1,5 @@
 lib_LTLIBRARIES = libcshellsynth.la
-libcshellsynth_la_SOURCES = ampeg_vt22.c bandpass.c clock.c controller.c distortion.c envelope_generator.c falling_saw.c filter.c cot.c highpass.c instrument.c jclient.c key.c lin2exp.c lowpass.c mixer.c modulator.c rising_saw.c sequencer.c sine.c square.c synth.c triangle.c
+libcshellsynth_la_SOURCES = bandpass.c clock.c controller.c distortion.c envelope_generator.c falling_saw.c filter.c cot.c highpass.c instrument.c jclient.c key.c lin2exp.c lowpass.c mixer.c modulator.c rising_saw.c sequencer.c sine.c square.c synth.c triangle.c
 libcshellsynth_la_LDFLAGS = $(JACK_LIBS) $(SNDFILE_LIBS) -module -export-dynamic $(LDFLAGS)
 libcshellsynth_la_CFLAGS = $(JACK_CFLAGS) $(SNDFILE_CFLAGS) $(CFLAGS)
 # libcshellsynth_la_CXXFLAGS = $(JACK_CFLAGS) $(SNDFILE_CFLAGS) $(CXXFLAGS)

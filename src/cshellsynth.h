@@ -1,7 +1,6 @@
 #ifndef CSHELLSYNTH_H
 #define CSHELLSYNTH_H
 
-#include <cshellsynth/ampeg_vt22.h>
 #include <cshellsynth/bandpass.h>
 #include <cshellsynth/clock.h>
 #include <cshellsynth/controller.h>
