@@ -26,10 +26,9 @@ static int cs_highpass_process(jack_nframes_t nframes, void *arg) {
 	    return -1;
 	}
     }
-    double sample_rate = (double) jack_get_sample_rate(self->client);
     int i;
     for(i = 0; i < nframes; i++) {
-	double a = 1.0 - 1.0/(1.0 + sample_rate / (2.0 * M_PI * ((double) (isnanf(freq) ? freq_buffer[i] : freq))));
+	double a = 1.0 - 1.0/(1.0 + 1.0 / (2.0 * M_PI * ((double) (isnanf(freq) ? freq_buffer[i] : freq))));
 	float c_in = (isnanf(in) ? in_buffer[i] : in);
 	self->last_out = a * ((double) (c_in  - self->last_in))
 	    + a * self->last_out;
@@ -40,6 +39,9 @@ static int cs_highpass_process(jack_nframes_t nframes, void *arg) {
 }
 
 void cs_highpass_set_freq(cs_highpass_t *self, float freq) {
+    if(freq > 1.0) {
+	freq = freq / jack_get_sample_rate(self->client);
+    }
     atomic_float_set(&self->freq, freq);
 }
 

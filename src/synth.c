@@ -5,6 +5,9 @@
 #include "atomic-float.h"
 
 void cs_synth_set_freq(cs_synth_t *self, float freq) {
+    if(freq > 1.0) {
+	freq = freq / jack_get_sample_rate(self->client);
+    }
     atomic_float_set(&self->freq, freq);
 }
 

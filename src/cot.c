@@ -12,7 +12,6 @@ static int cs_cot_process(jack_nframes_t nframes, void *arg) {
     if(out_buffer == NULL) {
 	return -1;
     }
-    double sample_rate = (double) jack_get_sample_rate(self->client);
     float freq = atomic_float_read(&self->freq);
     if(isnanf(freq)) {
 	freq_buffer = (float *) jack_port_get_buffer(self->freq_port, nframes);
@@ -27,10 +26,9 @@ static int cs_cot_process(jack_nframes_t nframes, void *arg) {
 	    self->offset = 0.0;
 	    out_buffer[i] = 0.0f;
 	} else {
-	    double step = f / sample_rate;
-	    out_buffer[i] = (float) (log(fabs(sin(M_PI * f * (self->offset + step))
-					      / sin(M_PI * f * self->offset))) * sample_rate / (2.0 * M_PI * f));
-	    self->offset += step;
+	    out_buffer[i] = (float) (log(fabs(sin(M_PI * f * (self->offset + f))
+					      / sin(M_PI * f * self->offset))) / (2.0 * M_PI * f));
+	    self->offset += f;
 	}
     }
     return 0;

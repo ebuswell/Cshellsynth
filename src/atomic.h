@@ -612,10 +612,4 @@ static inline void atomic_or_long(unsigned long *v1, unsigned long v2)
 		     : : "r" ((unsigned)(mask)), "m" (*(addr))		\
 		     : "memory")
 
-/* Atomic operations are already serializing on x86 */
-#define smp_mb__before_atomic_dec()	barrier()
-#define smp_mb__after_atomic_dec()	barrier()
-#define smp_mb__before_atomic_inc()	barrier()
-#define smp_mb__after_atomic_inc()	barrier()
-
 #endif /* _ASM_X86_ATOMIC_H */

@@ -28,10 +28,9 @@ static int cs_bandpass_process(jack_nframes_t nframes, void *arg) {
 	}
     }
     double Q = atomic_double_read(&self->Q);
-    double sample_rate = (double) jack_get_sample_rate(self->client);
     int i;
     for(i = 0; i < nframes; i++) {
-	double wdt = 2.0 * M_PI * ((double) (isnanf(freq) ? freq_buffer[i] : freq)) / sample_rate;
+	double wdt = 2.0 * M_PI * ((double) (isnanf(freq) ? freq_buffer[i] : freq));
 	double denom = (wdt * (1.0 + Q * wdt) + Q);
 	self->last_out = ((double) (isnanf(in) ? in_buffer[i] : in)) * wdt / denom
 	    + self->last_out * Q / denom
@@ -43,6 +42,9 @@ static int cs_bandpass_process(jack_nframes_t nframes, void *arg) {
 }
 
 void cs_bandpass_set_freq(cs_bandpass_t *self, float freq) {
+    if(freq > 1.0) {
+	freq = freq / jack_get_sample_rate(self->client);
+    }
     atomic_float_set(&self->freq, freq);
 }
 

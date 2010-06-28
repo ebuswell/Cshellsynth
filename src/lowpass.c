@@ -26,10 +26,9 @@ static int cs_lowpass_process(jack_nframes_t nframes, void *arg) {
 	    return -1;
 	}
     }
-    double sample_rate = (double) jack_get_sample_rate(self->client);
     int i;
     for(i = 0; i < nframes; i++) {
-	double a = 1.0/(1.0 + sample_rate / (2.0 * M_PI * ((double) (isnanf(freq) ? freq_buffer[i] : freq))));
+	double a = 1.0/(1.0 + 1.0 / (2.0 * M_PI * ((double) (isnanf(freq) ? freq_buffer[i] : freq))));
 	self->last_out = a * ((double) (isnanf(in) ? in_buffer[i] : in))
 	    + (1 - a) * self->last_out;
 	out_buffer[i] = (float) self->last_out;
@@ -38,6 +37,9 @@ static int cs_lowpass_process(jack_nframes_t nframes, void *arg) {
 }
 
 void cs_lowpass_set_freq(cs_lowpass_t *self, float freq) {
+    if(freq > 1.0) {
+	freq = freq / jack_get_sample_rate(self->client);
+    }
     atomic_float_set(&self->freq, freq);
 }
 

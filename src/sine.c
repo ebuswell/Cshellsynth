@@ -13,7 +13,6 @@ static int cs_sine_process(jack_nframes_t nframes, void *arg) {
     if(out_buffer == NULL) {
 	return -1;
     }
-    double sample_rate = (double) jack_get_sample_rate(self->client);
     float freq = atomic_float_read(&self->freq);
     if(isnanf(freq)) {
 	freq_buffer = (float *) jack_port_get_buffer(self->freq_port, nframes);
@@ -28,12 +27,11 @@ static int cs_sine_process(jack_nframes_t nframes, void *arg) {
 	    self->offset = 0.0;
 	    out_buffer[i] = 0.0f;
 	} else {
-	    double step = f / sample_rate;
 	    while(self->offset >= 1.0) {
 		self->offset -= 1.0;
 	    }
-	    out_buffer[i] = (float) ((cos(2.0 * M_PI * self->offset) - cos(2.0 * M_PI * (self->offset + step))) * sample_rate / (2.0 * M_PI * f));
-	    self->offset += step;
+	    out_buffer[i] = (float) ((cos(2.0 * M_PI * self->offset) - cos(2.0 * M_PI * (self->offset + f))) / (2.0 * M_PI * f));
+	    self->offset += f;
 	}
     }
     return 0;

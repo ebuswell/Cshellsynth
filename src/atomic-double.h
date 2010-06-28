@@ -9,7 +9,21 @@
  * resource counting etc..
  */
 
+#ifdef __LP64__
 #define ATOMIC_DOUBLE_INIT(d)	{ (d) }
+#else
+#define ATOMIC_DOUBLE_INIT(d)	{ 0, (d) }
+#endif
+
+#ifndef __LP64__
+#define SPINLOCK(x)						\
+	while(unlikely(atomic_cmpxchg((atomic_t) x, 0, 1));	\
+	barrier()
+
+#define SPINUNLOCK(x)					\
+	barrier();					\
+	atomic_set((atomic_t) x, 0)
+#endif
 
 /**
  * atomic_double_read - read atomic variable
@@ -22,10 +36,9 @@ static inline double atomic_double_read(const atomic_double_t *v)
 #ifdef __LP64__
 	return v->counter;
 #else
-	// spinlock
-	while(unlikely(atomic_cmpxchg((atomic_t) v, 0, 1)));
+	SPINLOCK(v);
 	double ret = v->d;
-	atomic_set((atomic_t) v, 0);
+	SPINUNLOCK(v);
 	return ret;
 #endif
 }
@@ -42,10 +55,9 @@ static inline void atomic_double_set(atomic_double_t *v, double d)
 #ifdef __LP64__
 	v->counter = d;
 #else
-	// spinlock
-	while(unlikely(atomic_cmpxchg((atomic_t) v, 0, 1)));
+	SPINLOCK(v);
 	v->d = d;
-	atomic_set((atomic_t) v, 0);
+	SPINUNLOCK(v);
 #endif
 }
 
@@ -92,23 +104,21 @@ static inline double atomic_double_xchg(atomic_double_t *v, double new)
 static inline double atomic_double_cmpxchg(atomic_double_t *v, double old, double new)
 {
 	double prev;
-	// spinlock
-	while(unlikely(atomic_cmpxchg((atomic_t) v, 0, 1)));
+	SPINLOCK(v);
 	prev = v->d;
 	if(likely(prev == old))
-		v->d = new;
-	atomic_set((atomic_t) v, 0);
+	    v->d = new;
+	SPINUNLOCK(v);
 	return prev;
 }
 
 static inline double atomic_double_xchg(atomic_double_t *v, double new)
 {
 	double prev;
-	// spinlock
-	while(unlikely(atomic_cmpxchg((atomic_t) v, 0, 1)));
+	SPINLOCK(v);
 	prev = v->d;
 	v->d = new;
-	atomic_set((atomic_t) v, 0);
+	SPINUNLOCK(v);
 	return prev;
 }
 

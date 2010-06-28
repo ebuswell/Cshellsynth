@@ -12,7 +12,6 @@ static int cs_triangle_process(jack_nframes_t nframes, void *arg) {
     if(out_buffer == NULL) {
 	return -1;
     }
-    double sample_rate = (double) jack_get_sample_rate(self->client);
     float freq = atomic_float_read(&self->freq);
     if(isnanf(freq)) {
 	freq_buffer = (float *) jack_port_get_buffer(self->freq_port, nframes);
@@ -41,7 +40,7 @@ static int cs_triangle_process(jack_nframes_t nframes, void *arg) {
 		a = 4.0f - a;
 	    }
 	    out_buffer[i] = a - 1.0f;
-	    self->offset += f / sample_rate;
+	    self->offset += f;
 	}
     }
     return 0;

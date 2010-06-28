@@ -60,11 +60,7 @@ const cs_key_tuning_t cs_pythagorean_tuning = {
 #define cs_equal_tuning ((cs_key_tuning_t *) -1)
 
 static inline float cs_key_note2freq_param(float note, float root, cs_key_tuning_t *tuning) {
-    if(isnanf(note)) {
-	return NAN;
-    }
-    if((tuning == cs_equal_tuning)
-       || (tuning->tuning == CS_EQUAL_TUNING)) {
+    if(tuning == cs_equal_tuning) {
 	return root * powf(2.0f, (note/12.0f));
     } else {
 	int tuning_length = tuning->tuning_length;
@@ -77,6 +73,9 @@ static inline float cs_key_note2freq_param(float note, float root, cs_key_tuning
 	if(m < 0) {
 	    e--;
 	    m = tuning_length + m;
+	}
+	if(tuning->tuning == CS_EQUAL_TUNING) {
+	    return root * powf(2.0f, ((float) e) + (((float) m)/12.0f));
 	}
 	float freq = tuning->tuning[m];
 	if(f != 0.0f) {
@@ -189,6 +188,9 @@ void cs_key_set_tuning(cs_key_t *self, const float *tuning, size_t tuning_length
 }
 
 void cs_key_set_root(cs_key_t *self, float root) {
+    if(root > 1.0) {
+	root = root / jack_get_sample_rate(self->client);
+    }
     atomic_float_set(&self->root, root);
 }
 
@@ -230,7 +232,7 @@ int cs_key_init(cs_key_t *self, const char *client_name, jack_options_t flags, c
     }
 
     atomic_ptr_set(&self->tuning, cs_equal_tuning);
-    atomic_float_set(&self->root, CS_C);
+    atomic_float_set(&self->root, CS_C / jack_get_sample_rate(self->client));
     atomic_float_set(&self->note, NAN);
 
     r = jack_set_process_callback(self->client, cs_key_process, self);
