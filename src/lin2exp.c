@@ -28,9 +28,7 @@ static int cs_lin2exp_process(jack_nframes_t nframes, void *arg) {
     }
     int i;
     for(i = 0; i < nframes; i++) {
-	float x = isnanf(in) ? in_buffer[i] : in;
-	/* out_buffer[i] = (powf(zero, 1.0f - x) - zero) / (1.0f - zero); */
-	out_buffer[i] = zero*exp(x);
+	out_buffer[i] = ((double) (isnanf(zero) ? zero_buffer[i] : zero))*exp((double) (isnanf(in) ? in_buffer[i] : in));
     }
     return 0;
 }

@@ -169,19 +169,25 @@ int cs_seq_init(cs_seq_t *self, const char *client_name, jack_options_t flags, c
     return 0;
 }
 
-void cs_seq_make_sequence(cs_seq_t *self, float offset, float length, size_t sequence_length, const float sequence[][3], bool repeat) {
+int cs_seq_make_sequence(cs_seq_t *self, float offset, float length, size_t sequence_length, const float sequence[][3], bool repeat) {
     void *sequence_p = malloc(sizeof(float *) * (sequence_length + 1) + sizeof(float) * 3 * sequence_length);
+    if(sequence_p == NULL) {
+	return -1;
+    }
     memcpy(sequence_p + sizeof(float *) * (sequence_length + 1), sequence, sizeof(float) * 3 * sequence_length);
     ((float **) sequence_p)[sequence_length] = NULL;
     int i;
     for(i = 0; i < sequence_length; i++) {
 	((float **) sequence_p)[i] = (float *) (sequence_p + sizeof(float *) * (sequence_length + 1) + sizeof(float) * 3 * i);
     }
-    cs_seq_make_sequence_ll(self, offset, length, sequence_p, repeat);
+    return cs_seq_make_sequence_ll(self, offset, length, sequence_p, repeat);
 }
 
-void cs_seq_make_sequence_ll(cs_seq_t *self, float offset, float length, float **sequence, bool repeat) {
+int cs_seq_make_sequence_ll(cs_seq_t *self, float offset, float length, float **sequence, bool repeat) {
     cs_seq_sequence_t *seq = malloc(sizeof(cs_seq_sequence_t));
+    if(seq == NULL) {
+	return -1;
+    }
     seq->offset = offset;
     seq->length = length;
     seq->started = false;
@@ -191,4 +197,5 @@ void cs_seq_make_sequence_ll(cs_seq_t *self, float offset, float length, float *
     if(oldseq != NULL) {
 	cs_seq_sequence_free(oldseq);
     }
+    return 0;
 }

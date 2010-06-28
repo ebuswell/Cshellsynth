@@ -32,11 +32,11 @@ static int cs_rsaw_process(jack_nframes_t nframes, void *arg) {
 	    //  /|
 	    // / |
 	    // 201
-	    while(self->offset >= 1.0) {
+	    if(self->offset >= 1.0) {
 		self->offset -= 1.0;
 	    }
 	    out_buffer[i] = ((float) (2.0 * self->offset)) - 1.0f;
-	    self->offset += f;
+	    self->offset += ((double) f);
 	}
     }
     return 0;

@@ -26,8 +26,13 @@ static int cs_cot_process(jack_nframes_t nframes, void *arg) {
 	    self->offset = 0.0;
 	    out_buffer[i] = 0.0f;
 	} else {
-	    out_buffer[i] = (float) (log(fabs(sin(M_PI * f * (self->offset + f))
-					      / sin(M_PI * f * self->offset))) / (2.0 * M_PI * f));
+	    out_buffer[i] = (float) (log(fabs(cos(M_PI * f)
+					      + sin(M_PI * f) / tan(M_PI * self->offset))) / (2.0 * M_PI * f));
+	    if(out_buffer[i] == INFINITY) {
+		out_buffer[i] = HUGE;
+	    } else if(out_buffer[i] == -INFINITY) {
+		out_buffer[i] = -HUGE;
+	    }
 	    self->offset += f;
 	}
     }

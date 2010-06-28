@@ -7,14 +7,14 @@
 #include "atomic-float.h"
 #include "atomic-ptr.h"
 
-const float CS_MAJOR_TUNING[] = {
-    1.0f,
-    9.0f/8.0f,
-    5.0f/4.0f,
-    4.0f/3.0f,
-    3.0f/2.0f,
-    (4.0f/3.0f)*(5.0f/4.0f),
-    (3.0f/2.0f)*(5.0f/4.0f)
+const double CS_MAJOR_TUNING[] = {
+    1.0,
+    9.0/8.0,
+    5.0/4.0,
+    4.0/3.0,
+    3.0/2.0,
+    (4.0/3.0)*(5.0/4.0),
+    (3.0/2.0)*(5.0/4.0)
 };
 
 const cs_key_tuning_t cs_major_tuning = {
@@ -22,14 +22,14 @@ const cs_key_tuning_t cs_major_tuning = {
     CS_MAJOR_TUNING
 };
 
-const float CS_MINOR_TUNING[] = {
-    1.0f,
-    9.0f/8.0f,
-    6.0f/5.0f,
-    4.0f/3.0f,
-    3.0f/2.0f,
-    (4.0f/3.0f)*(6.0f/5.0f),
-    (3.0f/2.0f)*(6.0f/5.0f)
+const double CS_MINOR_TUNING[] = {
+    1.0,
+    9.0/8.0,
+    6.0/5.0,
+    4.0/3.0,
+    3.0/2.0,
+    (4.0/3.0)*(6.0/5.0),
+    (3.0/2.0)*(6.0/5.0)
 };
 
 const cs_key_tuning_t cs_minor_tuning = {
@@ -37,19 +37,19 @@ const cs_key_tuning_t cs_minor_tuning = {
     CS_MINOR_TUNING
 };
 
-const float CS_PYTHAGOREAN_TUNING[] = {
-    1.0f,
-    256.0f/243.0f,
-    9.0f/8.0f,
-    32.0f/27.0f,
-    81.0f/64.0f,
-    4.0f/3.0f,
-    1024.0f/729.0f,
-    32.0f/2.0f,
-    128.0f/81.0f,
-    27.0f/16.0f,
-    16.0f/9.0f,
-    243.0f/128.0f
+const double CS_PYTHAGOREAN_TUNING[] = {
+    1.0,
+    256.0/243.0,
+    9.0/8.0,
+    32.0/27.0,
+    81.0/64.0,
+    4.0/3.0,
+    1024.0/729.0,
+    32.0/2.0,
+    128.0/81.0,
+    27.0/16.0,
+    16.0/9.0,
+    243.0/128.0
 };
 
 const cs_key_tuning_t cs_pythagorean_tuning = {
@@ -61,7 +61,7 @@ const cs_key_tuning_t cs_pythagorean_tuning = {
 
 static inline float cs_key_note2freq_param(float note, float root, cs_key_tuning_t *tuning) {
     if(tuning == cs_equal_tuning) {
-	return root * powf(2.0f, (note/12.0f));
+	return ((double) root) * pow(2.0, (((double) note)/12.0));
     } else {
 	int tuning_length = tuning->tuning_length;
 	float f = note;
@@ -75,21 +75,21 @@ static inline float cs_key_note2freq_param(float note, float root, cs_key_tuning
 	    m = tuning_length + m;
 	}
 	if(tuning->tuning == CS_EQUAL_TUNING) {
-	    return root * powf(2.0f, ((float) e) + (((float) m)/12.0f));
+	    return ((double) root) * pow(2.0, ((double) e) + ((((double) m) + ((double) f))/12.0));
 	}
-	float freq = tuning->tuning[m];
+	double freq = tuning->tuning[m];
 	if(f != 0.0f) {
 	    if(m == (tuning_length - 1)) {
-		freq *= powf(2.0/tuning->tuning[m], f);
+		freq *= pow(2.0/tuning->tuning[m], f);
 	    } else {
-		freq *= powf(tuning->tuning[m + 1]/tuning->tuning[m], f);
+		freq *= pow(tuning->tuning[m + 1]/tuning->tuning[m], f);
 	    }
 	}
 	if(e >= 0) {
-	    return ((freq * root) * (1 << e));
+	    return ((freq * ((double) root)) * ((double) (1 << e)));
 	} else {
 	    e = -e;
-	    return ((freq * root) / (1 << e));
+	    return ((freq * ((double) root)) / ((double) (1 << e)));
 	}
     }
 }
@@ -149,13 +149,13 @@ void cs_key_free_tuning(cs_key_tuning_t *tuning) {
 	   && (tuning->tuning != CS_EQUAL_TUNING)
 	   && (tuning->tuning != CS_MINOR_TUNING)
 	   && (tuning->tuning != CS_PYTHAGOREAN_TUNING)) {
-	    free((void *) tuning->tuning);
+	    free(tuning->tuning);
 	}
 	free(tuning);
     }
 }
 
-void cs_key_set_tuning(cs_key_t *self, const float *tuning, size_t tuning_length) {
+int cs_key_set_tuning(cs_key_t *self, const double *tuning, size_t tuning_length) {
     cs_key_tuning_t *oldtuning;
     if((tuning == CS_EQUAL_TUNING)
        && (tuning_length = CS_EQUAL_TUNING_LENGTH)) {
@@ -171,13 +171,20 @@ void cs_key_set_tuning(cs_key_t *self, const float *tuning, size_t tuning_length
 	oldtuning = atomic_ptr_xchg(&self->tuning, &cs_pythagorean_tuning);
     } else {
 	cs_key_tuning_t *newtuning = malloc(sizeof(cs_key_tuning_t));
+	if(newtuning == NULL) {
+	    return -1;
+	}
 	newtuning->tuning_length = tuning_length;
 	if((tuning != CS_MAJOR_TUNING)
 	   && (tuning != CS_MINOR_TUNING)
 	   && (tuning != CS_PYTHAGOREAN_TUNING)
 	   && (tuning != CS_EQUAL_TUNING)) {
-	    newtuning->tuning = malloc(sizeof(float) * tuning_length);
-	    memcpy((void *) newtuning->tuning, tuning, sizeof(float) * tuning_length);
+	    newtuning->tuning = malloc(sizeof(double) * tuning_length);
+	    if(newtuning->tuning == NULL) {
+		free(newtuning);
+		return -1;
+	    }
+	    memcpy(newtuning->tuning, tuning, sizeof(double) * tuning_length);
 	} else {
 	    newtuning->tuning = tuning;
 	}

@@ -7,7 +7,7 @@
 
 typedef struct cs_key_tuning_struct {
     size_t tuning_length;
-    const float *tuning;
+    const double *tuning;
 } cs_key_tuning_t;
 
 typedef struct cs_key_struct {
@@ -23,7 +23,7 @@ typedef struct cs_key_struct {
 int cs_key_destroy(cs_key_t *cs_key);
 int cs_key_init(cs_key_t *self, const char *client_name, jack_options_t flags, char *server_name);
 void cs_key_set_root(cs_key_t *self, float root);
-void cs_key_set_tuning(cs_key_t *self, const float *tuning, size_t tuning_length);
+int cs_key_set_tuning(cs_key_t *self, const double *tuning, size_t tuning_length);
 float cs_key_note2freq(cs_key_t *self, float note);
 void cs_key_set_note(cs_key_t *self, float note);
 
@@ -49,16 +49,16 @@ void cs_key_set_note(cs_key_t *self, float note);
 #define CS_G_SHARP 415.304697579945
 #define CS_A_FLAT 415.304697579945
 
-extern const float CS_MAJOR_TUNING[];
+extern const double CS_MAJOR_TUNING[];
 #define CS_MAJOR_TUNING_LENGTH 7
 
-extern const float CS_MINOR_TUNING[];
+extern const double CS_MINOR_TUNING[];
 #define CS_MINOR_TUNING_LENGTH 7
 
-extern const float CS_PYTHAGOREAN_TUNING[];
+extern const double CS_PYTHAGOREAN_TUNING[];
 #define CS_PYTHAGOREAN_TUNING_LENGTH 12
 
-#define CS_EQUAL_TUNING ((float *) -1)
+#define CS_EQUAL_TUNING ((double *) -1)
 #define CS_EQUAL_TUNING_LENGTH 12
 
 #endif

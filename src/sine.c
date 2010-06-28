@@ -22,7 +22,7 @@ static int cs_sine_process(jack_nframes_t nframes, void *arg) {
     }
     int i;
     for(i = 0; i < nframes; i++) {
-	double f = (double) (isnanf(freq) ? freq_buffer[i] : freq);
+	double f = isnanf(freq) ? freq_buffer[i] : freq;
 	if(f == 0.0 || isnan(f)) {
 	    self->offset = 0.0;
 	    out_buffer[i] = 0.0f;
@@ -30,8 +30,8 @@ static int cs_sine_process(jack_nframes_t nframes, void *arg) {
 	    while(self->offset >= 1.0) {
 		self->offset -= 1.0;
 	    }
-	    out_buffer[i] = (float) ((cos(2.0 * M_PI * self->offset) - cos(2.0 * M_PI * (self->offset + f))) / (2.0 * M_PI * f));
-	    self->offset += f;
+	    out_buffer[i] = (cos(2.0 * M_PI * self->offset) - cos(2.0 * M_PI * (self->offset + f))) / (2.0 * M_PI * f);
+	    self->offset += (double) f;
 	}
     }
     return 0;

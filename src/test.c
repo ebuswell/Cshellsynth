@@ -22,8 +22,8 @@ cs_key_t key2;
 destroy_func(key2, key);
 cs_sine_t sine;
 destroy_func(sine, sine);
-cs_fsaw_t fsaw;
-destroy_func(fsaw, fsaw);
+cs_cot_t cot;
+destroy_func(cot, cot);
 cs_envg_t envg1;
 destroy_func(envg1, envg);
 cs_modu_t envm1;
@@ -56,19 +56,23 @@ int main(int argc, char **argv) {
     r = cs_ ## t ## _init(&x, #x, 0, NULL);			\
     if(r != 0) {						\
 	perror("could not initialize " #x);			\
-	exit(r);						\
+	exit(EXIT_FAILURE);						\
     }								\
     atexit(destroy_ ## x);
 
     init_and_check(bandpass, bandpass);
     cs_bandpass_set_Q(&bandpass, 0.5);
     init_and_check(sweep, key);
-    cs_key_set_tuning(&sweep, CS_EQUAL_TUNING, CS_EQUAL_TUNING_LENGTH);
+    r = cs_key_set_tuning(&sweep, CS_EQUAL_TUNING, CS_EQUAL_TUNING_LENGTH);
+    if(r != 0) {
+    	perror("Could not set sweep tuning");
+    	exit(EXIT_FAILURE);
+    }
     cs_key_set_root(&sweep, NAN);
     init_and_check(sweep_scale, modu);
     cs_modu_set_in2(&sweep_scale, 4*12.0);
     init_and_check(sweep_envg, envg);
-    cs_envg_set_attack_t(&sweep_envg, 0.25);
+    cs_envg_set_attack_t(&sweep_envg, 0.0);
     cs_envg_set_decay_t(&sweep_envg, 0.5);
     cs_envg_set_sustain_a(&sweep_envg, 0.0f);
     cs_envg_set_linear(&sweep_envg, 1);
@@ -82,27 +86,35 @@ int main(int argc, char **argv) {
     cs_distort_set_sharpness(&distortion2, 4.0);
 
     init_and_check(key1, key);
-    cs_key_set_tuning(&key1, CS_MAJOR_TUNING, CS_MAJOR_TUNING_LENGTH);
+    r = cs_key_set_tuning(&key1, CS_MAJOR_TUNING, CS_MAJOR_TUNING_LENGTH);
+    if(r != 0) {
+	perror("Could not set key1 tuning");
+	exit(EXIT_FAILURE);
+    }
     cs_key_set_root(&key1, CS_G);
 
     init_and_check(key2, key);
-    cs_key_set_tuning(&key2, CS_MAJOR_TUNING, CS_MAJOR_TUNING_LENGTH);
+    r = cs_key_set_tuning(&key2, CS_MAJOR_TUNING, CS_MAJOR_TUNING_LENGTH);
+    if(r != 0) {
+    	perror("Could not set key2 tuning");
+    	exit(EXIT_FAILURE);
+    }
     cs_key_set_root(&key2, CS_G);
 
     init_and_check(mixer, mix);
 
     init_and_check(sine, sine);
-    init_and_check(fsaw, fsaw);
+    init_and_check(cot, cot);
 
     init_and_check(envg1, envg);
-    cs_envg_set_attack_t(&envg1, 0.125);
-    cs_envg_set_decay_t(&envg1, 0.5);
+    cs_envg_set_attack_t(&envg1, 0.5);
+    cs_envg_set_decay_t(&envg1, 0.125);
     cs_envg_set_sustain_a(&envg1, 0.65f);
     cs_envg_set_release_t(&envg1, 0.125);
     init_and_check(envg2, envg);
-    cs_envg_set_attack_t(&envg2, 0.125);
-    cs_envg_set_decay_t(&envg2, 0.5);
-    cs_envg_set_sustain_a(&envg2, 0.65f);
+    cs_envg_set_attack_t(&envg2, 0.125f);
+    cs_envg_set_decay_t(&envg2, 0.0);
+    cs_envg_set_sustain_a(&envg2, 1.0f);
     cs_envg_set_release_t(&envg2, 0.125f);
 
     init_and_check(envm1, modu);
@@ -129,8 +141,8 @@ int main(int argc, char **argv) {
     jack_connect(sine.client, "sine:out", "envm1:in1");
     jack_connect(envm1.client, "envm1:out", "distortion1:in");
 
-    jack_connect(key2.client, "key2:freq", "fsaw:freq");
-    jack_connect(fsaw.client, "fsaw:out", "bandpass:in");
+    jack_connect(key2.client, "key2:freq", "cot:freq");
+    jack_connect(cot.client, "cot:out", "bandpass:in");
     jack_connect(bandpass.client, "bandpass:out", "distortion2:in");
     jack_connect(distortion2.client, "distortion2:out", "envm2:in1");
 
@@ -146,65 +158,16 @@ int main(int argc, char **argv) {
     jack_connect(mixer.client, "mixer:out", "system:playback_1");
     jack_connect(mixer.client, "mixer:out", "system:playback_2");
 
-    /* float first_verse[10][3] = { */
-    /* 	{0.0f, 2.75f, 4.0f}, */
-    /* 	{3.0f, 5.75f, 2.0f}, */
-    /* 	{6.0f, 8.75f, 0.0f}, */
-    /* 	{9.0f, 11.75f,-3.0f}, */
-    /* 	{12.0f, 12.95f, -2.0f}, */
-    /* 	{13.0f, 13.95f, -1.0f}, */
-    /* 	{14.0f, 14.95f, 0.0f}, */
-    /* 	{15.0f, 16.95f, -2.0f}, */
-    /* 	{17.0f, 17.95f, 0.0f}, */
-    /* 	{18.0f, 20.75f, -3.0f}, */
-    /* }; */
-    /* float second_verse[10][3] = { */
-    /* 	{24.0f + 0.0f, 24.0f + 2.75f, 1.0f}, */
-    /* 	{24.0f + 3.0f, 24.0f + 5.75f, 4.0f}, */
-    /* 	{24.0f + 6.0f, 24.0f + 8.75f, 2.0f}, */
-    /* 	{24.0f + 9.0f, 24.0f + 11.75f, 0.0f}, */
-    /* 	{24.0f + 12.0f, 24.0f + 12.95f, -2.0}, */
-    /* 	{24.0f + 13.0f, 24.0f + 13.95f, -1.0}, */
-    /* 	{24.0f + 14.0f, 24.0f + 14.95f, 0.0f}, */
-    /* 	{24.0f + 15.0f, 24.0f + 16.95f, 1.0f}, */
-    /* 	{24.0f + 17.0f, 24.0f + 17.95f, 2.0f}, */
-    /* 	{24.0f + 18.0f, 24.0f + 20.75f, 1.0f} */
-    /* }; */
-
-    /* float **first_verse_p = alloca(11 * sizeof(float *)); */
-    /* first_verse_p[10] = NULL; */
-    /* int i; */
-    /* for(i = 0; i < 10; i++) { */
-    /* 	first_verse_p[i] = alloca(3*sizeof(float)); */
-    /* 	int j; */
-    /* 	for(j = 0; j < 3; j++) { */
-    /* 	    first_verse_p[i][j] = first_verse[i][j]; */
-    /* 	} */
-    /* } */
-
-    /* float **second_verse_p = alloca(11 * sizeof(float *)); */
-    /* second_verse_p[10] = NULL; */
-    /* for(i = 0; i < 10; i++) { */
-    /* 	second_verse_p[i] = alloca(3*sizeof(float)); */
-    /* 	int j; */
-    /* 	for(j = 0; j < 3; j++) { */
-    /* 	    second_verse_p[i][j] = second_verse[i][j]; */
-    /* 	} */
-    /* } */
-
-    /* cs_seq_sequence_once(&seq1, 0.0f, 21.0f, first_verse_p); */
-    /* cs_seq_sequence_once(&seq2, 0.0f, 45.0f, second_verse_p); */
-
     const float first_verse[10][3] = {
     	{0.0f, 2.75f, 4.0f},
     	{3.0f, 5.75f, 2.0f},
     	{6.0f, 8.75f, 0.0f},
     	{9.0f, 11.75f,-3.0f},
-    	{12.0f, 12.95f, -2.0f},
-    	{13.0f, 13.95f, -1.0f},
-    	{14.0f, 14.95f, 0.0f},
-    	{15.0f, 16.95f, -2.0f},
-    	{17.0f, 17.95f, 0.0f},
+    	{12.0f, 12.75f, -2.0f},
+    	{13.0f, 13.75f, -1.0f},
+    	{14.0f, 14.75f, 0.0f},
+    	{15.0f, 16.75f, -2.0f},
+    	{17.0f, 17.75f, 0.0f},
     	{18.0f, 20.75f, -3.0f},
     };
     const float second_verse[10][3] = {
@@ -219,8 +182,16 @@ int main(int argc, char **argv) {
     	{24.0f + 17.0f, 24.0f + 17.95f, 2.0f},
     	{24.0f + 18.0f, 24.0f + 20.75f, 1.0f}
     };
-    cs_seq_sequence_once(&seq1, 0.0f, 21.0f, 10, first_verse);
-    cs_seq_sequence_once(&seq2, 0.0f, 45.0f, 10, second_verse);
+    r = cs_seq_sequence_once(&seq1, 0.0f, 21.0f, 10, first_verse);
+    if(r != 0) {
+	perror("Could not sequence seq1");
+	exit(EXIT_FAILURE);
+    }
+    r = cs_seq_sequence_once(&seq2, 0.0f, 45.0f, 10, second_verse);
+    if(r != 0) {
+	perror("Could not sequence seq2");
+	exit(EXIT_FAILURE);
+    }
     
     printf("Hit return to quit");
     getchar();

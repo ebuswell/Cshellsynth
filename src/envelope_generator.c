@@ -5,6 +5,9 @@
 #include "atomic-float.h"
 #include "atomic-double.h"
 
+#define ONE_ADJUST 1.0137884674666036
+/* (1.0/(1.0 - (1.0 + 2.0 * M_PI)*exp(-2.0 * M_PI))) */
+
 static int cs_envg_process(jack_nframes_t nframes, void *arg) {
     cs_envg_t *self = (cs_envg_t *) arg;
     float *ctl_buffer = (float *) jack_port_get_buffer(self->ctl_port, nframes);
@@ -41,12 +44,10 @@ static int cs_envg_process(jack_nframes_t nframes, void *arg) {
 	case ATTACK:
 	    if(self->offset < attack_t) {
 		if(linear) {
-		    out_buffer[i] = self->last_a = ((float) (self->offset / attack_t)) * (1.0f - self->start_a) + self->start_a;
+		    out_buffer[i] = self->last_a = ((float) ((self->offset / attack_t) * ((double) (1.0f - self->start_a)))) + self->start_a;
 		} else {
-		    double w1 = 2.0 * M_PI;
-		    float a = (float) (1.0/(1.0 - (1.0 + w1)*exp(-w1)));
-		    double wt = 2 * M_PI * self->offset / attack_t;
-		    out_buffer[i] = self->last_a = self->start_a + (a - self->start_a) * ((float) (1.0 - (1.0 + wt)*exp(-wt)));
+		    double wt = 2.0 * M_PI * self->offset / attack_t;
+		    out_buffer[i] = self->last_a = self->start_a + ((float) ((ONE_ADJUST - ((double) self->start_a)) * ((1.0 - (1.0 + wt)*exp(-wt)))));
 		}
 		self->offset += 1.0;
 		break;
@@ -66,14 +67,19 @@ static int cs_envg_process(jack_nframes_t nframes, void *arg) {
 		    // fall through
 		}
 	    } else {
-		double wt = 2 * M_PI * self->offset / decay_t;
-		out_buffer[i] = self->last_a = sustain_a + (1.0f - sustain_a)*((float) ((1.0 + wt)*exp(-wt)));
-		if(self->last_a == sustain_a) {
+		if(decay_t != 0.0) {
+		    double wt = 2.0 * M_PI * self->offset / decay_t;
+		    out_buffer[i] = self->last_a = sustain_a + ((float) (((double) (1.0f - sustain_a))*(1.0 + wt)*exp(-wt)));
+		    if(self->last_a == sustain_a) {
+			self->state = SUSTAIN;
+			// fall through
+		    } else {
+			self->offset += 1.0;
+			break;
+		    }
+		} else {
 		    self->state = SUSTAIN;
 		    // fall through
-		} else {
-		    self->offset += 1.0;
-		    break;
 		}
 	    }
 	case SUSTAIN:
@@ -82,7 +88,7 @@ static int cs_envg_process(jack_nframes_t nframes, void *arg) {
 	case RELEASE:
 	    if(linear) {
 		if(self->offset < release_t) {
-		    out_buffer[i] = self->last_a = ((float) (1.0 - (self->offset / release_t))) * self->start_a;
+		    out_buffer[i] = self->last_a = ((1.0 - (self->offset / release_t)) * ((double) self->start_a));
 		    self->offset += 1.0;
 		    break;
 		} else {
@@ -90,14 +96,19 @@ static int cs_envg_process(jack_nframes_t nframes, void *arg) {
 		    // fall through
 		}
 	    } else {
-		double wt = 2 * M_PI * self->offset / decay_t;
-		out_buffer[i] = self->last_a = self->start_a*((float) ((1.0 + wt)*exp(-wt)));
-		if(self->last_a == 0.0f) {
+		if(release_t != 0.0) {
+		    double wt = 2.0 * M_PI * self->offset / release_t;
+		    out_buffer[i] = self->last_a = (((double) self->start_a) * (1.0 + wt) * exp(-wt));
+		    if(self->last_a == 0.0f) {
+			self->state = FINISHED;
+			// fall through
+		    } else {
+			self->offset += 1.0;
+			break;
+		    }
+		} else {
 		    self->state = FINISHED;
 		    // fall through
-		} else {
-		    self->offset += 1.0;
-		    break;
 		}
 	    }
 	case FINISHED:

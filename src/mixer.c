@@ -4,14 +4,6 @@
 #include "cshellsynth/jclient.h"
 #include "atomic-float.h"
 
-void cs_mix_set_in1(cs_mix_t *self, float in1) {
-    atomic_float_set(&self->in1, in1);
-}
-
-void cs_mix_set_in2(cs_mix_t *self, float in2) {
-    atomic_float_set(&self->in2, in2);
-}
-
 static int cs_mix_process(jack_nframes_t nframes, void *arg) {
     cs_mix_t *self = (cs_mix_t *) arg;
     float *in1_buffer;
@@ -39,6 +31,14 @@ static int cs_mix_process(jack_nframes_t nframes, void *arg) {
 	out_buffer[i] = (isnanf(in1) ? in1_buffer[i] : in1) + (isnanf(in2) ? in2_buffer[i] : in2);
     }
     return 0;
+}
+
+void cs_mix_set_in1(cs_mix_t *self, float in1) {
+    atomic_float_set(&self->in1, in1);
+}
+
+void cs_mix_set_in2(cs_mix_t *self, float in2) {
+    atomic_float_set(&self->in2, in2);
 }
 
 int cs_mix_subclass_init(cs_mix_t *self, const char *client_name, jack_options_t flags, char *server_name) {

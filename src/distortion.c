@@ -27,19 +27,20 @@ static int cs_distort_process(jack_nframes_t nframes, void *arg) {
 	}
     }
     double sharpness = (double) atomic_float_read(&self->sharpness);
-    double factor = 1.0/(log(exp(sharpness) + 1.0));
+    double factor = log(exp(sharpness) + 1.0);
     int i;
     for(i = 0; i < nframes; i++) {
 	double c_in = (double) (isnanf(in) ? in_buffer[i] : in);
 	double c_gain = (double) (isnanf(gain) ? gain_buffer[i] : gain);
 	if(c_in >= 0.0f) {
 	    out_buffer[i] = (float) (
-		1.0 - factor
-		* log(exp(-sharpness * ((c_in * c_gain) - 1.0)) + 1.0));
+		1.0
+		- log(exp(-sharpness * ((c_in * c_gain) - 1.0)) + 1.0)
+		  / factor);
 	} else {
 	    out_buffer[i] = (float) (
-		factor
-		* log(exp(sharpness * ((c_in * c_gain) + 1.0)) + 1.0)
+		log(exp(sharpness * ((c_in * c_gain) + 1.0)) + 1.0)
+		/ factor
 		- 1.0);
 	}
     }

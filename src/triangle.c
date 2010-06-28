@@ -40,7 +40,7 @@ static int cs_triangle_process(jack_nframes_t nframes, void *arg) {
 		a = 4.0f - a;
 	    }
 	    out_buffer[i] = a - 1.0f;
-	    self->offset += f;
+	    self->offset += ((double) f);
 	}
     }
     return 0;
