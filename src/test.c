@@ -74,8 +74,8 @@ int main(int argc, char **argv) {
     cs_envg_set_linear(&sweep_envg, 1);
 
     init_and_check(distortion1, distort);
-    cs_distort_set_gain(&distortion1, 0.9);
-    cs_distort_set_sharpness(&distortion1, 4.0);
+    cs_distort_set_gain(&distortion1, 1.25);
+    cs_distort_set_sharpness(&distortion1, 2.0);
 
     init_and_check(distortion2, distort);
     cs_distort_set_gain(&distortion2, 0.9);
