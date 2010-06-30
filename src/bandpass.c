@@ -30,13 +30,14 @@ static int cs_bandpass_process(jack_nframes_t nframes, void *arg) {
     double Q = atomic_double_read(&self->Q);
     int i;
     for(i = 0; i < nframes; i++) {
-	double wdt = 2.0 * M_PI * ((double) (isnanf(freq) ? freq_buffer[i] : freq));
-	double denom = (wdt * (1.0 + Q * wdt) + Q);
-	self->last_out = ((double) (isnanf(in) ? in_buffer[i] : in)) * wdt / denom
-	    + self->last_out * Q / denom
-	    - self->out_accumulator * Q * wdt * wdt / denom;
+	double w = 2.0 * M_PI * ((double) (isnanf(freq) ? freq_buffer[i] : freq));
+	double out = (((double) (isnanf(in) ? in_buffer[i] : in)) * w
+		      + self->last_out * Q * (1 + w * w)
+		      - self->out_accumulator * Q * w * w)
+	    / (w + Q + Q * w * w);
 	self->out_accumulator += self->last_out;
-	out_buffer[i] = (float) self->last_out;
+	self->last_out = out;
+	out_buffer[i] = out;
     }
     return 0;
 }

@@ -9,20 +9,14 @@ static VALUE cCSInstrument;
 static VALUE rbcs_inst_play(VALUE self, VALUE value) {
     cs_inst_t *cself;
     Data_Get_Struct(self, cs_inst_t, cself);
-    int r = cs_inst_play(cself, NUM2DBL(value));
-    if(r != 0) {
-	rb_raise(eJackFailure, "Overall operation failure: %d", r);
-    }
+    cs_inst_play(cself, NUM2DBL(value));
     return self;
 }
 
 static VALUE rbcs_inst_stop(VALUE self) {
     cs_inst_t *cself;
     Data_Get_Struct(self, cs_inst_t, cself);
-    int r = cs_inst_stop(cself);
-    if(r != 0) {
-	rb_raise(eJackFailure, "Overall operation failure: %d", r);
-    }
+    cs_inst_stop(cself);
     return self;
 }
 

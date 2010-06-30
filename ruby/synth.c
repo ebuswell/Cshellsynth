@@ -10,26 +10,19 @@ VALUE cCSSynth;
 static VALUE rbcs_synth_freq(VALUE self) {
     cs_synth_t *cself;
     Data_Get_Struct(self, cs_synth_t, cself);
-    if(isnanf(cself->freq)) {
-	VALUE freq_port = rb_iv_get(self, "@freq_port");
-	if(NIL_P(freq_port)) {
-	    freq_port = Data_Wrap_Struct(cJackPort, 0, fake_free, cself->freq_port);
-	    rb_iv_set(self, "@freq_port", freq_port);
-	}
-	return freq_port;
-    } else {
-	return DBL2NUM(cself->freq);
+    VALUE freq_port = rb_iv_get(self, "@freq_port");
+    if(NIL_P(freq_port)) {
+	freq_port = Data_Wrap_Struct(cJackPort, 0, fake_free, cself->freq_port);
+	rb_iv_set(self, "@freq_port", freq_port);
     }
+    return freq_port;
 }
 
 static VALUE rbcs_synth_set_freq(VALUE self, VALUE freq) {
     if(KIND_OF(freq, rb_cNumeric)) {
 	cs_synth_t *cself;
 	Data_Get_Struct(self, cs_synth_t, cself);
-	int r = cs_synth_set_freq(cself, NUM2DBL(freq));
-	if(r != 0) {
-	    rb_raise(eJackFailure, "Overall operation failed: %d", r);
-	}
+	cs_synth_set_freq(cself, NUM2DBL(freq));
     } else {
 	VALUE freq_port = rb_iv_get(self, "@freq_port");
 	if(NIL_P(freq_port)) {

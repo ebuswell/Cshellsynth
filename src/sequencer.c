@@ -97,26 +97,25 @@ static int cs_seq_process(jack_nframes_t nframes, void *arg) {
 		continue;
 	    }
 	}
+	ctl_buffer[i] = 0.0f;
     TEST_SEQ_CURRENT:
 	if(*self->current != NULL) {
-	    if((time + self->offset) > (*self->current)[1]) {
+	    if((time + self->offset) >= (*self->current)[1]) {
 		self->current++;
+		self->playing = false;
+		ctl_buffer[i] = -1.0f;
 		goto TEST_SEQ_CURRENT;
 	    } else if((time + self->offset) >= (*self->current)[0]) {
 		self->out = (*self->current)[2];
 		if(!self->playing) {
 		    ctl_buffer[i] = 1.0f;
 		    self->playing = true;
-		} else {
-		    ctl_buffer[i] = 0.0f;
 		}
 		out_buffer[i] = self->out;
 	    } else {
 		if(self->playing) {
 		    self->playing = false;
 		    ctl_buffer[i] = -1.0f;
-		} else {
-		    ctl_buffer[i] = 0.0f;
 		}
 		out_buffer[i] = self->out;
 	    }
@@ -124,8 +123,6 @@ static int cs_seq_process(jack_nframes_t nframes, void *arg) {
 	    if(self->playing) {
 		self->playing = false;
 		ctl_buffer[i] = -1.0f;
-	    } else {
-		ctl_buffer[i] = 0.0f;
 	    }
 	    out_buffer[i] = self->out;
 	}

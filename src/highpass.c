@@ -30,8 +30,8 @@ static int cs_highpass_process(jack_nframes_t nframes, void *arg) {
     for(i = 0; i < nframes; i++) {
 	double a = 1.0/((2.0 * M_PI * ((double) (isnanf(freq) ? freq_buffer[i] : freq))) + 1.0);
 	float c_in = (isnanf(in) ? in_buffer[i] : in);
-	self->last_out = a * ((double) (c_in  - self->last_in))
-	    + a * self->last_out;
+	self->last_out = a * (((double) (c_in  - self->last_in))
+			      + self->last_out);
 	self->last_in = c_in;
 	out_buffer[i] = (float) self->last_out;
     }

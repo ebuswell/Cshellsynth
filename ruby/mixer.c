@@ -8,26 +8,19 @@ VALUE cCSMixer;
 static VALUE rbcs_mix_in1(VALUE self) {
     cs_mix_t *cself;
     Data_Get_Struct(self, cs_mix_t, cself);
-    if(isnanf(cself->in1)) {
-	VALUE in1_port = rb_iv_get(self, "@in1_port");
-	if(NIL_P(in1_port)) {
-	    in1_port = Data_Wrap_Struct(cJackPort, 0, fake_free, cself->in1_port);
-	    rb_iv_set(self, "@in1_port", in1_port);
-	}
-	return in1_port;
-    } else {
-	return DBL2NUM(cself->in1);
+    VALUE in1_port = rb_iv_get(self, "@in1_port");
+    if(NIL_P(in1_port)) {
+	in1_port = Data_Wrap_Struct(cJackPort, 0, fake_free, cself->in1_port);
+	rb_iv_set(self, "@in1_port", in1_port);
     }
+    return in1_port;
 }
 
 static VALUE rbcs_mix_set_in1(VALUE self, VALUE in1) {
     if(KIND_OF(in1, rb_cNumeric)) {
 	cs_mix_t *cself;
 	Data_Get_Struct(self, cs_mix_t, cself);
-	int r = cs_mix_set_in1(cself, NUM2DBL(in1));
-	if(r != 0) {
-	    rb_raise(eJackFailure, "Overall operation failed: %d", r);
-	}
+	cs_mix_set_in1(cself, NUM2DBL(in1));
     } else {
 	VALUE in1_port = rb_iv_get(self, "@in1_port");
 	if(NIL_P(in1_port)) {
@@ -45,26 +38,19 @@ static VALUE rbcs_mix_set_in1(VALUE self, VALUE in1) {
 static VALUE rbcs_mix_in2(VALUE self) {
     cs_mix_t *cself;
     Data_Get_Struct(self, cs_mix_t, cself);
-    if(isnanf(cself->in2)) {
-	VALUE in2_port = rb_iv_get(self, "@in2_port");
-	if(NIL_P(in2_port)) {
-	    in2_port = Data_Wrap_Struct(cJackPort, 0, fake_free, cself->in2_port);
-	    rb_iv_set(self, "@in2_port", in2_port);
-	}
-	return in2_port;
-    } else {
-	return DBL2NUM(cself->in2);
+    VALUE in2_port = rb_iv_get(self, "@in2_port");
+    if(NIL_P(in2_port)) {
+	in2_port = Data_Wrap_Struct(cJackPort, 0, fake_free, cself->in2_port);
+	rb_iv_set(self, "@in2_port", in2_port);
     }
+    return in2_port;
 }
 
 static VALUE rbcs_mix_set_in2(VALUE self, VALUE in2) {
     if(KIND_OF(in2, rb_cNumeric)) {
 	cs_mix_t *cself;
 	Data_Get_Struct(self, cs_mix_t, cself);
-	int r = cs_mix_set_in2(cself, NUM2DBL(in2));
-	if(r != 0) {
-	    rb_raise(eJackFailure, "Overall operation failed: %d", r);
-	}
+	cs_mix_set_in2(cself, NUM2DBL(in2));
     } else {
 	VALUE in2_port = rb_iv_get(self, "@in2_port");
 	if(NIL_P(in2_port)) {

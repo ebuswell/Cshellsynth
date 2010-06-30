@@ -7,40 +7,35 @@ static VALUE cCSEnvelopeGenerator;
 static VALUE rbcs_envg_set_attack_t(VALUE self, VALUE value) {
     cs_envg_t *cself;
     Data_Get_Struct(self, cs_envg_t, cself);
-    int r = cs_envg_set_attack_t(cself, NUM2DBL(value));
-    if(r != 0) {
-	rb_raise(eJackFailure, "Overall operation failure: %d", r);
-    }
+    cs_envg_set_attack_t(cself, NUM2DBL(value));
     return self;
 }
 
 static VALUE rbcs_envg_set_decay_t(VALUE self, VALUE value) {
     cs_envg_t *cself;
     Data_Get_Struct(self, cs_envg_t, cself);
-    int r = cs_envg_set_decay_t(cself, NUM2DBL(value));
-    if(r != 0) {
-	rb_raise(eJackFailure, "Overall operation failure: %d", r);
-    }
+    cs_envg_set_decay_t(cself, NUM2DBL(value));
     return self;
 }
 
 static VALUE rbcs_envg_set_sustain_a(VALUE self, VALUE value) {
     cs_envg_t *cself;
     Data_Get_Struct(self, cs_envg_t, cself);
-    int r = cs_envg_set_sustain_a(cself, NUM2DBL(value));
-    if(r != 0) {
-	rb_raise(eJackFailure, "Overall operation failure: %d", r);
-    }
+    cs_envg_set_sustain_a(cself, NUM2DBL(value));
     return self;
 }
 
 static VALUE rbcs_envg_set_release_t(VALUE self, VALUE value) {
     cs_envg_t *cself;
     Data_Get_Struct(self, cs_envg_t, cself);
-    int r = cs_envg_set_release_t(cself, NUM2DBL(value));
-    if(r != 0) {
-	rb_raise(eJackFailure, "Overall operation failure: %d", r);
-    }
+    cs_envg_set_release_t(cself, NUM2DBL(value));
+    return self;
+}
+
+static VALUE rbcs_envg_set_linear(VALUE self, VALUE value) {
+    cs_envg_t *cself;
+    Data_Get_Struct(self, cs_envg_t, cself);
+    cs_envg_set_linear(cself, IS_TRUE(value));
     return self;
 }
 
@@ -108,4 +103,5 @@ void Init_envelope_generator() {
     rb_define_method(cCSEnvelopeGenerator, "decay_t=", rbcs_envg_set_decay_t, 1);
     rb_define_method(cCSEnvelopeGenerator, "sustain_a=", rbcs_envg_set_sustain_a, 1);
     rb_define_method(cCSEnvelopeGenerator, "release_t=", rbcs_envg_set_release_t, 1);
+    rb_define_method(cCSEnvelopeGenerator, "linear=", rbcs_envg_set_linear, 1);
 }

@@ -33,7 +33,7 @@ static VALUE rbcs_key_set_tuning(VALUE self, VALUE value) {
 	    rb_raise(rb_eArgError, "tuning must be an array");
 	}
 	size_t tuning_length = RARRAY_LEN(value);
-	jack_default_audio_sample_t *tuning = ALLOCA_N(jack_default_audio_sample_t, tuning_length);
+	double *tuning = ALLOCA_N(double, tuning_length);
 	int i;
 	for(i = 0; i < tuning_length; i++) {
 	    tuning[i] = NUM2DBL(RARRAY_PTR(value)[i]);
@@ -46,39 +46,22 @@ static VALUE rbcs_key_set_tuning(VALUE self, VALUE value) {
     return value;
 }
 
-static VALUE rbcs_key_set_root(VALUE self, VALUE value) {
-    cs_key_t *cself;
-    Data_Get_Struct(self, cs_key_t, cself);
-    int r = cs_key_set_root(cself, NUM2DBL(value));
-    if(r != 0) {
-	rb_raise(eJackFailure, "Overall operation failure: %d", r);
-    }
-    return self;
-}
-
 static VALUE rbcs_key_note(VALUE self) {
     cs_key_t *cself;
     Data_Get_Struct(self, cs_key_t, cself);
-    if(isnanf(cself->note)) {
-	VALUE note_port = rb_iv_get(self, "@note_port");
-	if(NIL_P(note_port)) {
-	    note_port = Data_Wrap_Struct(cJackPort, 0, fake_free, cself->note_port);
-	    rb_iv_set(self, "@note_port", note_port);
-	}
-	return note_port;
-    } else {
-	return DBL2NUM(cself->note);
+    VALUE note_port = rb_iv_get(self, "@note_port");
+    if(NIL_P(note_port)) {
+	note_port = Data_Wrap_Struct(cJackPort, 0, fake_free, cself->note_port);
+	rb_iv_set(self, "@note_port", note_port);
     }
+    return note_port;
 }
 
 static VALUE rbcs_key_set_note(VALUE self, VALUE note) {
     if(KIND_OF(note, rb_cNumeric)) {
 	cs_key_t *cself;
 	Data_Get_Struct(self, cs_key_t, cself);
-	int r = cs_key_set_note(cself, NUM2DBL(note));
-	if(r != 0) {
-	    rb_raise(eJackFailure, "Overall operation failed: %d", r);
-	}
+	cs_key_set_note(cself, NUM2DBL(note));
     } else {
 	VALUE note_port = rb_iv_get(self, "@note_port");
 	if(NIL_P(note_port)) {
@@ -91,6 +74,36 @@ static VALUE rbcs_key_set_note(VALUE self, VALUE note) {
 	// ignore return value
     }
     return note;
+}
+
+static VALUE rbcs_key_root(VALUE self) {
+    cs_key_t *cself;
+    Data_Get_Struct(self, cs_key_t, cself);
+    VALUE root_port = rb_iv_get(self, "@root_port");
+    if(NIL_P(root_port)) {
+	root_port = Data_Wrap_Struct(cJackPort, 0, fake_free, cself->root_port);
+	rb_iv_set(self, "@root_port", root_port);
+    }
+    return root_port;
+}
+
+static VALUE rbcs_key_set_root(VALUE self, VALUE root) {
+    if(KIND_OF(root, rb_cNumeric)) {
+	cs_key_t *cself;
+	Data_Get_Struct(self, cs_key_t, cself);
+	cs_key_set_root(cself, NUM2DBL(root));
+    } else {
+	VALUE root_port = rb_iv_get(self, "@root_port");
+	if(NIL_P(root_port)) {
+	    cs_key_t *cself;
+	    Data_Get_Struct(self, cs_key_t, cself);
+	    root_port = Data_Wrap_Struct(cJackPort, 0, fake_free, cself->root_port);
+	    rb_iv_set(self, "@root_port", root_port);
+	}
+	jr_client_connect(self, root, root_port);
+	// ignore return value
+    }
+    return root;
 }
 
 static VALUE rbcs_key_freq(VALUE self) {
@@ -130,6 +143,7 @@ void Init_key() {
     rb_define_method(cCSKey, "note=", rbcs_key_set_note, 1);
     rb_define_method(cCSKey, "note2freq", rbcs_key_note2freq, 1);
     rb_define_method(cCSKey, "freq", rbcs_key_freq, 0);
+    rb_define_method(cCSKey, "root", rbcs_key_root, 0);
     rb_define_method(cCSKey, "root=", rbcs_key_set_root, 1);
     rb_define_method(cCSKey, "tuning=", rbcs_key_set_tuning, 1);
 
@@ -154,6 +168,9 @@ void Init_key() {
 
     rbcs_key_equal_tuning = rb_ary_new2(CS_EQUAL_TUNING_LENGTH);
     rb_define_const(cCSKey, "Equal", rbcs_key_equal_tuning);
+    for(i = 0; i < CS_EQUAL_TUNING_LENGTH; i++) {
+	rb_ary_push(rbcs_key_equal_tuning, DBL2NUM(pow(2.0, ((double) i)/12.0)));
+    }
 
     rb_define_const(cCSKey, "A", DBL2NUM(CS_A));
     rb_define_const(cCSKey, "A_Sharp", DBL2NUM(CS_A_SHARP));

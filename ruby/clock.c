@@ -7,20 +7,14 @@ static VALUE cCSClock;
 static VALUE rbcs_clock_set_meter(VALUE self, VALUE meter) {
     cs_clock_t *cself;
     Data_Get_Struct(self, cs_clock_t, cself);
-    int r = cs_clock_set_meter(cself, NUM2DBL(meter));
-    if(r != 0) {
-	rb_raise(eJackFailure, "Overall operation failed: %d", r);
-    }
+    cs_clock_set_meter(cself, NUM2DBL(meter));
     return meter;
 }
 
 static VALUE rbcs_clock_set_bpm(VALUE self, VALUE bpm) {
     cs_clock_t *cself;
     Data_Get_Struct(self, cs_clock_t, cself);
-    int r = cs_clock_set_bpm(cself, NUM2DBL(bpm));
-    if(r != 0) {
-	rb_raise(eJackFailure, "Overall operation failed: %d", r);
-    }
+    cs_clock_set_bpm(cself, NUM2DBL(bpm));
     return bpm;
 }
 

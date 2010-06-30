@@ -27,10 +27,10 @@ static int cs_sine_process(jack_nframes_t nframes, void *arg) {
 	    self->offset = 0.0;
 	    out_buffer[i] = 0.0f;
 	} else {
-	    while(self->offset >= 1.0) {
+	    if(self->offset >= 1.0) {
 		self->offset -= 1.0;
 	    }
-	    out_buffer[i] = (cos(2.0 * M_PI * self->offset) - cos(2.0 * M_PI * (self->offset + f))) / (2.0 * M_PI * f);
+	    out_buffer[i] = ((cos(2.0 * M_PI * self->offset) - cos(2.0 * M_PI * (self->offset + f))) / (2.0 * M_PI * f));
 	    self->offset += (double) f;
 	}
     }

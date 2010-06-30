@@ -5,8 +5,8 @@
 #include "atomic-float.h"
 #include "atomic-double.h"
 
-#define ONE_ADJUST 1.0137884674666036
-/* (1.0/(1.0 - (1.0 + 2.0 * M_PI)*exp(-2.0 * M_PI))) */
+#define ONE_ADJUST 1.0451657053636841
+/* (1.0/(1.0 - exp(-M_PI)) */
 
 static int cs_envg_process(jack_nframes_t nframes, void *arg) {
     cs_envg_t *self = (cs_envg_t *) arg;
@@ -46,8 +46,7 @@ static int cs_envg_process(jack_nframes_t nframes, void *arg) {
 		if(linear) {
 		    out_buffer[i] = self->last_a = ((float) ((self->offset / attack_t) * ((double) (1.0f - self->start_a)))) + self->start_a;
 		} else {
-		    double wt = 2.0 * M_PI * self->offset / attack_t;
-		    out_buffer[i] = self->last_a = self->start_a + ((float) ((ONE_ADJUST - ((double) self->start_a)) * ((1.0 - (1.0 + wt)*exp(-wt)))));
+		    out_buffer[i] = self->last_a = self->start_a + ((float) ((ONE_ADJUST - ((double) self->start_a)) * (1.0 - exp(-M_PI * self->offset / attack_t))));
 		}
 		self->offset += 1.0;
 		break;
@@ -68,12 +67,12 @@ static int cs_envg_process(jack_nframes_t nframes, void *arg) {
 		}
 	    } else {
 		if(decay_t != 0.0) {
-		    double wt = 2.0 * M_PI * self->offset / decay_t;
-		    out_buffer[i] = self->last_a = sustain_a + ((float) (((double) (1.0f - sustain_a))*(1.0 + wt)*exp(-wt)));
-		    if(self->last_a == sustain_a) {
+		    float adjust = (((double) (1.0f - sustain_a))*exp(-M_PI * self->offset / decay_t));
+		    if(adjust == 0.0f) {
 			self->state = SUSTAIN;
 			// fall through
 		    } else {
+			out_buffer[i] = self->last_a = sustain_a + adjust;
 			self->offset += 1.0;
 			break;
 		    }
@@ -97,11 +96,10 @@ static int cs_envg_process(jack_nframes_t nframes, void *arg) {
 		}
 	    } else {
 		if(release_t != 0.0) {
-		    double wt = 2.0 * M_PI * self->offset / release_t;
-		    out_buffer[i] = self->last_a = (((double) self->start_a) * (1.0 + wt) * exp(-wt));
+		    out_buffer[i] = self->last_a = (((double) self->start_a) * exp(-M_PI * self->offset / release_t));
 		    if(self->last_a == 0.0f) {
 			self->state = FINISHED;
-			// fall through
+			break;
 		    } else {
 			self->offset += 1.0;
 			break;
@@ -141,6 +139,7 @@ int cs_envg_init(cs_envg_t *self, const char *client_name, jack_options_t flags,
     atomic_double_set(&self->decay_t, 0.0);
     atomic_float_set(&self->sustain_a, 1.0f);
     atomic_double_set(&self->release_t, 0.0);
+    atomic_set(&self->linear, 0);
     self->state = FINISHED;
 
     r = jack_set_process_callback(self->client, cs_envg_process, self);

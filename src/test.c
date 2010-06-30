@@ -72,17 +72,18 @@ int main(int argc, char **argv) {
     init_and_check(sweep_scale, modu);
     cs_modu_set_in2(&sweep_scale, 4*12.0);
     init_and_check(sweep_envg, envg);
-    cs_envg_set_attack_t(&sweep_envg, 0.0);
+    cs_envg_set_attack_t(&sweep_envg, 0.0625);
     cs_envg_set_decay_t(&sweep_envg, 0.5);
     cs_envg_set_sustain_a(&sweep_envg, 0.0f);
+    cs_envg_set_release_t(&sweep_envg, 0.125);
     cs_envg_set_linear(&sweep_envg, 1);
 
     init_and_check(distortion1, distort);
-    cs_distort_set_gain(&distortion1, 1.25);
+    cs_distort_set_gain(&distortion1, exp(0.25));
     cs_distort_set_sharpness(&distortion1, 2.0);
 
     init_and_check(distortion2, distort);
-    cs_distort_set_gain(&distortion2, 0.9);
+    cs_distort_set_gain(&distortion2, exp(-0.25));
     cs_distort_set_sharpness(&distortion2, 4.0);
 
     init_and_check(key1, key);
@@ -107,9 +108,9 @@ int main(int argc, char **argv) {
     init_and_check(cot, cot);
 
     init_and_check(envg1, envg);
-    cs_envg_set_attack_t(&envg1, 0.5);
+    cs_envg_set_attack_t(&envg1, 0.125);
     cs_envg_set_decay_t(&envg1, 0.125);
-    cs_envg_set_sustain_a(&envg1, 0.65f);
+    cs_envg_set_sustain_a(&envg1, exp(-0.25));
     cs_envg_set_release_t(&envg1, 0.125);
     init_and_check(envg2, envg);
     cs_envg_set_attack_t(&envg2, 0.125f);
@@ -142,9 +143,9 @@ int main(int argc, char **argv) {
     jack_connect(envm1.client, "envm1:out", "distortion1:in");
 
     jack_connect(key2.client, "key2:freq", "cot:freq");
-    jack_connect(cot.client, "cot:out", "bandpass:in");
-    jack_connect(bandpass.client, "bandpass:out", "distortion2:in");
-    jack_connect(distortion2.client, "distortion2:out", "envm2:in1");
+    jack_connect(cot.client, "cot:out", "distortion2:in");
+    jack_connect(distortion2.client, "distortion2:out", "bandpass:in");
+    jack_connect(bandpass.client, "bandpass:out", "envm2:in1");
 
     jack_connect(key2.client, "key2:freq", "sweep:root");
     jack_connect(seq2.client, "seq2:ctl", "sweep_envg:ctl");
@@ -171,16 +172,16 @@ int main(int argc, char **argv) {
     	{18.0f, 20.75f, -3.0f},
     };
     const float second_verse[10][3] = {
-    	{24.0f + 0.0f, 24.0f + 2.75f, 1.0f},
-    	{24.0f + 3.0f, 24.0f + 5.75f, 4.0f},
-    	{24.0f + 6.0f, 24.0f + 8.75f, 2.0f},
-    	{24.0f + 9.0f, 24.0f + 11.75f, 0.0f},
-    	{24.0f + 12.0f, 24.0f + 12.95f, -2.0},
-    	{24.0f + 13.0f, 24.0f + 13.95f, -1.0},
-    	{24.0f + 14.0f, 24.0f + 14.95f, 0.0f},
-    	{24.0f + 15.0f, 24.0f + 16.95f, 1.0f},
-    	{24.0f + 17.0f, 24.0f + 17.95f, 2.0f},
-    	{24.0f + 18.0f, 24.0f + 20.75f, 1.0f}
+    	{24.0f + 0.0f, 24.0f + 3.0f, 1.0f},
+    	{24.0f + 3.0f, 24.0f + 6.0f, 4.0f},
+    	{24.0f + 6.0f, 24.0f + 9.0f, 2.0f},
+    	{24.0f + 9.0f, 24.0f + 12.0f, 0.0f},
+    	{24.0f + 12.0f, 24.0f + 13.0f, -2.0},
+    	{24.0f + 13.0f, 24.0f + 14.0f, -1.0},
+    	{24.0f + 14.0f, 24.0f + 15.0f, 0.0f},
+    	{24.0f + 15.0f, 24.0f + 17.0f, 1.0f},
+    	{24.0f + 17.0f, 24.0f + 18.0f, 2.0f},
+    	{24.0f + 18.0f, 24.0f + 21.0f, 1.0f}
     };
     r = cs_seq_sequence_once(&seq1, 0.0f, 21.0f, 10, first_verse);
     if(r != 0) {

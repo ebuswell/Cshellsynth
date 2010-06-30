@@ -28,9 +28,9 @@ static int cs_lowpass_process(jack_nframes_t nframes, void *arg) {
     }
     int i;
     for(i = 0; i < nframes; i++) {
-	double a = 1.0/(1.0 + 1.0 / (2.0 * M_PI * ((double) (isnanf(freq) ? freq_buffer[i] : freq))));
-	self->last_out = a * ((double) (isnanf(in) ? in_buffer[i] : in))
-	    + (1 - a) * self->last_out;
+	double a = 1.0/(1.0 + (2.0 * M_PI * ((double) (isnanf(freq) ? freq_buffer[i] : freq))));
+	self->last_out = (1 - a) * ((double) (isnanf(in) ? in_buffer[i] : in))
+	    + a * self->last_out;
 	out_buffer[i] = self->last_out;
     }
     return 0;

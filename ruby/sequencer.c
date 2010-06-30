@@ -13,21 +13,25 @@ static void rbcs_seq_make_sequence(VALUE self, VALUE roffset, VALUE rlength, VAL
     jack_default_audio_sample_t offset = NUM2DBL(roffset);
     jack_default_audio_sample_t length = NUM2DBL(rlength);
     size_t sequence_length = RARRAY_LEN(rsequence);
-    jack_default_audio_sample_t **sequence = ALLOCA_N(jack_default_audio_sample_t *, sequence_length + 1);
+    void *sequence = malloc(sizeof(float *) * (sequence_length + 1) + sizeof(float) * 3 * sequence_length);
+    
     int i;
+    for(i = 0; i < sequence_length; i++) {
+	((float **) sequence)[i] = (float *) (sequence + sizeof(float *) * (sequence_length + 1) + sizeof(float) * 3 * i);
+    }
+    ((float **) sequence)[sequence_length] = NULL;
     for(i = 0; i < sequence_length; i++) {
 	VALUE rsubsequence = RARRAY_PTR(rsequence)[i];
 	if((TYPE(rsubsequence) != T_ARRAY)
 	   || (RARRAY_LEN(rsubsequence) != 3)) {
+	    free(sequence);
 	    rb_raise(rb_eArgError, "sequence must consist of 3-element tuples");
 	}
-	sequence[i] = ALLOCA_N(jack_default_audio_sample_t, 3);
-	sequence[i][0] = NUM2DBL(RARRAY_PTR(rsubsequence)[0]);
-	sequence[i][1] = NUM2DBL(RARRAY_PTR(rsubsequence)[1]);
-	sequence[i][2] = NUM2DBL(RARRAY_PTR(rsubsequence)[2]);
+	((float **) sequence)[i][0] = NUM2DBL(RARRAY_PTR(rsubsequence)[0]);
+	((float **) sequence)[i][1] = NUM2DBL(RARRAY_PTR(rsubsequence)[1]);
+	((float **) sequence)[i][2] = NUM2DBL(RARRAY_PTR(rsubsequence)[2]);
     }
-    sequence[sequence_length] = NULL;
-    int r = cs_seq_make_sequence(cself, offset, length, sequence, repeat);
+    int r = cs_seq_make_sequence_ll(cself, offset, length, sequence, repeat);
     if(r != 0) {
 	rb_raise(eJackFailure, "Overall operation failed: %d", r);
     }
