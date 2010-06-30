@@ -45,11 +45,19 @@ static int cs_envg_process(jack_nframes_t nframes, void *arg) {
 	    if(self->offset < attack_t) {
 		if(linear) {
 		    out_buffer[i] = self->last_a = ((float) ((self->offset / attack_t) * ((double) (1.0f - self->start_a)))) + self->start_a;
+		    self->offset += 1.0;
+		    break;
 		} else {
 		    out_buffer[i] = self->last_a = self->start_a + ((float) ((ONE_ADJUST - ((double) self->start_a)) * (1.0 - exp(-M_PI * self->offset / attack_t))));
+		    if(self->last_a < 1.0f) {
+			self->offset += 1.0;
+			break;
+		    } else {
+			self->state = DECAY;
+			self->offset = 0;
+			// fall through
+		    }
 		}
-		self->offset += 1.0;
-		break;
 	    } else {
 		self->state = DECAY;
 		self->offset -= attack_t;
