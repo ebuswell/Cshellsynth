@@ -1,5 +1,6 @@
 #include <ruby.h>
 #include <cshellsynth/bandpass.h>
+#include <math.h> /* for NAN */
 #include "jackruby.h"
 #include "filters.h"
 #include "filter.h"
@@ -36,22 +37,28 @@ static VALUE rbcs_bandpass_freq(VALUE self) {
 }
 
 static VALUE rbcs_bandpass_set_freq(VALUE self, VALUE freq) {
+    cs_bandpass_t *cself;
+    Data_Get_Struct(self, cs_bandpass_t, cself);
     if(KIND_OF(freq, rb_cNumeric)) {
-	cs_bandpass_t *cself;
-	Data_Get_Struct(self, cs_bandpass_t, cself);
 	cs_bandpass_set_freq(cself, NUM2DBL(freq));
     } else {
 	VALUE freq_port = rb_iv_get(self, "@freq_port");
 	if(NIL_P(freq_port)) {
-	    cs_bandpass_t *cself;
-	    Data_Get_Struct(self, cs_bandpass_t, cself);
 	    freq_port = Data_Wrap_Struct(cJackPort, 0, fake_free, cself->freq_port);
 	    rb_iv_set(self, "@freq_port", freq_port);
 	}
 	jr_client_connect(self, freq, freq_port);
 	// ignore return value
+	cs_bandpass_set_freq(cself, NAN);
     }
     return freq;
+}
+
+static VALUE rbcs_bandpass_set_Q(VALUE self, VALUE Q) {
+    cs_bandpass_t *cself;
+    Data_Get_Struct(self, cs_bandpass_t, cself);
+    cs_bandpass_set_Q(cself, NUM2DBL(Q));
+    return Q;
 }
 
 void Init_bandpass() {
@@ -60,4 +67,5 @@ void Init_bandpass() {
     rb_define_singleton_method(cCSBandpass, "new", rbcs_bandpass_new, -1);
     rb_define_method(cCSBandpass, "freq", rbcs_bandpass_freq, 0);
     rb_define_method(cCSBandpass, "freq=", rbcs_bandpass_set_freq, 1);
+    rb_define_method(cCSBandpass, "Q=", rbcs_bandpass_set_Q, 1);
 }

@@ -20,6 +20,7 @@ AC_PROG_LIBTOOL
 PKG_CHECK_MODULES([JACK], [jack], [HAVE_JACK=true], [HAVE_JACK=false])
 # PKG_CHECK_MODULES([FREEVERB3], [freeverb3], [HAVE_FREEVERB3=true], [HAVE_FREEVERB3=false])
 PKG_CHECK_MODULES([SNDFILE], [sndfile >= 1.0.2], [HAVE_SNDFILE=true], [HAVE_SNDFILE=false])
+PKG_CHECK_MODULES([FFTW3], [fftw3], [HAVE_FFTW3=true], [HAVE_FFTW3=false])
 
 # Checks for header files.
 AC_CHECK_HEADERS([malloc.h stdlib.h string.h unistd.h])

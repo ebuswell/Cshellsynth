@@ -58,20 +58,19 @@ static VALUE rbcs_key_note(VALUE self) {
 }
 
 static VALUE rbcs_key_set_note(VALUE self, VALUE note) {
+    cs_key_t *cself;
+    Data_Get_Struct(self, cs_key_t, cself);
     if(KIND_OF(note, rb_cNumeric)) {
-	cs_key_t *cself;
-	Data_Get_Struct(self, cs_key_t, cself);
 	cs_key_set_note(cself, NUM2DBL(note));
     } else {
 	VALUE note_port = rb_iv_get(self, "@note_port");
 	if(NIL_P(note_port)) {
-	    cs_key_t *cself;
-	    Data_Get_Struct(self, cs_key_t, cself);
 	    note_port = Data_Wrap_Struct(cJackPort, 0, fake_free, cself->note_port);
 	    rb_iv_set(self, "@note_port", note_port);
 	}
 	jr_client_connect(self, note, note_port);
 	// ignore return value
+	cs_key_set_note(cself, NAN);
     }
     return note;
 }
@@ -88,20 +87,19 @@ static VALUE rbcs_key_root(VALUE self) {
 }
 
 static VALUE rbcs_key_set_root(VALUE self, VALUE root) {
+    cs_key_t *cself;
+    Data_Get_Struct(self, cs_key_t, cself);
     if(KIND_OF(root, rb_cNumeric)) {
-	cs_key_t *cself;
-	Data_Get_Struct(self, cs_key_t, cself);
 	cs_key_set_root(cself, NUM2DBL(root));
     } else {
 	VALUE root_port = rb_iv_get(self, "@root_port");
 	if(NIL_P(root_port)) {
-	    cs_key_t *cself;
-	    Data_Get_Struct(self, cs_key_t, cself);
 	    root_port = Data_Wrap_Struct(cJackPort, 0, fake_free, cself->root_port);
 	    rb_iv_set(self, "@root_port", root_port);
 	}
 	jr_client_connect(self, root, root_port);
 	// ignore return value
+	cs_key_set_root(cself, NAN);
     }
     return root;
 }

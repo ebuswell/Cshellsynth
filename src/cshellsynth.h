@@ -17,11 +17,14 @@
 #include <cshellsynth/lowpass.h>
 #include <cshellsynth/mixer.h>
 #include <cshellsynth/modulator.h>
+#include <cshellsynth/noise.h>
 #include <cshellsynth/rising_saw.h>
+#include <cshellsynth/sampler.h>
 #include <cshellsynth/sequencer.h>
 #include <cshellsynth/sine.h>
 #include <cshellsynth/square.h>
 #include <cshellsynth/synth.h>
 #include <cshellsynth/triangle.h>
+#include <cshellsynth/vocalizer.h>
 
 #endif

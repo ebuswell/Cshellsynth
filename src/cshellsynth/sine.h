@@ -4,7 +4,6 @@
 #include <jack/jack.h>
 #include <cshellsynth/atomic-types.h>
 #include <cshellsynth/synth.h>
-#include <stdbool.h>
 
 typedef struct cs_sine_struct {
     jack_client_t *client;

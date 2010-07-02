@@ -17,20 +17,19 @@ static VALUE rbcs_mix_in1(VALUE self) {
 }
 
 static VALUE rbcs_mix_set_in1(VALUE self, VALUE in1) {
+    cs_mix_t *cself;
+    Data_Get_Struct(self, cs_mix_t, cself);
     if(KIND_OF(in1, rb_cNumeric)) {
-	cs_mix_t *cself;
-	Data_Get_Struct(self, cs_mix_t, cself);
 	cs_mix_set_in1(cself, NUM2DBL(in1));
     } else {
 	VALUE in1_port = rb_iv_get(self, "@in1_port");
 	if(NIL_P(in1_port)) {
-	    cs_mix_t *cself;
-	    Data_Get_Struct(self, cs_mix_t, cself);
 	    in1_port = Data_Wrap_Struct(cJackPort, 0, fake_free, cself->in1_port);
 	    rb_iv_set(self, "@in1_port", in1_port);
 	}
 	jr_client_connect(self, in1, in1_port);
 	// ignore return value
+	cs_mix_set_in1(cself, NAN);
     }
     return in1;
 }
@@ -47,20 +46,19 @@ static VALUE rbcs_mix_in2(VALUE self) {
 }
 
 static VALUE rbcs_mix_set_in2(VALUE self, VALUE in2) {
+    cs_mix_t *cself;
+    Data_Get_Struct(self, cs_mix_t, cself);
     if(KIND_OF(in2, rb_cNumeric)) {
-	cs_mix_t *cself;
-	Data_Get_Struct(self, cs_mix_t, cself);
 	cs_mix_set_in2(cself, NUM2DBL(in2));
     } else {
 	VALUE in2_port = rb_iv_get(self, "@in2_port");
 	if(NIL_P(in2_port)) {
-	    cs_mix_t *cself;
-	    Data_Get_Struct(self, cs_mix_t, cself);
 	    in2_port = Data_Wrap_Struct(cJackPort, 0, fake_free, cself->in2_port);
 	    rb_iv_set(self, "@in2_port", in2_port);
 	}
 	jr_client_connect(self, in2, in2_port);
 	// ignore return value
+	cs_mix_set_in1(cself, NAN);
     }
     return in2;
 }

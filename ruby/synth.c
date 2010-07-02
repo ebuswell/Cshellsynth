@@ -19,20 +19,19 @@ static VALUE rbcs_synth_freq(VALUE self) {
 }
 
 static VALUE rbcs_synth_set_freq(VALUE self, VALUE freq) {
+    cs_synth_t *cself;
+    Data_Get_Struct(self, cs_synth_t, cself);
     if(KIND_OF(freq, rb_cNumeric)) {
-	cs_synth_t *cself;
-	Data_Get_Struct(self, cs_synth_t, cself);
 	cs_synth_set_freq(cself, NUM2DBL(freq));
     } else {
 	VALUE freq_port = rb_iv_get(self, "@freq_port");
 	if(NIL_P(freq_port)) {
-	    cs_synth_t *cself;
-	    Data_Get_Struct(self, cs_synth_t, cself);
 	    freq_port = Data_Wrap_Struct(cJackPort, 0, fake_free, cself->freq_port);
 	    rb_iv_set(self, "@freq_port", freq_port);
 	}
 	jr_client_connect(self, freq, freq_port);
 	// ignore return value
+	cs_synth_set_freq(cself, NAN);
     }
     return freq;
 }

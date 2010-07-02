@@ -19,20 +19,19 @@ static VALUE rbcs_filter_in(VALUE self) {
 }
 
 static VALUE rbcs_filter_set_in(VALUE self, VALUE in) {
+    cs_filter_t *cself;
+    Data_Get_Struct(self, cs_filter_t, cself);
     if(KIND_OF(in, rb_cNumeric)) {
-	cs_filter_t *cself;
-	Data_Get_Struct(self, cs_filter_t, cself);
 	cs_filter_set_in(cself, NUM2DBL(in));
     } else {
 	VALUE in_port = rb_iv_get(self, "@in_port");
 	if(NIL_P(in_port)) {
-	    cs_filter_t *cself;
-	    Data_Get_Struct(self, cs_filter_t, cself);
 	    in_port = Data_Wrap_Struct(cJackPort, 0, fake_free, cself->in_port);
 	    rb_iv_set(self, "@in_port", in_port);
 	}
 	jr_client_connect(self, in, in_port);
 	// ignore return value
+	cs_filter_set_in(cself, NAN);
     }
     return in;
 }
