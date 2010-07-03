@@ -18,6 +18,7 @@ typedef struct cs_key_struct {
     atomic_float_t root;
     jack_port_t *freq_port;
     atomic_ptr_t tuning; // cs_key_tuning_t *
+    atomic_t tuning_sync;
 } cs_key_t;
 
 int cs_key_destroy(cs_key_t *cs_key);

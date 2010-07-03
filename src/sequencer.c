@@ -86,13 +86,24 @@ static int cs_seq_process(jack_nframes_t nframes, void *arg) {
 	    cs_seq_sequence_t *old_seq = self->curr_seq;
 	    self->curr_seq = atomic_ptr_xchg(&self->next_seq, NULL);
 	    if(self->curr_seq != NULL) {
+		/* Some mojo to find out if we start right away: */
+		double fake_offset = (old_seq->length - floor(old_seq->length)) + floor(time);
+		/* FIXME: we shouldn't call free() during the RT thread */
 		cs_seq_sequence_free(old_seq);
+		self->offset = 0.0;
+		if(fake_offset <= self->curr_seq->offset) {
+		    self->curr_seq->started = true;
+		    self->offset = -self->curr_seq->offset;
+		    self->current = self->curr_seq->seq;
+		    self->last = time;
+		}
 		goto TEST_SEQ_STARTED;
 	    } else if(old_seq->repeat) {
 		self->curr_seq = old_seq;
 		self->offset -= self->curr_seq->length;
 		self->current = self->curr_seq->seq;
 	    } else {
+		/* FIXME: we shouldn't call free() during the RT thread */
 		cs_seq_sequence_free(old_seq);
 		continue;
 	    }

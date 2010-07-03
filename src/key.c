@@ -2,8 +2,10 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sched.h>
 #include "cshellsynth/jclient.h"
 #include "cshellsynth/key.h"
+#include "atomic.h"
 #include "atomic-float.h"
 #include "atomic-ptr.h"
 
@@ -118,15 +120,18 @@ static int cs_key_process(jack_nframes_t nframes, void *arg) {
 	    return -1;
 	}
     }
+    atomic_inc(&self->tuning_sync);
     cs_key_tuning_t *tuning = atomic_ptr_read(&self->tuning);
     if(isnanf(note) || isnanf(root)) {
 	int i;
 	for(i = 0; i < nframes; i++) {
 	    freq_buffer[i] = cs_key_note2freq_param((isnanf(note) ? note_buffer[i] : note), (isnanf(root) ? root_buffer[i] : root), tuning);
 	}
+	atomic_dec(&self->tuning_sync);
     } else {
 	int i;
 	float freq = cs_key_note2freq_param(note, root, tuning);
+	atomic_dec(&self->tuning_sync);
 	for(i = 0; i < nframes; i++) {
 	    freq_buffer[i] = freq;
 	}
@@ -190,6 +195,10 @@ int cs_key_set_tuning(cs_key_t *self, const double *tuning, size_t tuning_length
 	}
     }
     if(oldtuning != NULL) {
+	/* make sure we're not using it before we free it */
+	while(atomic_read(&self->tuning_sync)) {
+	    sched_yield();
+	}
 	cs_key_free_tuning(oldtuning);
     }
 }
@@ -239,6 +248,7 @@ int cs_key_init(cs_key_t *self, const char *client_name, jack_options_t flags, c
     }
 
     atomic_ptr_set(&self->tuning, cs_equal_tuning);
+    atomic_set(&self->tuning_sync, 0);
     atomic_float_set(&self->root, CS_C / jack_get_sample_rate(self->client));
     atomic_float_set(&self->note, NAN);
 

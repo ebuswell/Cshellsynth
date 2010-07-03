@@ -5,6 +5,12 @@
 #include <cshellsynth/atomic-types.h>
 #include <cshellsynth/jclient.h>
 #include <stdbool.h>
+#include <sndfile.h>
+
+typedef struct cs_sampler_sndfile_struct {
+    SNDFILE *sf;
+    SF_INFO sf_info;
+} cs_sampler_sf_t;
 
 typedef struct cs_sampler_struct {
     jack_client_t *client;
@@ -12,6 +18,7 @@ typedef struct cs_sampler_struct {
     jack_port_t *outL_port;
     jack_port_t *outR_port;
     atomic_ptr_t sf;
+    atomic_t sf_sync;
     bool playing;
 } cs_sampler_t;
 

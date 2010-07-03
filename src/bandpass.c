@@ -9,6 +9,7 @@ static int cs_bandpass_process(jack_nframes_t nframes, void *arg) {
     cs_bandpass_t *self = (cs_bandpass_t *) arg;
     float *in_buffer;
     float *freq_buffer;
+    float *Q_buffer;
     float *out_buffer = (float *)jack_port_get_buffer(self->out_port, nframes);
     if(out_buffer == NULL) {
 	return -1;
@@ -27,14 +28,21 @@ static int cs_bandpass_process(jack_nframes_t nframes, void *arg) {
 	    return -1;
 	}
     }
-    double Q = atomic_double_read(&self->Q);
+    float Q = atomic_float_read(&self->Q);
+    if(isnanf(Q)) {
+	Q_buffer = (float *)jack_port_get_buffer(self->Q_port, nframes);
+	if(Q_buffer == NULL) {
+	    return -1;
+	}
+    }
     int i;
     for(i = 0; i < nframes; i++) {
 	double w = 2.0 * M_PI * ((double) (isnanf(freq) ? freq_buffer[i] : freq));
+	double cQ = isnanf(Q) ? Q_buffer[i] : Q;
 	double out = (((double) (isnanf(in) ? in_buffer[i] : in)) * w
-		      + self->last_out * Q * (1 + w * w)
-		      - self->out_accumulator * Q * w * w)
-	    / (w + Q + Q * w * w);
+		      + self->last_out * cQ * (1 + w * w)
+		      - self->out_accumulator * cQ * w * w)
+	    / (w + cQ + cQ * w * w);
 	self->out_accumulator += self->last_out;
 	self->last_out = out;
 	out_buffer[i] = out;
@@ -49,8 +57,8 @@ void cs_bandpass_set_freq(cs_bandpass_t *self, float freq) {
     atomic_float_set(&self->freq, freq);
 }
 
-void cs_bandpass_set_Q(cs_bandpass_t *self, double Q) {
-    atomic_double_set(&self->Q, Q);
+void cs_bandpass_set_Q(cs_bandpass_t *self, float Q) {
+    atomic_float_set(&self->Q, Q);
 }
 
 int cs_bandpass_init(cs_bandpass_t *self, const char *client_name, jack_options_t flags, char *server_name) {
@@ -65,8 +73,14 @@ int cs_bandpass_init(cs_bandpass_t *self, const char *client_name, jack_options_
 	return -1;
     };
 
+    self->Q_port = jack_port_register(self->client, "Q", JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
+    if(self->Q_port == NULL) {
+	cs_filter_destroy((cs_filter_t *) self);
+	return -1;
+    };
+
     atomic_float_set(&self->freq, NAN);
-    atomic_double_set(&self->Q, 0.5);
+    atomic_float_set(&self->Q, 0.5);
     self->last_out = 0.0;
     self->out_accumulator = 0.0;
 

@@ -3,6 +3,7 @@
 #include <sndfile.h>
 #include <alloca.h>
 #include <string.h>
+#include <stdlib.h>
 #include "cshellsynth/sampler.h"
 #include "cshellsynth/jclient.h"
 #include "atomic-ptr.h"
@@ -21,33 +22,32 @@ static int cs_sampler_process(jack_nframes_t nframes, void *arg) {
     if(outR_buffer == NULL) {
 	return -1;
     }
-    SNDFILE *sf = atomic_ptr_read(&self->sf);
+    atomic_inc(&self->sf_sync);
+    cs_sampler_sf_t *sf = atomic_ptr_read(&self->sf);
     float *interleaved = NULL;
     if(sf != NULL) {
 	jack_nframes_t i = 0;
 	while(i < nframes) {
-	    if(ctl_buffer[i] == -1.0f) {
-		self->playing = false;
-	    } else if(ctl_buffer[i] == 1.0f) {
-		sf_count_t r = sf_seek(sf, 0, SEEK_SET);
-		self->playing = true;
+	    if(ctl_buffer[i] == 1.0f) {
+		sf_count_t r = sf_seek(sf->sf, 0, SEEK_SET);
 		if(r < 0) {
 		    return r;
 		}
+		self->playing = true;
 	    }
 	    if(self->playing) {
 		if(interleaved == NULL) {
-		    interleaved = alloca(nframes * sizeof(float) * 2);
-		    memset(interleaved, 0, nframes * sizeof(float) * 2);
+		    interleaved = alloca(nframes * sizeof(float) * sf->sf_info.channels);
+		    memset(interleaved, 0, nframes * sizeof(float) * sf->sf_info.channels);
 		}
 		/* find out how long we're playing... */
 		int j;
 		for(j = i + 1; j < nframes; j++) {
-		    if(ctl_buffer[j] != 0.0f) {
+		    if(ctl_buffer[j] == 1.0f) {
 			break;
 		    }
 		}
-		sf_count_t c = sf_readf_float(sf, (float *) interleaved + i * 2, j - i);
+		sf_count_t c = sf_readf_float(sf->sf, (float *) interleaved + i * sf->sf_info.channels, j - i);
 		if(c < 0) {
 		    return c;
 		}
@@ -66,9 +66,15 @@ static int cs_sampler_process(jack_nframes_t nframes, void *arg) {
 	    }
 	}
 	if(interleaved != NULL) {
-	    for(i = 0; i < nframes; i ++) {
-		outL_buffer[i] = interleaved[2*i];
-		outR_buffer[i] = interleaved[2*i + 1];
+	    if(sf->sf_info.channels == 1) {
+		for(i = 0; i < nframes; i ++) {
+		    outL_buffer[i] = outR_buffer[i] = interleaved[i];
+		}
+	    } else {
+		for(i = 0; i < nframes; i ++) {
+		    outL_buffer[i] = interleaved[sf->sf_info.channels*i];
+		    outR_buffer[i] = interleaved[sf->sf_info.channels*i + 1];
+		}
 	    }
 	} else {
 	    memset(outL_buffer, 0, sizeof(float) * nframes);
@@ -78,27 +84,25 @@ static int cs_sampler_process(jack_nframes_t nframes, void *arg) {
 	memset(outL_buffer, 0, sizeof(float) * nframes);
 	memset(outR_buffer, 0, sizeof(float) * nframes);
     }
+    atomic_dec(&self->sf_sync);
     return 0;
 }
 
 int cs_sampler_load(cs_sampler_t *self, char *path) {
-    SNDFILE *sf;
-    SF_INFO sf_info;
-    int r;
-    memset(&sf_info, 0, sizeof(sf_info));
-    sf = sf_open(path, SFM_READ, &sf_info);
+    cs_sampler_sf_t *sf = malloc(sizeof(cs_sampler_sf_t));
     if(sf == NULL) {
 	return -1;
     }
-    if(sf_info.samplerate != jack_get_sample_rate(self->client)) {
-	r = sf_close(sf);
-	if(r != 0) {
-	    return r;
-	}
+    int r;
+    memset(&sf->sf_info, 0, sizeof(SF_INFO));
+    sf->sf = sf_open(path, SFM_READ, &sf->sf_info);
+    if(sf->sf == NULL) {
+	free(sf);
 	return -1;
     }
-    if(sf_info.channels != 2) {
-	r = sf_close(sf);
+    if(sf->sf_info.samplerate != jack_get_sample_rate(self->client)) {
+	r = sf_close(sf->sf);
+	free(sf);
 	if(r != 0) {
 	    return r;
 	}
@@ -107,7 +111,12 @@ int cs_sampler_load(cs_sampler_t *self, char *path) {
 
     sf = atomic_ptr_xchg(&self->sf, sf);
     if(sf != NULL) {
-	r = sf_close(sf);
+	/* make sure we're not using it before we free it */
+	while(atomic_read(&self->sf_sync)) {
+	    sched_yield();
+	}
+	r = sf_close(sf->sf);
+	free(sf);
 	if(r != 0) {
 	    return r;
 	}
@@ -151,6 +160,7 @@ int cs_sampler_init(cs_sampler_t *self, const char *client_name, jack_options_t 
     }
 
     atomic_ptr_set(&self->sf, NULL);
+    atomic_set(&self->sf_sync, 0);
     self->playing = false;
 
     r = jack_set_process_callback(self->client, cs_sampler_process, self);
