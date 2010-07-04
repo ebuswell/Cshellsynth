@@ -1,0 +1,25 @@
+distdir:
+install-data:
+install-exec: install
+uninstall:
+install-dvi:
+install-html:
+install-ps:
+install-pdf:
+installdirs:
+check:
+installcheck:
+mostlyclean: clean
+maintainer-clean: realclean
+dvi:
+pdf:
+ps:
+info:
+html:
+tags:
+ctags:
+
+$(DLLIB): ./../src/libcshellsynth.la
+
+./../src/libcshellsynth.la:
+	(cd ../src && $(MAKE) libcshellsynth.la) || exit 1
