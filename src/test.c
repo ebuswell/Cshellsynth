@@ -126,7 +126,7 @@ int main(int argc, char **argv) {
     init_and_check(seq2, seq);
 
     init_and_check(clock1, clock);
-    cs_clock_set_bpm(&clock1, 240.0);
+    cs_clock_set_rate(&clock1, 240.0);
     cs_clock_set_meter(&clock1, 3.0);
 
     jack_connect(clock1.client, "clock1:clock", "seq1:clock");

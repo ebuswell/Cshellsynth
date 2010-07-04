@@ -1,5 +1,6 @@
 #include <jack/jack.h>
 #include <math.h>
+#include <stdbool.h>
 #include "cshellsynth/envelope_generator.h"
 #include "cshellsynth/jclient.h"
 #include "atomic-float.h"
@@ -31,95 +32,99 @@ static int cs_envg_process(jack_nframes_t nframes, void *arg) {
 	}
 	if(ctl > 0.0f) {
 	    // attack event
-	    self->offset = 0.0;
 	    self->state = ATTACK;
-	    self->start_a = self->last_a;
+	    self->release = false;
+	    printf("attack\n");
 	} else if(ctl < 0.0f) {
 	    // release event
-	    self->offset = 0.0;
-	    self->state = RELEASE;
-	    self->start_a = self->last_a;
+	    self->release = true;
 	}
 	switch(self->state) {
 	case ATTACK:
-	    if(self->offset < attack_t) {
-		if(linear) {
-		    out_buffer[i] = self->last_a = ((float) ((self->offset / attack_t) * ((double) (1.0f - self->start_a)))) + self->start_a;
-		    self->offset += 1.0;
-		    break;
-		} else {
-		    out_buffer[i] = self->last_a = self->start_a + ((float) ((ONE_ADJUST - ((double) self->start_a)) * (1.0 - exp(-M_PI * self->offset / attack_t))));
-		    if(self->last_a < 1.0f) {
-			self->offset += 1.0;
-			break;
-		    } else {
-			self->state = DECAY;
-			self->offset = 0;
-			// fall through
-		    }
-		}
-	    } else {
+	    if(attack_t <= 0.0) {
+		self->last_a = 1.0;
 		self->state = DECAY;
-		self->offset -= attack_t;
 		// fall through
+		printf("decay\n");
+	    } else {
+		if(linear) {
+		    out_buffer[i] = self->last_a = self->last_a + 1.0 / attack_t;
+		} else {
+		    out_buffer[i] = self->last_a = ONE_ADJUST - (ONE_ADJUST - self->last_a) * exp(-M_PI / attack_t);
+		}
+		if(self->last_a >= 1.0) {
+		    out_buffer[i] = self->last_a = 1.0;
+		    self->state = DECAY;
+		    printf("decay\n");
+		}
+		break;
 	    }
 	case DECAY:
-	    if(linear) {
-		if(self->offset < decay_t) {
-		    out_buffer[i] = self->last_a = ((float) (1.0 - (self->offset / decay_t))) * (1.0f - sustain_a) + sustain_a;
-		    self->offset += 1.0;
-		    break;
-		} else {
-		    self->state = SUSTAIN;
-		    // fall through
-		}
+	    if(decay_t <= 0.0) {
+		self->state = SUSTAIN;
+		// fall through
+		printf("sustain\n");
 	    } else {
-		if(decay_t != 0.0) {
-		    float adjust = (((double) (1.0f - sustain_a))*exp(-M_PI * self->offset / decay_t));
-		    if(adjust == 0.0f) {
+		if(linear) {
+		    out_buffer[i] = self->last_a = self->last_a - ((double) (1.0f - sustain_a)) / decay_t;
+		    if(self->last_a <= sustain_a) {
 			self->state = SUSTAIN;
 			// fall through
+			printf("sustain\n");
 		    } else {
-			out_buffer[i] = self->last_a = sustain_a + adjust;
-			self->offset += 1.0;
 			break;
 		    }
 		} else {
-		    self->state = SUSTAIN;
-		    // fall through
+		    // find out if we are within the range for releasing:
+		    if(self->release && (self->last_a <= ((double) sustain_a) + ((double) (1.0f - sustain_a)) * exp(-M_PI))) {
+			self->state = RELEASE;
+			// fall through
+			printf("release\n");
+		    } else {
+			out_buffer[i] = self->last_a = ((double) sustain_a) + (self->last_a - ((double) sustain_a)) * exp(-M_PI / decay_t);
+			if(self->last_a <= sustain_a) {
+			    self->state = SUSTAIN;
+			    // fall through
+			    printf("sustain\n");
+			} else {
+			    break;
+			}
+		    }
 		}
 	    }
 	case SUSTAIN:
-	    out_buffer[i] = self->last_a = sustain_a;
-	    break;
-	case RELEASE:
-	    if(linear) {
-		if(self->offset < release_t) {
-		    out_buffer[i] = self->last_a = ((1.0 - (self->offset / release_t)) * ((double) self->start_a));
-		    self->offset += 1.0;
+	    // check fall through
+	    if(self->state == SUSTAIN) {
+		out_buffer[i] = self->last_a = sustain_a;
+		if(self->release) {
+		    self->state = RELEASE;
+		    // fall through
+		    printf("release\n");
+		} else {
 		    break;
-		} else {
-		    self->state = FINISHED;
-		    // fall through
 		}
+	    }
+	case RELEASE:
+	    if(release_t <= 0.0) {
+		self->state = FINISHED;
+		// fall through
+		printf("finished\n");
 	    } else {
-		if(release_t != 0.0) {
-		    out_buffer[i] = self->last_a = (((double) self->start_a) * exp(-M_PI * self->offset / release_t));
-		    if(self->last_a == 0.0f) {
-			self->state = FINISHED;
-			break;
-		    } else {
-			self->offset += 1.0;
-			break;
-		    }
+		if(linear) {
+		    out_buffer[i] = self->last_a = self->last_a - 1.0 / release_t;
 		} else {
+		    out_buffer[i] = self->last_a = self->last_a * exp(-M_PI / release_t);
+		}
+		if(self->last_a <= 0.0) {
 		    self->state = FINISHED;
 		    // fall through
+		    printf("finished\n");
+		} else {
+		    break;
 		}
 	    }
 	case FINISHED:
-	default:
-	    out_buffer[i] = self->last_a = 0.0f;
+	    out_buffer[i] = self->last_a = 0.0;
 	}
     }
     return 0;
@@ -149,15 +154,14 @@ int cs_envg_init(cs_envg_t *self, const char *client_name, jack_options_t flags,
     atomic_double_set(&self->release_t, 0.0);
     atomic_set(&self->linear, 0);
     self->state = FINISHED;
+    self->last_a = 0.0;
+    self->release = false;
 
     r = jack_set_process_callback(self->client, cs_envg_process, self);
     if(r != 0) {
 	jclient_destroy((jclient_t *) self);
 	return r;
     }
-    self->offset = 0.0;
-    self->start_a = 0.0f;
-    self->last_a = 0.0f;
     r = jack_activate(self->client);
     if(r != 0) {
 	jclient_destroy((jclient_t *) self);

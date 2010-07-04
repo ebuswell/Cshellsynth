@@ -1,11 +1,11 @@
 lib_LTLIBRARIES = libcshellsynth.la
-libcshellsynth_la_SOURCES = bandpass.c clock.c controller.c distortion.c envelope_generator.c falling_saw.c filter.c cot.c highpass.c instrument.c jclient.c key.c lin2exp.c lowpass.c mixer.c modulator.c noise.c rising_saw.c sampler.c sequencer.c sine.c square.c synth.c triangle.c vocalizer.c
-libcshellsynth_la_LDFLAGS = $(JACK_LIBS) $(SNDFILE_LIBS) $(FFTW3_LIBS) -module -export-dynamic $(LDFLAGS)
-libcshellsynth_la_CFLAGS = $(JACK_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW3_CFLAGS) $(CFLAGS) -Wall
+libcshellsynth_la_SOURCES = bandpass.c clock.c controller.c distortion.c envelope_generator.c falling_saw.c filter.c cot.c highpass.c instrument.c jclient.c key.c lin2exp.c lowpass.c mixer.c modulator.c noise.c rising_saw.c sampler.c sequencer.c sine.c square.c synth.c triangle.c
+libcshellsynth_la_LDFLAGS = $(JACK_LIBS) $(SNDFILE_LIBS) -module -export-dynamic $(LDFLAGS)
+libcshellsynth_la_CFLAGS = $(JACK_CFLAGS) $(SNDFILE_CFLAGS) $(CFLAGS) -Wall
 # libcshellsynth_la_CXXFLAGS = $(JACK_CFLAGS) $(SNDFILE_CFLAGS) $(CXXFLAGS) -Wall
-nobase_include_HEADERS = cshellsynth/atomic-types.h cshellsynth/bandpass.h cshellsynth/clock.h cshellsynth/controller.h cshellsynth/distortion.h cshellsynth/envelope_generator.h cshellsynth/falling_saw.h cshellsynth/filter.h cshellsynth/cot.h cshellsynth/highpass.h cshellsynth/instrument.h cshellsynth/jclient.h cshellsynth/key.h cshellsynth/lin2exp.h cshellsynth/lowpass.h cshellsynth/mixer.h cshellsynth/modulator.h cshellsynth/noise.h cshellsynth/rising_saw.h cshellsynth/sampler.h cshellsynth/sequencer.h cshellsynth/sine.h cshellsynth/square.h cshellsynth/synth.h cshellsynth/triangle.h cshellsynth/vocalizer.h cshellsynth.h
+nobase_include_HEADERS = cshellsynth/atomic-types.h cshellsynth/bandpass.h cshellsynth/clock.h cshellsynth/controller.h cshellsynth/distortion.h cshellsynth/envelope_generator.h cshellsynth/falling_saw.h cshellsynth/filter.h cshellsynth/cot.h cshellsynth/highpass.h cshellsynth/instrument.h cshellsynth/jclient.h cshellsynth/key.h cshellsynth/lin2exp.h cshellsynth/lowpass.h cshellsynth/mixer.h cshellsynth/modulator.h cshellsynth/noise.h cshellsynth/rising_saw.h cshellsynth/sampler.h cshellsynth/sequencer.h cshellsynth/sine.h cshellsynth/square.h cshellsynth/synth.h cshellsynth/triangle.h cshellsynth.h
 check_PROGRAMS = test
-test_LDFLAGS = $(JACK_LIBS) $(SNDFILE_LIBS) $(FFTW3_LIBS) -lcshellsynth
-test_CFLAGS = $(JACK_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW3_CFLAGS) $(CFLAGS) -Wall
+test_LDFLAGS = $(JACK_LIBS) $(SNDFILE_LIBS) -lcshellsynth
+test_CFLAGS = $(JACK_CFLAGS) $(SNDFILE_CFLAGS) $(CFLAGS) -Wall
 TESTS = test
 MAINTAINERCLEANFILES = Makefile.in config.h.in config.h.in~

@@ -2,6 +2,7 @@
 #define CSHELLSYNTH_ENVELOPE_GENERATOR_H 1
 
 #include <jack/jack.h>
+#include <stdbool.h>
 #include <cshellsynth/atomic-types.h>
 #include <cshellsynth/jclient.h>
 
@@ -22,10 +23,9 @@ typedef struct cs_envg_struct {
     atomic_float_t sustain_a;
     atomic_double_t release_t;
     atomic_t linear;
-    double offset;
     enum cs_envg_state state;
-    float last_a;
-    float start_a;
+    double last_a;
+    bool release;
 } cs_envg_t;
 
 #define cs_envg_destroy(cs_envg) jclient_destroy((jclient_t *) (cs_envg))
