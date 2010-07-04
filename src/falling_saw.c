@@ -26,12 +26,14 @@ static int cs_fsaw_process(jack_nframes_t nframes, void *arg) {
 	    self->offset = 0.5;
 	    out_buffer[i] = 0.0f;
 	} else {
-	    //  |\
-	    // \|
-	    // 0 1
-	    // \ |
-	    //  \|
-	    // 10
+	    /*
+	     *  |\ 
+	     * \|
+	     * 0 1
+	     * \ |
+	     *  \|
+	     * 10
+	     */
 	    while(self->offset >= 1.0) {
 		self->offset -= 1.0;
 	    }

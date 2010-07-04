@@ -154,7 +154,7 @@ void cs_key_free_tuning(cs_key_tuning_t *tuning) {
 	   && (tuning->tuning != CS_EQUAL_TUNING)
 	   && (tuning->tuning != CS_MINOR_TUNING)
 	   && (tuning->tuning != CS_PYTHAGOREAN_TUNING)) {
-	    free(tuning->tuning);
+	    free((void *) tuning->tuning);
 	}
 	free(tuning);
     }
@@ -189,10 +189,11 @@ int cs_key_set_tuning(cs_key_t *self, const double *tuning, size_t tuning_length
 		free(newtuning);
 		return -1;
 	    }
-	    memcpy(newtuning->tuning, tuning, sizeof(double) * tuning_length);
+	    memcpy((void *) newtuning->tuning, tuning, sizeof(double) * tuning_length);
 	} else {
 	    newtuning->tuning = tuning;
 	}
+	oldtuning = atomic_ptr_xchg(&self->tuning, newtuning);
     }
     if(oldtuning != NULL) {
 	/* make sure we're not using it before we free it */
@@ -201,6 +202,7 @@ int cs_key_set_tuning(cs_key_t *self, const double *tuning, size_t tuning_length
 	}
 	cs_key_free_tuning(oldtuning);
     }
+    return 0;
 }
 
 void cs_key_set_root(cs_key_t *self, float root) {

@@ -26,12 +26,14 @@ static int cs_triangle_process(jack_nframes_t nframes, void *arg) {
 	    self->offset = 0.25;
 	    out_buffer[i] = 0.0f;
 	} else {
-	    // /\
-	    //   \/
-	    // 0123
-	    //  /\
-	    // /  \
-	    // 3012
+	    /*
+	     * /\ 
+	     *   \/
+	     * 0123
+	     *  /\ 
+	     * /  \ 
+	     * 3012
+	     */
 	    if(self->offset >= 1.0) {
 		self->offset -= 1.0;
 	    }

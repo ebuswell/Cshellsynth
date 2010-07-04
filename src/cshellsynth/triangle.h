@@ -17,4 +17,5 @@ typedef struct cs_triangle_struct {
 int cs_triangle_init(cs_triangle_t *self, const char *client_name, jack_options_t flags, char *server_name);
 #define cs_triangle_set_freq(cs_triangle, freq) cs_synth_set_freq((cs_synth_t *) (cs_triangle), (freq))
 
-#endif
+#endif /* #ifndef CSHELLSYNTH_TRIANGLE_H */
+

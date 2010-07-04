@@ -2,7 +2,7 @@
 #include <math.h>
 #include "cshellsynth/clock.h"
 #include "cshellsynth/jclient.h"
-#include "atomic-double.h"
+#include "atomic-float.h"
 
 void cs_clock_set_meter(cs_clock_t *self, float meter) {
     atomic_float_set(&self->meter, meter);
