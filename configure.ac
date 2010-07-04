@@ -10,10 +10,6 @@ AC_CANONICAL_TARGET
 
 # Checks for programs.
 AC_PROG_CC
-AC_PROG_INSTALL
-AC_PROG_LN_S
-AC_PROG_MAKE_SET
-AC_PROG_LIBTOOL
 
 AC_ARG_WITH([ruby],
 	[AS_HELP_STRING([--with-ruby],
@@ -45,10 +41,12 @@ cd ..
 PKG_CHECK_MODULES([JACK], [jack], [HAVE_JACK=true], [AC_MSG_ERROR([libjack is required to build AC_PACKAGE_NAME])])
 PKG_CHECK_MODULES([SNDFILE], [sndfile >= 1.0.2], [HAVE_SNDFILE=true], [AC_MSG_ERROR([libsndfile [(>= 1.0.2)] is required to build AC_PACKAGE_NAME])])
 
+# Checks for language features.
 AC_LANG([C])
 
 AC_CHECK_SIZEOF([long])
 
+# Checks for architecture.
 AS_CASE([$target_cpu],
 [i?86], [AC_DEFINE([ARCH_X86], [1], [Define if compiling for an x86 or x86_64/amd64 target.])],
 [x86_64], [AC_DEFINE([ARCH_X86], [1], [Define if compiling for an x86 or x86_64/amd64 target.])
@@ -58,7 +56,8 @@ headers for your architecture you should be able to fix this.  The Linux Kernel 
 place to start.])])
 
 # Checks for header files.
-AC_CHECK_HEADERS([malloc.h stdlib.h string.h unistd.h])
+AC_FUNC_ALLOCA
+AC_CHECK_HEADERS([malloc.h stdlib.h string.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
@@ -66,9 +65,8 @@ AC_C_INLINE
 AC_TYPE_SIZE_T
 
 # Checks for library functions.
-AC_FUNC_ALLOCA
 AC_FUNC_MALLOC
-AC_CHECK_FUNCS([floorf memset powf strerror])
+AC_CHECK_FUNCS([atexit floor memset pow])
 
 AC_CONFIG_FILES([Makefile
                  src/Makefile])
