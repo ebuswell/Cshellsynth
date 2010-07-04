@@ -34,7 +34,6 @@ static int cs_envg_process(jack_nframes_t nframes, void *arg) {
 	    // attack event
 	    self->state = ATTACK;
 	    self->release = false;
-	    printf("attack\n");
 	} else if(ctl < 0.0f) {
 	    // release event
 	    self->release = true;
@@ -45,7 +44,6 @@ static int cs_envg_process(jack_nframes_t nframes, void *arg) {
 		self->last_a = 1.0;
 		self->state = DECAY;
 		// fall through
-		printf("decay\n");
 	    } else {
 		if(linear) {
 		    out_buffer[i] = self->last_a = self->last_a + 1.0 / attack_t;
@@ -55,7 +53,6 @@ static int cs_envg_process(jack_nframes_t nframes, void *arg) {
 		if(self->last_a >= 1.0) {
 		    out_buffer[i] = self->last_a = 1.0;
 		    self->state = DECAY;
-		    printf("decay\n");
 		}
 		break;
 	    }
@@ -63,14 +60,12 @@ static int cs_envg_process(jack_nframes_t nframes, void *arg) {
 	    if(decay_t <= 0.0) {
 		self->state = SUSTAIN;
 		// fall through
-		printf("sustain\n");
 	    } else {
 		if(linear) {
 		    out_buffer[i] = self->last_a = self->last_a - ((double) (1.0f - sustain_a)) / decay_t;
 		    if(self->last_a <= sustain_a) {
 			self->state = SUSTAIN;
 			// fall through
-			printf("sustain\n");
 		    } else {
 			break;
 		    }
@@ -79,13 +74,11 @@ static int cs_envg_process(jack_nframes_t nframes, void *arg) {
 		    if(self->release && (self->last_a <= ((double) sustain_a) + ((double) (1.0f - sustain_a)) * exp(-M_PI))) {
 			self->state = RELEASE;
 			// fall through
-			printf("release\n");
 		    } else {
 			out_buffer[i] = self->last_a = ((double) sustain_a) + (self->last_a - ((double) sustain_a)) * exp(-M_PI / decay_t);
 			if(self->last_a <= sustain_a) {
 			    self->state = SUSTAIN;
 			    // fall through
-			    printf("sustain\n");
 			} else {
 			    break;
 			}
@@ -99,7 +92,6 @@ static int cs_envg_process(jack_nframes_t nframes, void *arg) {
 		if(self->release) {
 		    self->state = RELEASE;
 		    // fall through
-		    printf("release\n");
 		} else {
 		    break;
 		}
@@ -108,7 +100,6 @@ static int cs_envg_process(jack_nframes_t nframes, void *arg) {
 	    if(release_t <= 0.0) {
 		self->state = FINISHED;
 		// fall through
-		printf("finished\n");
 	    } else {
 		if(linear) {
 		    out_buffer[i] = self->last_a = self->last_a - 1.0 / release_t;
@@ -118,7 +109,6 @@ static int cs_envg_process(jack_nframes_t nframes, void *arg) {
 		if(self->last_a <= 0.0) {
 		    self->state = FINISHED;
 		    // fall through
-		    printf("finished\n");
 		} else {
 		    break;
 		}

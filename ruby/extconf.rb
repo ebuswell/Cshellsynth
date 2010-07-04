@@ -29,7 +29,7 @@ lib_main.close
 
 
 $LIBPATH << "#$curdir/../src/.libs/"
-$INCFLAGS << " " << "-I#$curdir/../src".quote
+$INCFLAGS << " " << "-I#$srcdir/../src".quote
 
 if(!have_library('jack', 'jack_client_open'))
   exit(1);

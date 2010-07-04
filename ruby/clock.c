@@ -98,5 +98,7 @@ void Init_clock() {
     rb_define_singleton_method(cCSClock, "new", rbcs_clock_new, -1);
     rb_define_method(cCSClock, "meter=", rbcs_clock_set_meter, 1);
     rb_define_method(cCSClock, "rate=", rbcs_clock_set_rate, 1);
+    rb_define_method(cCSClock, "meter", rbcs_clock_meter, 1);
+    rb_define_method(cCSClock, "rate", rbcs_clock_rate, 1);
     rb_define_method(cCSClock, "clock", rbcs_clock_clock, 0);
 }

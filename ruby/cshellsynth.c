@@ -16,6 +16,7 @@ void Init_key();
 void Init_sine();
 void Init_vocalizer();
 void Init_square();
+void Init_portamento();
 void Init_sequencer();
 void Init_triangle();
 void Init_falling_saw();
@@ -46,6 +47,7 @@ void Init_cshellsynth() {
     Init_sine();
     Init_vocalizer();
     Init_square();
+    Init_portamento();
     Init_sequencer();
     Init_triangle();
     Init_falling_saw();

@@ -48,6 +48,8 @@ cs_distort_t distortion1;
 destroy_func(distortion1, distort);
 cs_distort_t distortion2;
 destroy_func(distortion2, distort);
+cs_porta_t portamento;
+destroy_func(portamento, porta);
 
 int main(int argc, char **argv) {
     int r;
@@ -77,6 +79,9 @@ int main(int argc, char **argv) {
     cs_envg_set_sustain_a(&sweep_envg, 0.0f);
     cs_envg_set_release_t(&sweep_envg, 0.125);
     cs_envg_set_linear(&sweep_envg, 1);
+
+    init_and_check(portamento, porta);
+    cs_porta_set_lag(&portamento, 0.125);
 
     init_and_check(distortion1, distort);
     cs_distort_set_gain(&distortion1, exp(0.25));
@@ -142,12 +147,13 @@ int main(int argc, char **argv) {
     jack_connect(sine.client, "sine:out", "envm1:in1");
     jack_connect(envm1.client, "envm1:out", "distortion1:in");
 
-    jack_connect(key2.client, "key2:freq", "cot:freq");
+    jack_connect(key2.client, "key2:freq", "portamento:in");
+    jack_connect(portamento.client, "portamento:out", "cot:freq");
     jack_connect(cot.client, "cot:out", "distortion2:in");
     jack_connect(distortion2.client, "distortion2:out", "bandpass:in");
     jack_connect(bandpass.client, "bandpass:out", "envm2:in1");
 
-    jack_connect(key2.client, "key2:freq", "sweep:root");
+    jack_connect(portamento.client, "portamento:out", "sweep:root");
     jack_connect(seq2.client, "seq2:ctl", "sweep_envg:ctl");
     jack_connect(sweep_envg.client, "sweep_envg:out", "sweep_scale:in1");
     jack_connect(sweep_scale.client, "sweep_scale:out", "sweep:note");

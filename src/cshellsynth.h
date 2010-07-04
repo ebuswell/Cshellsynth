@@ -18,6 +18,7 @@
 #include <cshellsynth/mixer.h>
 #include <cshellsynth/modulator.h>
 #include <cshellsynth/noise.h>
+#include <cshellsynth/portamento.h>
 #include <cshellsynth/rising_saw.h>
 #include <cshellsynth/sampler.h>
 #include <cshellsynth/sequencer.h>
