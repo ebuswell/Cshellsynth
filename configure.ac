@@ -10,6 +10,7 @@ AC_CANONICAL_TARGET
 
 # Checks for programs.
 AC_PROG_CC
+AC_PROG_LIBTOOL
 
 AC_ARG_WITH([ruby],
 	[AS_HELP_STRING([--with-ruby],
