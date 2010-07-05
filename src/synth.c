@@ -11,6 +11,14 @@ void cs_synth_set_freq(cs_synth_t *self, float freq) {
     atomic_float_set(&self->freq, freq);
 }
 
+void cs_synth_set_offset(cs_synth_t *self, float offset) {
+    atomic_float_set(&self->offset, offset);
+}
+
+void cs_synth_set_amp(cs_synth_t *self, float amp) {
+    atomic_float_set(&self->amp, amp);
+}
+
 int cs_synth_init(cs_synth_t *self, const char *client_name, jack_options_t flags, char *server_name) {
     int r = jclient_init((jclient_t *) self, client_name, flags, server_name);
     if(r != 0) {
@@ -30,6 +38,8 @@ int cs_synth_init(cs_synth_t *self, const char *client_name, jack_options_t flag
     }
 
     atomic_float_set(&self->freq, NAN);
+    atomic_float_set(&self->amp, 1.0f);
+    atomic_float_set(&self->offset, 0.0f);
 
     return 0;
 }

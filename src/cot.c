@@ -19,26 +19,28 @@ static int cs_cot_process(jack_nframes_t nframes, void *arg) {
 	    return -1;
 	}
     }
+    float offset = atomic_float_read(&self->offset);
+    float amp = atomic_float_read(&self->amp);
     int i;
     for(i = 0; i < nframes; i++) {
 	double f = (double) (isnanf(freq) ? freq_buffer[i] : freq);
 	if(f == 0.0 || isnan(f)) {
-	    self->offset = 0.0;
-	    out_buffer[i] = 0.0f;
+	    self->t = 0.0;
+	    out_buffer[i] = offset;
 	} else {
-	    if(self->offset >= 1.0) {
-		self->offset -= 1.0;
+	    if(self->t >= 1.0) {
+		self->t -= 1.0;
 	    }
-	    double out = (log(fabs(sin(M_PI * (self->offset + f))
-				      / sin(M_PI * self->offset)))
+	    double out = (log(fabs(sin(M_PI * (self->t + f))
+				      / sin(M_PI * self->t)))
 			     / (2.0 * M_PI * f));
 	    if(out == INFINITY) {
 		out = HUGE;
 	    } else if(out == -INFINITY) {
 		out = -HUGE;
 	    }
-	    self->offset += f;
-	    out_buffer[i] = out;
+	    self->t += f;
+	    out_buffer[i] = out * amp + offset;
 	}
     }
     return 0;
@@ -54,7 +56,7 @@ int cs_cot_init(cs_cot_t *self, const char *client_name, jack_options_t flags, c
 	cs_synth_destroy((cs_synth_t *) self);
 	return r;
     }
-    self->offset = 0.0;
+    self->t = 0.0;
     r = jack_activate(self->client);
     if(r != 0) {
 	cs_synth_destroy((cs_synth_t *) self);

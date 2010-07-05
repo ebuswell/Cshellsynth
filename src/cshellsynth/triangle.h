@@ -10,12 +10,16 @@ typedef struct cs_triangle_struct {
     jack_port_t *freq_port;
     atomic_float_t freq;
     jack_port_t *out_port;
-    double offset;
+    atomic_float_t amp;
+    atomic_float_t offset;
+    double t;
 } cs_triangle_t;
 
 #define cs_triangle_destroy(cs_triangle) cs_synth_destroy((cs_synth_t *) (cs_triangle))
 int cs_triangle_init(cs_triangle_t *self, const char *client_name, jack_options_t flags, char *server_name);
 #define cs_triangle_set_freq(cs_triangle, freq) cs_synth_set_freq((cs_synth_t *) (cs_triangle), (freq))
+#define cs_triangle_set_offset(cs_triangle, offset) cs_synth_set_offset((cs_synth_t *) (cs_triangle), (offset))
+#define cs_triangle_set_amp(cs_triangle, amp) cs_synth_set_amp((cs_synth_t *) (cs_triangle), (amp))
 
 #endif /* #ifndef CSHELLSYNTH_TRIANGLE_H */
 

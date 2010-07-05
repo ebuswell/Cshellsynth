@@ -36,6 +36,20 @@ static VALUE rbcs_synth_set_freq(VALUE self, VALUE freq) {
     return freq;
 }
 
+static VALUE rbcs_synth_set_offset(VALUE self, VALUE offset) {
+    cs_synth_t *cself;
+    Data_Get_Struct(self, cs_synth_t, cself);
+    cs_synth_set_offset(cself, NUM2DBL(offset));
+    return offset;
+}
+
+static VALUE rbcs_synth_set_amp(VALUE self, VALUE amp) {
+    cs_synth_t *cself;
+    Data_Get_Struct(self, cs_synth_t, cself);
+    cs_synth_set_amp(cself, NUM2DBL(amp));
+    return amp;
+}
+
 static VALUE rbcs_synth_out(VALUE self) {
     VALUE out_port = rb_iv_get(self, "@out_port");
     if(NIL_P(out_port)) {
@@ -72,4 +86,7 @@ void Init_synth() {
     rb_define_method(cCSSynth, "freq", rbcs_synth_freq, 0);
     rb_define_method(cCSSynth, "freq=", rbcs_synth_set_freq, 1);
     rb_define_method(cCSSynth, "out", rbcs_synth_out, 0);
+    rb_define_method(cCSSynth, "offset=", rbcs_synth_set_offset, 1);
+    rb_define_method(cCSSynth, "amp=", rbcs_synth_set_amp, 1);
+    rb_define_method(cCSSynth, "amplitude=", rbcs_synth_set_amp, 1);
 }

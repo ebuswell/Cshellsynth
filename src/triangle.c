@@ -19,12 +19,14 @@ static int cs_triangle_process(jack_nframes_t nframes, void *arg) {
 	    return -1;
 	}
     }
+    float offset = atomic_float_read(&self->offset);
+    float amp = atomic_float_read(&self->amp);
     int i;
     for(i = 0; i < nframes; i++) {
 	float f = isnanf(freq) ? freq_buffer[i] : freq;
 	if(f == 0.0f || isnanf(f)) {
-	    self->offset = 0.25;
-	    out_buffer[i] = 0.0f;
+	    self->t = 0.25;
+	    out_buffer[i] = offset;
 	} else {
 	    /*
 	     * /\ 
@@ -34,15 +36,15 @@ static int cs_triangle_process(jack_nframes_t nframes, void *arg) {
 	     * /  \ 
 	     * 3012
 	     */
-	    if(self->offset >= 1.0) {
-		self->offset -= 1.0;
+	    if(self->t >= 1.0) {
+		self->t -= 1.0;
 	    }
-	    float a = (float) (4.0 * self->offset);
+	    float a = (float) (4.0 * self->t);
 	    if(a > 2.0f) {
 		a = 4.0f - a;
 	    }
-	    out_buffer[i] = a - 1.0f;
-	    self->offset += ((double) f);
+	    out_buffer[i] = (a - 1.0f) * amp + offset;
+	    self->t += ((double) f);
 	}
     }
     return 0;
@@ -58,7 +60,7 @@ int cs_triangle_init(cs_triangle_t *self, const char *client_name, jack_options_
 	cs_synth_destroy((cs_synth_t *) self);
 	return r;
     }
-    self->offset = 0.25;
+    self->t = 0.25;
     r = jack_activate(self->client);
     if(r != 0) {
 	cs_synth_destroy((cs_synth_t *) self);

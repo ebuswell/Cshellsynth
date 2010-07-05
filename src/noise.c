@@ -28,14 +28,16 @@ static int cs_noise_process(jack_nframes_t nframes, void *arg) {
 	return -1;
     }
     int kind = atomic_read(&self->kind);
+    float offset = atomic_float_read(&self->offset);
+    float amp = atomic_float_read(&self->amp);
     int i;
     for(i = 0; i < nframes; i++) {
 	switch(kind) {
 	case CS_WHITE:
-	    out_buffer[i] = ((float) random()) / ((float) RAND_MAX);
+	    out_buffer[i] = (((float) random()) / ((float) RAND_MAX)) * amp + offset;
 	    break;
 	case CS_PINK:
-	    out_buffer[i] = pink_random(self->state);
+	    out_buffer[i] = pink_random(self->state) * amp + offset;
 	    break;
 	case CS_RED:
 	    // not implemented
@@ -51,6 +53,14 @@ void cs_noise_set_kind(cs_noise_t *self, int kind) {
     atomic_set(&self->kind, kind);
 }
 
+void cs_noise_set_offset(cs_noise_t *self, float offset) {
+    atomic_float_set(&self->offset, offset);
+}
+
+void cs_noise_set_amp(cs_noise_t *self, float amp) {
+    atomic_float_set(&self->amp, amp);
+}
+
 int cs_noise_init(cs_noise_t *self, const char *client_name, jack_options_t flags, char *server_name) {
     int r = jclient_init((jclient_t *) self, client_name, flags, server_name);
     if(r != 0) {
@@ -63,6 +73,8 @@ int cs_noise_init(cs_noise_t *self, const char *client_name, jack_options_t flag
     }
 
     atomic_set(&self->kind, CS_WHITE);
+    atomic_float_set(&self->amp, 1.0);
+    atomic_float_set(&self->offset, 0.0);
     self->state[0] = 0.0;
     self->state[1] = 0.0;
     self->state[2] = 0.0;

@@ -8,6 +8,8 @@
 typedef struct cs_noise_struct {
     jack_client_t *client;
     jack_port_t *out_port;
+    atomic_float_t amp;
+    atomic_float_t offset;
     atomic_t kind;
     float state[3];
 } cs_noise_t;
