@@ -19,6 +19,12 @@ html:
 tags:
 ctags:
 
+pre-install-rb:
+	$(MAKEDIRS) $(RUBYARCHDIR)/cshellsynth
+
+install-rb:
+	$(INSTALL_DATA) "cshellsynth/extra.rb" $(RUBYARCHDIR)/cshellsynth/extra.rb
+
 $(DLLIB): ./../src/libcshellsynth.la
 
 ./../src/libcshellsynth.la:

@@ -17,6 +17,8 @@ typedef struct cs_noise_struct {
 #define cs_noise_destroy(cs_noise) jclient_destroy((jclient_t *) (cs_noise))
 int cs_noise_init(cs_noise_t *self, const char *client_name, jack_options_t flags, char *server_name);
 void cs_noise_set_kind(cs_noise_t *self, int kind);
+void cs_noise_set_offset(cs_noise_t *self, float offset);
+void cs_noise_set_amp(cs_noise_t *self, float amp);
 
 #define CS_WHITE 1
 #define CS_PINK 2
