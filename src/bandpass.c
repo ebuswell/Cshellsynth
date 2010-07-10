@@ -37,7 +37,11 @@ static int cs_bandpass_process(jack_nframes_t nframes, void *arg) {
     }
     int i;
     for(i = 0; i < nframes; i++) {
-	double w = 2.0 * M_PI * ((double) (isnanf(freq) ? freq_buffer[i] : freq));
+	double f = isnanf(freq) ? freq_buffer[i] : freq;
+	if(f > 1.0) {
+	    f = 1.0;
+	}
+	double w = 2.0 * M_PI * f;
 	double cQ = isnanf(Q) ? Q_buffer[i] : Q;
 	double out = (((double) (isnanf(in) ? in_buffer[i] : in)) * w
 		      + self->last_out * cQ * (1 + w * w)

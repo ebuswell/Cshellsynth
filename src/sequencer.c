@@ -55,6 +55,7 @@ static int cs_seq_process(jack_nframes_t nframes, void *arg) {
 		continue;
 	    }
 	}
+	ctl_buffer[i] = 0.0f;
     TEST_SEQ_STARTED:
 	if(!self->curr_seq->started) {
 	    if((time <= self->curr_seq->offset) ||
@@ -69,8 +70,6 @@ static int cs_seq_process(jack_nframes_t nframes, void *arg) {
 		if(self->playing) {
 		    self->playing = false;
 		    ctl_buffer[i] = -1.0f;
-		} else {
-		    ctl_buffer[i] = 0.0f;
 		}
 		out_buffer[i] = self->out;
 		continue;
@@ -83,6 +82,10 @@ static int cs_seq_process(jack_nframes_t nframes, void *arg) {
 	self->last = time;
 	// see if the sequence is over
 	if((time + self->offset) >= self->curr_seq->length) {
+	    if(self->playing) {
+		self->playing = false;
+		ctl_buffer[i] = -1.0f;
+	    }
 	    cs_seq_sequence_t *old_seq = self->curr_seq;
 	    self->curr_seq = atomic_ptr_xchg(&self->next_seq, NULL);
 	    if(self->curr_seq != NULL) {
@@ -108,7 +111,6 @@ static int cs_seq_process(jack_nframes_t nframes, void *arg) {
 		continue;
 	    }
 	}
-	ctl_buffer[i] = 0.0f;
     TEST_SEQ_CURRENT:
 	if(*self->current != NULL) {
 	    if((time + self->offset) >= (*self->current)[1]) {

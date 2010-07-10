@@ -4,6 +4,7 @@
 #include "cshellsynth/noise.h"
 #include "cshellsynth/jclient.h"
 #include "atomic.h"
+#include "atomic-float.h"
 
 const float A[] = { 0.02109238, 0.07113478, 0.68873558 }; // rescaled by (1+P)/(1-P)
 const float P[] = { 0.3190,  0.7756,  0.9613  };
