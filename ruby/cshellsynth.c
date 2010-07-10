@@ -15,7 +15,6 @@ void Init_lowpass();
 void Init_envelope_generator();
 void Init_key();
 void Init_sine();
-void Init_vocalizer();
 void Init_square();
 void Init_portamento();
 void Init_sequencer();
@@ -46,7 +45,6 @@ void Init_cshellsynth() {
     Init_envelope_generator();
     Init_key();
     Init_sine();
-    Init_vocalizer();
     Init_square();
     Init_portamento();
     Init_sequencer();

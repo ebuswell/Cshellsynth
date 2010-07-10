@@ -47,6 +47,19 @@ static VALUE rbcs_filter_out(VALUE self) {
     return out_port;
 }
 
+static VALUE rbcs_filter_set_out(VALUE self, VALUE out) {
+    cs_filter_t *cself;
+    Data_Get_Struct(self, cs_filter_t, cself);
+    VALUE out_port = rb_iv_get(self, "@out_port");
+    if(NIL_P(out_port)) {
+	out_port = Data_Wrap_Struct(cJackPort, 0, fake_free, cself->out_port);
+	rb_iv_set(self, "@out_port", out_port);
+    }
+    jr_client_connect(self, out_port, out);
+    // ignore return value
+    return out;
+}
+
 static void cs_filter_free(void *mem) {
     cs_filter_t *cself = (cs_filter_t *) mem;
     cs_filter_destroy(cself);
@@ -72,4 +85,5 @@ void Init_filter() {
     rb_define_method(cCSFilter, "in", rbcs_filter_in, 0);
     rb_define_method(cCSFilter, "in=", rbcs_filter_set_in, 1);
     rb_define_method(cCSFilter, "out", rbcs_filter_out, 0);
+    rb_define_method(cCSFilter, "out=", rbcs_filter_set_out, 1);
 }

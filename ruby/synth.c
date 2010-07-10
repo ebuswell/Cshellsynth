@@ -61,6 +61,19 @@ static VALUE rbcs_synth_out(VALUE self) {
     return out_port;
 }
 
+static VALUE rbcs_synth_set_out(VALUE self, VALUE out) {
+    cs_synth_t *cself;
+    Data_Get_Struct(self, cs_synth_t, cself);
+    VALUE out_port = rb_iv_get(self, "@out_port");
+    if(NIL_P(out_port)) {
+	out_port = Data_Wrap_Struct(cJackPort, 0, fake_free, cself->out_port);
+	rb_iv_set(self, "@out_port", out_port);
+    }
+    jr_client_connect(self, out_port, out);
+    // ignore return value
+    return out;
+}
+
 static void cs_synth_free(void *mem) {
     cs_synth_t *cself = (cs_synth_t *) mem;
     cs_synth_destroy(cself);
@@ -86,6 +99,7 @@ void Init_synth() {
     rb_define_method(cCSSynth, "freq", rbcs_synth_freq, 0);
     rb_define_method(cCSSynth, "freq=", rbcs_synth_set_freq, 1);
     rb_define_method(cCSSynth, "out", rbcs_synth_out, 0);
+    rb_define_method(cCSSynth, "out=", rbcs_synth_set_out, 1);
     rb_define_method(cCSSynth, "offset=", rbcs_synth_set_offset, 1);
     rb_define_method(cCSSynth, "amp=", rbcs_synth_set_amp, 1);
     rb_define_method(cCSSynth, "amplitude=", rbcs_synth_set_amp, 1);

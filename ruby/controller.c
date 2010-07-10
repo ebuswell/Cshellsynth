@@ -17,6 +17,19 @@ static VALUE rbcs_ctlr_out(VALUE self) {
     return out_port;
 }
 
+static VALUE rbcs_ctlr_set_out(VALUE self, VALUE out) {
+    cs_ctlr_t *cself;
+    Data_Get_Struct(self, cs_ctlr_t, cself);
+    VALUE out_port = rb_iv_get(self, "@out_port");
+    if(NIL_P(out_port)) {
+	out_port = Data_Wrap_Struct(cJackPort, 0, fake_free, cself->out_port);
+	rb_iv_set(self, "@out_port", out_port);
+    }
+    jr_client_connect(self, out_port, out);
+    // ignore return value
+    return out;
+}
+
 static VALUE rbcs_ctlr_ctl(VALUE self) {
     VALUE ctl_port = rb_iv_get(self, "@ctl_port");
     if(NIL_P(ctl_port)) {
@@ -26,6 +39,19 @@ static VALUE rbcs_ctlr_ctl(VALUE self) {
 	rb_iv_set(self, "@ctl_port", ctl_port);
     }
     return ctl_port;
+}
+
+static VALUE rbcs_ctlr_set_ctl(VALUE self, VALUE ctl) {
+    cs_ctlr_t *cself;
+    Data_Get_Struct(self, cs_ctlr_t, cself);
+    VALUE ctl_port = rb_iv_get(self, "@ctl_port");
+    if(NIL_P(ctl_port)) {
+	ctl_port = Data_Wrap_Struct(cJackPort, 0, fake_free, cself->ctl_port);
+	rb_iv_set(self, "@ctl_port", ctl_port);
+    }
+    jr_client_connect(self, ctl_port, ctl);
+    // ignore return value
+    return ctl;
 }
 
 static void cs_ctlr_free(void *mem) {
@@ -51,5 +77,7 @@ void Init_controller() {
 
     rb_define_singleton_method(cCSController, "new", rbcs_ctlr_new, -1);
     rb_define_method(cCSController, "out", rbcs_ctlr_out, 0);
+    rb_define_method(cCSController, "out=", rbcs_ctlr_set_out, 1);
     rb_define_method(cCSController, "ctl", rbcs_ctlr_ctl, 0);
+    rb_define_method(cCSController, "ctl=", rbcs_ctlr_set_ctl, 1);
 }

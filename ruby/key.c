@@ -115,6 +115,19 @@ static VALUE rbcs_key_freq(VALUE self) {
     return freq_port;
 }
 
+static VALUE rbcs_key_set_freq(VALUE self, VALUE freq) {
+    cs_key_t *cself;
+    Data_Get_Struct(self, cs_key_t, cself);
+    VALUE freq_port = rb_iv_get(self, "@freq_port");
+    if(NIL_P(freq_port)) {
+	freq_port = Data_Wrap_Struct(cJackPort, 0, fake_free, cself->freq_port);
+	rb_iv_set(self, "@freq_port", freq_port);
+    }
+    jr_client_connect(self, freq_port, freq);
+    // ignore return value
+    return freq;
+}
+
 static void cs_key_free(void *mem) {
     cs_key_t *cself = (cs_key_t *) mem;
     cs_key_destroy(cself);
@@ -141,6 +154,7 @@ void Init_key() {
     rb_define_method(cCSKey, "note=", rbcs_key_set_note, 1);
     rb_define_method(cCSKey, "note2freq", rbcs_key_note2freq, 1);
     rb_define_method(cCSKey, "freq", rbcs_key_freq, 0);
+    rb_define_method(cCSKey, "freq=", rbcs_key_set_freq, 1);
     rb_define_method(cCSKey, "root", rbcs_key_root, 0);
     rb_define_method(cCSKey, "root=", rbcs_key_set_root, 1);
     rb_define_method(cCSKey, "tuning=", rbcs_key_set_tuning, 1);

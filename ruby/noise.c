@@ -16,6 +16,19 @@ static VALUE rbcs_noise_out(VALUE self) {
     return out_port;
 }
 
+static VALUE rbcs_noise_set_out(VALUE self, VALUE out) {
+    cs_noise_t *cself;
+    Data_Get_Struct(self, cs_noise_t, cself);
+    VALUE out_port = rb_iv_get(self, "@out_port");
+    if(NIL_P(out_port)) {
+	out_port = Data_Wrap_Struct(cJackPort, 0, fake_free, cself->out_port);
+	rb_iv_set(self, "@out_port", out_port);
+    }
+    jr_client_connect(self, out_port, out);
+    // ignore return value
+    return out;
+}
+
 static VALUE rbcs_noise_set_kind(VALUE self, VALUE kind) {
     cs_noise_t *cself;
     Data_Get_Struct(self, cs_noise_t, cself);
@@ -60,6 +73,7 @@ void Init_noise() {
 
     rb_define_singleton_method(cCSNoise, "new", rbcs_noise_new, -1);
     rb_define_method(cCSNoise, "out", rbcs_noise_out, 0);
+    rb_define_method(cCSNoise, "out=", rbcs_noise_set_out, 1);
     rb_define_method(cCSNoise, "kind=", rbcs_noise_set_kind, 1);
     rb_define_method(cCSNoise, "offset=", rbcs_noise_set_offset, 1);
     rb_define_method(cCSNoise, "amp=", rbcs_noise_set_amp, 1);

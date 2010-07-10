@@ -50,6 +50,19 @@ static VALUE rbcs_sampler_outL(VALUE self) {
     return outL_port;
 }
 
+static VALUE rbcs_sampler_set_outL(VALUE self, VALUE outL) {
+    cs_sampler_t *cself;
+    Data_Get_Struct(self, cs_sampler_t, cself);
+    VALUE outL_port = rb_iv_get(self, "@outL_port");
+    if(NIL_P(outL_port)) {
+	outL_port = Data_Wrap_Struct(cJackPort, 0, fake_free, cself->outL_port);
+	rb_iv_set(self, "@outL_port", outL_port);
+    }
+    jr_client_connect(self, outL_port, outL);
+    // ignore return value
+    return outL;
+}
+
 static VALUE rbcs_sampler_outR(VALUE self) {
     VALUE outR_port = rb_iv_get(self, "@outR_port");
     if(NIL_P(outR_port)) {
@@ -59,6 +72,19 @@ static VALUE rbcs_sampler_outR(VALUE self) {
 	rb_iv_set(self, "@outR_port", outR_port);
     }
     return outR_port;
+}
+
+static VALUE rbcs_sampler_set_outR(VALUE self, VALUE outR) {
+    cs_sampler_t *cself;
+    Data_Get_Struct(self, cs_sampler_t, cself);
+    VALUE outR_port = rb_iv_get(self, "@outR_port");
+    if(NIL_P(outR_port)) {
+	outR_port = Data_Wrap_Struct(cJackPort, 0, fake_free, cself->outR_port);
+	rb_iv_set(self, "@outR_port", outR_port);
+    }
+    jr_client_connect(self, outR_port, outR);
+    // ignore return value
+    return outR;
 }
 
 static void cs_sampler_free(void *mem) {
@@ -87,5 +113,7 @@ void Init_sampler() {
     rb_define_method(cCSSampler, "ctl", rbcs_sampler_ctl, 0);
     rb_define_method(cCSSampler, "ctl=", rbcs_sampler_set_ctl, 1);
     rb_define_method(cCSSampler, "outL", rbcs_sampler_outL, 0);
+    rb_define_method(cCSSampler, "outL=", rbcs_sampler_set_outL, 1);
     rb_define_method(cCSSampler, "outR", rbcs_sampler_outR, 0);
+    rb_define_method(cCSSampler, "outR=", rbcs_sampler_set_outR, 1);
 }

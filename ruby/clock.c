@@ -74,6 +74,19 @@ static VALUE rbcs_clock_clock(VALUE self) {
     return clock_port;
 }
 
+static VALUE rbcs_clock_set_clock(VALUE self, VALUE clock) {
+    cs_clock_t *cself;
+    Data_Get_Struct(self, cs_clock_t, cself);
+    VALUE clock_port = rb_iv_get(self, "@clock_port");
+    if(NIL_P(clock_port)) {
+	clock_port = Data_Wrap_Struct(cJackPort, 0, fake_free, cself->clock_port);
+	rb_iv_set(self, "@clock_port", clock_port);
+    }
+    jr_client_connect(self, clock_port, clock);
+    // ignore return value
+    return clock;
+}
+
 static void cs_clock_free(void *mem) {
     cs_clock_t *cself = (cs_clock_t *) mem;
     cs_clock_destroy(cself);
@@ -101,4 +114,5 @@ void Init_clock() {
     rb_define_method(cCSClock, "meter", rbcs_clock_meter, 1);
     rb_define_method(cCSClock, "rate", rbcs_clock_rate, 1);
     rb_define_method(cCSClock, "clock", rbcs_clock_clock, 0);
+    rb_define_method(cCSClock, "clock=", rbcs_clock_set_clock, 1);
 }

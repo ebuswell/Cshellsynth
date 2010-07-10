@@ -74,6 +74,19 @@ static VALUE rbcs_mix_out(VALUE self) {
     return out_port;
 }
 
+static VALUE rbcs_mix_set_out(VALUE self, VALUE out) {
+    cs_mix_t *cself;
+    Data_Get_Struct(self, cs_mix_t, cself);
+    VALUE out_port = rb_iv_get(self, "@out_port");
+    if(NIL_P(out_port)) {
+	out_port = Data_Wrap_Struct(cJackPort, 0, fake_free, cself->out_port);
+	rb_iv_set(self, "@out_port", out_port);
+    }
+    jr_client_connect(self, out_port, out);
+    // ignore return value
+    return out;
+}
+
 static void cs_mix_free(void *mem) {
     cs_mix_t *cself = (cs_mix_t *) mem;
     cs_mix_destroy(cself);
@@ -101,4 +114,5 @@ void Init_mixer() {
     rb_define_method(cCSMixer, "in2", rbcs_mix_in2, 0);
     rb_define_method(cCSMixer, "in2=", rbcs_mix_set_in2, 1);
     rb_define_method(cCSMixer, "out", rbcs_mix_out, 0);
+    rb_define_method(cCSMixer, "out=", rbcs_mix_set_out, 1);
 }
