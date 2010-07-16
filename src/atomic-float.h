@@ -1,3 +1,30 @@
+/*
+ * atomic-float.h
+ * 
+ * Copyright 2010 Evan Buswell
+ * Copyright 2010 Linus Torvalds et al.
+ *
+ * This file is a redaction of arch/x86/include/atomic*.h and some other files from the
+ * Linux Kernel. Ideally, this should be in an arch-dependent directory, and someone
+ * should make similar files for other architectures.  For now, though, we depend on x86.
+ * See the Linux documentation for more information.
+ *
+ * Because Linux is GPLv2 only, this file prevents this project from upgrading to GPLv3.
+ * 
+ * This file is part of Cshellsynth.
+ * 
+ * Cshellsynth is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, version 2.
+ * 
+ * Cshellsynth is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with Cshellsynth.  If not, see <http://www.gnu.org/licenses/>.
+ */
 #ifndef _ASM_X86_ATOMIC_FLOAT_H
 #define _ASM_X86_ATOMIC_FLOAT_H
 
