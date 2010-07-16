@@ -14,6 +14,7 @@ void Init_rising_saw();
 void Init_lowpass();
 void Init_envelope_generator();
 void Init_key();
+void Init_edho();
 void Init_sine();
 void Init_square();
 void Init_portamento();
@@ -44,6 +45,7 @@ void Init_cshellsynth() {
     Init_lowpass();
     Init_envelope_generator();
     Init_key();
+    Init_edho();
     Init_sine();
     Init_square();
     Init_portamento();
