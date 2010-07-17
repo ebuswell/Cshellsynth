@@ -46,9 +46,11 @@ static int cs_modu_process(jack_nframes_t nframes, void *arg) {
 	    return -1;
 	}
     }
+    float in1_amp = atomic_float_read(&self->in1_amp);
+    float in2_amp = atomic_float_read(&self->in2_amp);
     int i;
     for(i = 0; i < nframes; i++) {
-	out_buffer[i] = (isnanf(in1) ? in1_buffer[i] : in1) * (isnanf(in2) ? in2_buffer[i] : in2);
+	out_buffer[i] = (isnanf(in1) ? in1_buffer[i] : in1) * (isnanf(in2) ? in2_buffer[i] : in2) * in1_amp * in2_amp;
     }
     return 0;
 }

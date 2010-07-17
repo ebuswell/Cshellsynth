@@ -32,6 +32,8 @@ typedef struct cs_mix_struct {
     jack_port_t *in2_port;
     atomic_float_t in2;
     jack_port_t *out_port;
+    atomic_float_t in1_amp;
+    atomic_float_t in2_amp;
 } cs_mix_t;
 
 #define cs_mix_destroy(cs_mix) jclient_destroy((jclient_t *) (cs_mix))
@@ -39,5 +41,7 @@ int cs_mix_init(cs_mix_t *self, const char *client_name, jack_options_t flags, c
 int cs_mix_subclass_init(cs_mix_t *self, const char *client_name, jack_options_t flags, char *server_name);
 void cs_mix_set_in1(cs_mix_t *self, float in1);
 void cs_mix_set_in2(cs_mix_t *self, float in2);
+void cs_mix_set_in1_amp(cs_mix_t *self, float in1_amp);
+void cs_mix_set_in2_amp(cs_mix_t *self, float in2_amp);
 
 #endif

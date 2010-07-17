@@ -16,8 +16,57 @@
 # 
 # You should have received a copy of the GNU General Public License
 # along with Cshellsynth.  If not, see <http://www.gnu.org/licenses/>.
+class Mixer
+  module MixerHelp
+    def initialize(mix)
+      @mix = mix
+    end
+    def create_up_to(num)
+      for i in 1..num do
+        if @mix[i] == nil
+          @mix[i] = LLMixer.new
+          @mix[i - 1].in2 = @mix[i].out
+        end
+      end
+    end
+    def to_a
+      return @mix
+    end
+  end
+  class Inself
+    include MixerHelp
+    def [](index)
+      create_up_to(index)
+      @mix[index].in1
+    end
+    def []=(index, value)
+      create_up_to(index)
+      @mix[index].in1 = value
+    end
+  end
+  class InAmpself
+    include MixerHelp
+    def []=(index, value)
+      create_up_to(index)
+      @mix[index].in1_amp = value
+    end
+  end
+  attr_reader :in, :in_amp
+  def initialize
+    @mix = [LLMixer.new]
+    @in = Inself.new(@mix)
+    @in_amp = InAmpself.new(@mix)
+  end
+  def out
+    @mix[0].out
+  end
+  def out=(out)
+    @mix[0].out = out
+  end
+end
+
 class MiniSynth
-  attr_reader :clock, :seq, :inst, :porta, :envg, :key, :synth, :lfo, :distort, :fenvg, :feamp, :filter
+  attr_reader :clock, :seq, :inst, :porta, :envg, :key, :synth, :lfo, :distort, :fenvg, :filter
   def synth=(synth)
     @synth.disconnect @synth.freq
     @synth.disconnect @synth.out
@@ -67,11 +116,8 @@ class MiniSynth
     @fenvg.linear = true
     @fenvg.ctl = @inst.ctl
     @fenvg.ctl = @seq.ctl
-    @feamp = Modulator.new
-    @feamp.in1 = @fenvg.out
-    @feamp.in2 = 1.0
     @fem = Filters::Lin2Exp.new
-    @fem.in = @feamp.out
+    @fem.in = @fenvg.out
     @fem.zero = @key.freq
     @filter.freq = @fem.out
 

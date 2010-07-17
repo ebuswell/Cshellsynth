@@ -46,9 +46,11 @@ static int cs_mix_process(jack_nframes_t nframes, void *arg) {
 	    return -1;
 	}
     }
+    float in1_amp = atomic_float_read(&self->in1_amp);
+    float in2_amp = atomic_float_read(&self->in2_amp);
     int i;
     for(i = 0; i < nframes; i++) {
-	out_buffer[i] = (isnanf(in1) ? in1_buffer[i] : in1) + (isnanf(in2) ? in2_buffer[i] : in2);
+	out_buffer[i] = (isnanf(in1) ? in1_buffer[i] : in1) * in1_amp + (isnanf(in2) ? in2_buffer[i] : in2) * in2_amp;
     }
     return 0;
 }
@@ -57,8 +59,16 @@ void cs_mix_set_in1(cs_mix_t *self, float in1) {
     atomic_float_set(&self->in1, in1);
 }
 
+void cs_mix_set_in1_amp(cs_mix_t *self, float in1_amp) {
+    atomic_float_set(&self->in1_amp, in1_amp);
+}
+
 void cs_mix_set_in2(cs_mix_t *self, float in2) {
     atomic_float_set(&self->in2, in2);
+}
+
+void cs_mix_set_in2_amp(cs_mix_t *self, float in2_amp) {
+    atomic_float_set(&self->in2_amp, in2_amp);
 }
 
 int cs_mix_subclass_init(cs_mix_t *self, const char *client_name, jack_options_t flags, char *server_name) {
@@ -87,6 +97,8 @@ int cs_mix_subclass_init(cs_mix_t *self, const char *client_name, jack_options_t
 
     atomic_float_set(&self->in1, NAN);
     atomic_float_set(&self->in2, NAN);
+    atomic_float_set(&self->in1_amp, 1.0);
+    atomic_float_set(&self->in2_amp, 1.0);
 
     return 0;
 }

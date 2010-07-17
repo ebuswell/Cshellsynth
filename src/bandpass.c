@@ -68,6 +68,11 @@ static int cs_bandpass_process(jack_nframes_t nframes, void *arg) {
 		      - self->out_accumulator * cQ * w * w)
 	    / (w + cQ + cQ * w * w);
 	self->out_accumulator += self->last_out;
+	if(self->out_accumulator == INFINITY) {
+	    self->out_accumulator = HUGE;
+	} else if(self->out_accumulator == -INFINITY) {
+	    self->out_accumulator = -HUGE;
+	}
 	self->last_out = out;
 	out_buffer[i] = out;
     }

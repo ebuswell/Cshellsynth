@@ -54,6 +54,13 @@ static VALUE rbcs_mix_set_in1(VALUE self, VALUE in1) {
     return in1;
 }
 
+static VALUE rbcs_mix_set_in1_amp(VALUE self, VALUE in1_amp) {
+    cs_mix_t *cself;
+    Data_Get_Struct(self, cs_mix_t, cself);
+    cs_mix_set_in1_amp(cself, NUM2DBL(in1_amp));
+    return in1_amp;
+}
+
 static VALUE rbcs_mix_in2(VALUE self) {
     cs_mix_t *cself;
     Data_Get_Struct(self, cs_mix_t, cself);
@@ -81,6 +88,13 @@ static VALUE rbcs_mix_set_in2(VALUE self, VALUE in2) {
 	cs_mix_set_in1(cself, NAN);
     }
     return in2;
+}
+
+static VALUE rbcs_mix_set_in2_amp(VALUE self, VALUE in2_amp) {
+    cs_mix_t *cself;
+    Data_Get_Struct(self, cs_mix_t, cself);
+    cs_mix_set_in2_amp(cself, NUM2DBL(in2_amp));
+    return in2_amp;
 }
 
 static VALUE rbcs_mix_out(VALUE self) {
@@ -126,13 +140,15 @@ static VALUE rbcs_mix_new(int argc, VALUE *argv, VALUE klass) {
 }
 
 void Init_mixer() {
-    cCSMixer = rb_define_class("Mixer", cJackClient);
+    cCSMixer = rb_define_class("LLMixer", cJackClient);
 
     rb_define_singleton_method(cCSMixer, "new", rbcs_mix_new, -1);
     rb_define_method(cCSMixer, "in1", rbcs_mix_in1, 0);
     rb_define_method(cCSMixer, "in1=", rbcs_mix_set_in1, 1);
+    rb_define_method(cCSMixer, "in1_amp=", rbcs_mix_set_in1_amp, 1);
     rb_define_method(cCSMixer, "in2", rbcs_mix_in2, 0);
     rb_define_method(cCSMixer, "in2=", rbcs_mix_set_in2, 1);
+    rb_define_method(cCSMixer, "in2_amp=", rbcs_mix_set_in2_amp, 1);
     rb_define_method(cCSMixer, "out", rbcs_mix_out, 0);
     rb_define_method(cCSMixer, "out=", rbcs_mix_set_out, 1);
 }

@@ -32,11 +32,15 @@ typedef struct cs_modu_struct {
     jack_port_t *in2_port;
     atomic_float_t in2;
     jack_port_t *out_port;
+    atomic_float_t in1_amp;
+    atomic_float_t in2_amp;
 } cs_modu_t;
 
 #define cs_modu_destroy(cs_modu) cs_mix_destroy((cs_mix_t *) (cs_modu))
 int cs_modu_init(cs_modu_t *self, const char *client_name, jack_options_t flags, char *server_name);
 #define cs_modu_set_in1(self, in1) cs_mix_set_in1((cs_mix_t *) (self), in1);
 #define cs_modu_set_in2(self, in2) cs_mix_set_in2((cs_mix_t *) (self), in2);
+#define cs_modu_set_in1_amp(self, in1_amp) cs_mix_set_in1((cs_mix_t *) (self), in1_amp);
+#define cs_modu_set_in2_amp(self, in2_amp) cs_mix_set_in2((cs_mix_t *) (self), in2_amp);
 
 #endif
