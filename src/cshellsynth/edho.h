@@ -44,5 +44,6 @@ int cs_edho_init(cs_edho_t *self, const char *client_name, jack_options_t flags,
 #define cs_edho_set_offset(cs_edho, offset) cs_synth_set_offset((cs_synth_t *) (cs_edho), (offset))
 #define cs_edho_set_amp(cs_edho, amp) cs_synth_set_amp((cs_synth_t *) (cs_edho), (amp))
 void cs_edho_set_bright(cs_edho_t *self, float bright);
+void cs_edho_set_scale(cs_edho_t *self, int scale);
 
 #endif

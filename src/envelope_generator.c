@@ -26,8 +26,13 @@
 #include "atomic-float.h"
 #include "atomic-double.h"
 
-#define ONE_ADJUST 1.0451657053636841
-/* (1.0/(1.0 - exp(-M_PI)) */
+static inline double cs_envg_process_stage(int linear, double from, double to, double last, double time) {
+    if(linear) {
+	return last + (to - from) / time;
+    } else {
+	return to + (last - to) * exp(-M_PI / time);
+    }
+}
 
 static int cs_envg_process(jack_nframes_t nframes, void *arg) {
     cs_envg_t *self = (cs_envg_t *) arg;
@@ -40,10 +45,19 @@ static int cs_envg_process(jack_nframes_t nframes, void *arg) {
 	return -1;
     }
     double attack_t = atomic_double_read(&self->attack_t);
+    float attack_a = atomic_float_read(&self->attack_a);
     double decay_t = atomic_double_read(&self->decay_t);
     float sustain_a = atomic_float_read(&self->sustain_a);
     double release_t = atomic_double_read(&self->release_t);
+    float release_a = atomic_float_read(&self->release_a);
     int linear = atomic_read(&self->linear);
+    double attack_adj;
+    if(!linear) {
+	/* Adjust attack_a */
+	attack_adj = (((double) attack_a) - ((double) release_a) * exp(-M_PI))
+		   /*---------------------------------------------------------*/
+		   /                  (1.0 - exp(-M_PI));
+    }
     int i;
     for(i = 0; i < nframes; i++) {
 	float ctl = ctl_buffer[i];
@@ -54,6 +68,7 @@ static int cs_envg_process(jack_nframes_t nframes, void *arg) {
 	    // attack event
 	    self->state = ATTACK;
 	    self->release = false;
+	    self->upwards = (attack_a > self->last_a);
 	} else if(ctl < 0.0f) {
 	    // release event
 	    self->release = true;
@@ -61,18 +76,16 @@ static int cs_envg_process(jack_nframes_t nframes, void *arg) {
 	switch(self->state) {
 	case ATTACK:
 	    if(attack_t <= 0.0) {
-		self->last_a = 1.0;
+		self->last_a = attack_a;
 		self->state = DECAY;
+		self->upwards = (sustain_a > self->last_a);
 		// fall through
 	    } else {
-		if(linear) {
-		    out_buffer[i] = self->last_a = self->last_a + 1.0 / attack_t;
-		} else {
-		    out_buffer[i] = self->last_a = ONE_ADJUST - (ONE_ADJUST - self->last_a) * exp(-M_PI / attack_t);
-		}
-		if(self->last_a >= 1.0) {
-		    out_buffer[i] = self->last_a = 1.0;
+		out_buffer[i] = self->last_a = cs_envg_process_stage(linear, release_a, linear ? attack_a : attack_adj, self->last_a, attack_t);
+		if(self->upwards ? (self->last_a >= attack_a) : (self->last_a <= attack_a)) {
+		    out_buffer[i] = self->last_a = attack_a;
 		    self->state = DECAY;
+		    self->upwards = (sustain_a > self->last_a);
 		}
 		break;
 	    }
@@ -81,9 +94,9 @@ static int cs_envg_process(jack_nframes_t nframes, void *arg) {
 		self->state = SUSTAIN;
 		// fall through
 	    } else {
+		out_buffer[i] = self->last_a = cs_envg_process_stage(linear, attack_a, sustain_a, self->last_a, decay_t);
 		if(linear) {
-		    out_buffer[i] = self->last_a = self->last_a - ((double) (1.0f - sustain_a)) / decay_t;
-		    if(self->last_a <= sustain_a) {
+		    if(self->upwards ? (self->last_a >= sustain_a) : (self->last_a <= sustain_a)) {
 			self->state = SUSTAIN;
 			// fall through
 		    } else {
@@ -91,12 +104,17 @@ static int cs_envg_process(jack_nframes_t nframes, void *arg) {
 		    }
 		} else {
 		    // find out if we are within the range for releasing:
-		    if(self->release && (self->last_a <= ((double) sustain_a) + ((double) (1.0f - sustain_a)) * exp(-M_PI))) {
+		    if(self->release
+		       && (self->upwards
+			   ? (self->last_a >= ((double) sustain_a) 
+			      + ((double) (attack_a - sustain_a)) * exp(-M_PI))
+			   : (self->last_a <= ((double) sustain_a)
+			      + ((double) (attack_a - sustain_a)) * exp(-M_PI)))) {
 			self->state = RELEASE;
+			self->upwards = (release_a > self->last_a);
 			// fall through
 		    } else {
-			out_buffer[i] = self->last_a = ((double) sustain_a) + (self->last_a - ((double) sustain_a)) * exp(-M_PI / decay_t);
-			if(self->last_a <= sustain_a) {
+			if(self->upwards ? (self->last_a >= sustain_a) : (self->last_a <= sustain_a)) {
 			    self->state = SUSTAIN;
 			    // fall through
 			} else {
@@ -111,6 +129,7 @@ static int cs_envg_process(jack_nframes_t nframes, void *arg) {
 		out_buffer[i] = self->last_a = sustain_a;
 		if(self->release) {
 		    self->state = RELEASE;
+		    self->upwards = (release_a > self->last_a);
 		    // fall through
 		} else {
 		    break;
@@ -121,12 +140,8 @@ static int cs_envg_process(jack_nframes_t nframes, void *arg) {
 		self->state = FINISHED;
 		// fall through
 	    } else {
-		if(linear) {
-		    out_buffer[i] = self->last_a = self->last_a - 1.0 / release_t;
-		} else {
-		    out_buffer[i] = self->last_a = self->last_a * exp(-M_PI / release_t);
-		}
-		if(self->last_a <= 0.0) {
+		out_buffer[i] = self->last_a = cs_envg_process_stage(linear, sustain_a, release_a, self->last_a, release_t);
+		if(self->upwards ? (self->last_a >= release_a) : (self->last_a <= release_a)) {
 		    self->state = FINISHED;
 		    // fall through
 		} else {
@@ -134,7 +149,7 @@ static int cs_envg_process(jack_nframes_t nframes, void *arg) {
 		}
 	    }
 	case FINISHED:
-	    out_buffer[i] = self->last_a = 0.0;
+	    out_buffer[i] = self->last_a = release_a;
 	}
     }
     return 0;
@@ -159,9 +174,11 @@ int cs_envg_init(cs_envg_t *self, const char *client_name, jack_options_t flags,
     }
 
     atomic_double_set(&self->attack_t, 0.0);
+    atomic_float_set(&self->attack_a, 1.0f);
     atomic_double_set(&self->decay_t, 0.0);
     atomic_float_set(&self->sustain_a, 1.0f);
     atomic_double_set(&self->release_t, 0.0);
+    atomic_float_set(&self->release_a, 0.0);
     atomic_set(&self->linear, 0);
     self->state = FINISHED;
     self->last_a = 0.0;
@@ -188,6 +205,10 @@ void cs_envg_set_attack_t(cs_envg_t *self, double attack_t) {
     atomic_double_set(&self->attack_t, attack_t * jack_get_sample_rate(self->client));
 }
 
+void cs_envg_set_attack_a(cs_envg_t *self, float attack_a) {
+    atomic_float_set(&self->attack_a, attack_a);
+}
+
 void cs_envg_set_decay_t(cs_envg_t *self, double decay_t) {
     atomic_double_set(&self->decay_t, decay_t * jack_get_sample_rate(self->client));
 }
@@ -198,4 +219,8 @@ void cs_envg_set_sustain_a(cs_envg_t *self, float sustain_a) {
 
 void cs_envg_set_release_t(cs_envg_t *self, double release_t) {
     atomic_double_set(&self->release_t, release_t * jack_get_sample_rate(self->client));
+}
+
+void cs_envg_set_release_a(cs_envg_t *self, float release_a) {
+    atomic_float_set(&self->release_a, release_a);
 }

@@ -66,6 +66,7 @@ static VALUE rbcs_edho_set_scale(VALUE self, VALUE scale) {
     cs_edho_t *cself;
     Data_Get_Struct(self, cs_edho_t, cself);
     cs_edho_set_scale(cself, IS_TRUE(scale));
+    return scale;
 }
 
 static VALUE rbcs_edho_new(int argc, VALUE *argv, VALUE klass) {

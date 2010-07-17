@@ -62,8 +62,6 @@ cs_key_t sweep;
 destroy_func(sweep, key);
 cs_envg_t sweep_envg;
 destroy_func(sweep_envg, envg);
-cs_modu_t sweep_scale;
-destroy_func(sweep_scale, modu);
 cs_distort_t distortion1;
 destroy_func(distortion1, distort);
 cs_distort_t distortion2;
@@ -91,10 +89,9 @@ int main(int argc, char **argv) {
     	exit(EXIT_FAILURE);
     }
     cs_key_set_root(&sweep, NAN);
-    init_and_check(sweep_scale, modu);
-    cs_modu_set_in2(&sweep_scale, 4*12.0);
     init_and_check(sweep_envg, envg);
     cs_envg_set_attack_t(&sweep_envg, 0.0625);
+    cs_envg_set_attack_a(&sweep_envg, 4*12.0);
     cs_envg_set_decay_t(&sweep_envg, 0.5);
     cs_envg_set_sustain_a(&sweep_envg, 0.0f);
     cs_envg_set_release_t(&sweep_envg, 0.125);
@@ -175,8 +172,7 @@ int main(int argc, char **argv) {
 
     jack_connect(portamento.client, "portamento:out", "sweep:root");
     jack_connect(seq2.client, "seq2:ctl", "sweep_envg:ctl");
-    jack_connect(sweep_envg.client, "sweep_envg:out", "sweep_scale:in1");
-    jack_connect(sweep_scale.client, "sweep_scale:out", "sweep:note");
+    jack_connect(sweep_envg.client, "sweep_envg:out", "sweep:note");
     jack_connect(sweep.client, "sweep:freq", "bandpass:freq");
 
     jack_connect(distortion1.client, "distortion1:out", "mixer:in1");

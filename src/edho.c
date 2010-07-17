@@ -69,9 +69,10 @@ static int cs_edho_process(jack_nframes_t nframes, void *arg) {
 		 * everything within reasonable bounds from 15 hz on (at 44100kHz).  A
 		 * higher value could be used for higher frequencies, but that makes this
 		 * value frequency dependent, which doesn't sound good.  I suppose this
-		 * should probably be coded according to sample-rate, but I'll get around
-		 * to that eventually.  Formula is
-		 * (cos(4pi(15/sample_rate))/(1 + sin(4pi(15/sample_rate))) - 3.0517578125e-05 */
+		 * could probably be coded according to sample-rate, but then that would
+		 * make the brightness of 1.0 dependent on sample frequency in an
+		 * unexpected way.  Formula is (cos(4pi(15/sample_rate))/(1 +
+		 * sin(4pi(15/sample_rate))) - 3.0517578125e-05 */
 		m = m * 0.9957043154589819 + 3.0517578125e-05;
 		double m_1_m_2 = 2.0 * m / (1.0 + m * m);
 		out =
@@ -119,7 +120,7 @@ int cs_edho_init(cs_edho_t *self, const char *client_name, jack_options_t flags,
     }
 
     atomic_set(&self->scale, 0);
-    atomic_set(&self->bright, 0.5);
+    atomic_float_set(&self->bright, 0.5);
     self->t = 0.0;
     r = jack_set_process_callback(self->client, cs_edho_process, self);
     if(r != 0) {

@@ -28,35 +28,49 @@ static VALUE rbcs_envg_set_attack_t(VALUE self, VALUE value) {
     cs_envg_t *cself;
     Data_Get_Struct(self, cs_envg_t, cself);
     cs_envg_set_attack_t(cself, NUM2DBL(value));
-    return self;
+    return value;
+}
+
+static VALUE rbcs_envg_set_attack_a(VALUE self, VALUE value) {
+    cs_envg_t *cself;
+    Data_Get_Struct(self, cs_envg_t, cself);
+    cs_envg_set_attack_a(cself, NUM2DBL(value));
+    return value;
 }
 
 static VALUE rbcs_envg_set_decay_t(VALUE self, VALUE value) {
     cs_envg_t *cself;
     Data_Get_Struct(self, cs_envg_t, cself);
     cs_envg_set_decay_t(cself, NUM2DBL(value));
-    return self;
+    return value;
 }
 
 static VALUE rbcs_envg_set_sustain_a(VALUE self, VALUE value) {
     cs_envg_t *cself;
     Data_Get_Struct(self, cs_envg_t, cself);
     cs_envg_set_sustain_a(cself, NUM2DBL(value));
-    return self;
+    return value;
 }
 
 static VALUE rbcs_envg_set_release_t(VALUE self, VALUE value) {
     cs_envg_t *cself;
     Data_Get_Struct(self, cs_envg_t, cself);
     cs_envg_set_release_t(cself, NUM2DBL(value));
-    return self;
+    return value;
+}
+
+static VALUE rbcs_envg_set_release_a(VALUE self, VALUE value) {
+    cs_envg_t *cself;
+    Data_Get_Struct(self, cs_envg_t, cself);
+    cs_envg_set_release_a(cself, NUM2DBL(value));
+    return value;
 }
 
 static VALUE rbcs_envg_set_linear(VALUE self, VALUE value) {
     cs_envg_t *cself;
     Data_Get_Struct(self, cs_envg_t, cself);
     cs_envg_set_linear(cself, IS_TRUE(value));
-    return self;
+    return value;
 }
 
 static VALUE rbcs_envg_ctl(VALUE self) {
@@ -134,8 +148,10 @@ void Init_envelope_generator() {
     rb_define_method(cCSEnvelopeGenerator, "out", rbcs_envg_out, 0);
     rb_define_method(cCSEnvelopeGenerator, "out=", rbcs_envg_set_out, 1);
     rb_define_method(cCSEnvelopeGenerator, "attack_t=", rbcs_envg_set_attack_t, 1);
+    rb_define_method(cCSEnvelopeGenerator, "attack_a=", rbcs_envg_set_attack_a, 1);
     rb_define_method(cCSEnvelopeGenerator, "decay_t=", rbcs_envg_set_decay_t, 1);
     rb_define_method(cCSEnvelopeGenerator, "sustain_a=", rbcs_envg_set_sustain_a, 1);
     rb_define_method(cCSEnvelopeGenerator, "release_t=", rbcs_envg_set_release_t, 1);
+    rb_define_method(cCSEnvelopeGenerator, "release_a=", rbcs_envg_set_release_a, 1);
     rb_define_method(cCSEnvelopeGenerator, "linear=", rbcs_envg_set_linear, 1);
 }
