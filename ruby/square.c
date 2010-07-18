@@ -44,8 +44,16 @@ static VALUE rbcs_square_new(int argc, VALUE *argv, VALUE klass) {
     return Data_Wrap_Struct(klass, 0, cs_square_free, cself);
 }
 
+static VALUE rbcs_square_set_duty_cycle(VALUE self, VALUE value) {
+    cs_square_t *cself;
+    Data_Get_Struct(self, cs_square_t, cself);
+    cs_square_set_duty_cycle(cself, NUM2DBL(value));
+    return value;
+}
+
 void Init_square() {
     cCSSquare = rb_define_class_under(mCSSynths, "Square", cCSSynth);
 
     rb_define_singleton_method(cCSSquare, "new", rbcs_square_new, -1);
+    rb_define_method(cCSSquare, "duty_cycle=", rbcs_square_set_duty_cycle, 1);
 }

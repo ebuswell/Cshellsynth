@@ -96,7 +96,8 @@ class MiniSynth
     @porta.in = @inst.out
     @porta.in = @seq.out
     @key.note = @porta.out
-    @synth = Synths::Cotangent.new
+    @synth = Synths::Square.new
+    @synth.duty_cycle = 0.125
     @synth.freq = @key.freq
     @lfo = Synths::Sine.new
     @lfo.freq = 0.0
