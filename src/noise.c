@@ -51,7 +51,7 @@ static int cs_noise_process(jack_nframes_t nframes, void *arg) {
     int kind = atomic_read(&self->kind);
     float offset = atomic_float_read(&self->offset);
     float amp = atomic_float_read(&self->amp);
-    int i;
+    jack_nframes_t i;
     for(i = 0; i < nframes; i++) {
 	switch(kind) {
 	case CS_WHITE:

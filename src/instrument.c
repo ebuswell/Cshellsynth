@@ -42,7 +42,7 @@ static int cs_inst_process(jack_nframes_t nframes, void *arg) {
 	ctl_buffer[0] = ctl;
     }
     float value = atomic_float_read(&self->value);
-    int i;
+    jack_nframes_t i;
     for(i = 0; i < nframes; i++) {
 	out_buffer[i] = value;
     }

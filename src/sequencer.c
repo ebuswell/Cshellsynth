@@ -58,7 +58,7 @@ static int cs_seq_process(jack_nframes_t nframes, void *arg) {
 	return -1;
     }
 
-    int i;
+    jack_nframes_t i;
     for(i = 0; i < nframes; i++) {
 	float time = clock_buffer[i];
 	if(self->curr_seq == NULL) {
@@ -206,7 +206,7 @@ int cs_seq_make_sequence(cs_seq_t *self, float offset, float length, size_t sequ
     }
     memcpy(sequence_p + sizeof(float *) * (sequence_length + 1), sequence, sizeof(float) * 3 * sequence_length);
     ((float **) sequence_p)[sequence_length] = NULL;
-    int i;
+    size_t i;
     for(i = 0; i < sequence_length; i++) {
 	((float **) sequence_p)[i] = (float *) (sequence_p + sizeof(float *) * (sequence_length + 1) + sizeof(float) * 3 * i);
     }

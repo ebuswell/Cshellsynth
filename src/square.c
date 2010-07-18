@@ -28,7 +28,7 @@
 
 static int cs_square_process(jack_nframes_t nframes, void *arg) {
     cs_square_t *self = (cs_square_t *) arg;
-    float *freq_buffer;
+    float *freq_buffer = freq_buffer; /* suppress uninitialized warning */
     float *out_buffer = (float *) jack_port_get_buffer(self->out_port, nframes);
     if(out_buffer == NULL) {
 	return -1;
@@ -43,7 +43,7 @@ static int cs_square_process(jack_nframes_t nframes, void *arg) {
     }
     float offset = atomic_float_read(&self->offset);
     float amp = atomic_float_read(&self->amp);
-    int i;
+    jack_nframes_t i;
     for(i = 0; i < nframes; i++) {
 	float f = isnanf(freq) ? freq_buffer[i] : freq;
 	if(f == 0.0f || isnanf(f)) {

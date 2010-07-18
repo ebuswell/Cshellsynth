@@ -61,7 +61,7 @@ static int cs_sampler_process(jack_nframes_t nframes, void *arg) {
 		    memset(interleaved, 0, nframes * sizeof(float) * sf->sf_info.channels);
 		}
 		/* find out how long we're playing... */
-		int j;
+		jack_nframes_t j;
 		for(j = i + 1; j < nframes; j++) {
 		    if(ctl_buffer[j] == 1.0f) {
 			break;
@@ -120,7 +120,7 @@ int cs_sampler_load(cs_sampler_t *self, char *path) {
 	free(sf);
 	return -1;
     }
-    if(sf->sf_info.samplerate != jack_get_sample_rate(self->client)) {
+    if(((unsigned) sf->sf_info.samplerate) != jack_get_sample_rate(self->client)) {
 	r = sf_close(sf->sf);
 	free(sf);
 	if(r != 0) {

@@ -24,7 +24,16 @@
 #include <cshellsynth/jclient.h>
 #include "jackruby.h"
 
-void fake_free(void *mem) {
+#ifdef UNUSED
+#elif defined(__GNUC__)
+# define UNUSED(x) UNUSED_ ## x __attribute__((unused))
+#elif defined(__LCLINT__)
+# define UNUSED(x) /*@unused@*/ UNUSED_ ## x
+#else
+# define UNUSED(x) UNUSED_ ## x
+#endif
+
+void fake_free(void *UNUSED(mem)) {
     return;
 }
 
@@ -737,15 +746,15 @@ static VALUE jr_client_time_to_frames(VALUE self, VALUE time) {
     return JACKNFRAMEST2NUM(jack_time_to_frames(client, (jack_time_t) (NUM2DBL(time) * JACK_TIME_SCALEUP)));
 }
 
-static VALUE jr_client_get_time(VALUE self) {
+static VALUE jr_client_get_time(VALUE UNUSED(self)) {
     return DBL2NUM(((double) jack_get_time()) * JACK_TIME_SCALEDOWN);
 }
 
-static VALUE jr_client_max_name_size(VALUE self) {
+static VALUE jr_client_max_name_size(VALUE UNUSED(self)) {
     return INT2NUM(jack_client_name_size());
 }
 
-static VALUE jr_port_max_name_size(VALUE self) {
+static VALUE jr_port_max_name_size(VALUE UNUSED(self)) {
     return INT2NUM(jack_port_name_size());
 }
 

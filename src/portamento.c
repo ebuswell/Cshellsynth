@@ -26,8 +26,8 @@
 
 static int cs_porta_process(jack_nframes_t nframes, void *arg) {
     cs_porta_t *self = (cs_porta_t *) arg;
-    float *in_buffer;
-    float *lag_buffer;
+    float *in_buffer = in_buffer; /* suppress uninitialized warning */
+    float *lag_buffer = lag_buffer; /* suppress uninitialized warning */
     float *out_buffer = (float *)jack_port_get_buffer(self->out_port, nframes);
     if(out_buffer == NULL) {
 	return -1;
@@ -46,7 +46,7 @@ static int cs_porta_process(jack_nframes_t nframes, void *arg) {
 	    return -1;
 	}
     }
-    int i;
+    jack_nframes_t i;
     for(i = 0; i < nframes; i++) {
 	double c_in = (double) (isnanf(in) ? in_buffer[i] : in);
 	if(c_in != self->target) {

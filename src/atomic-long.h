@@ -2,7 +2,8 @@
  * atomic-long.h
  * 
  * Copyright 2010 Evan Buswell
- * Copyright 2010 Linus Torvalds et al.
+ * Copyright 2005 Silicon Graphics, Inc.
+ *	Christoph Lameter
  *
  * This file is a redaction of arch/x86/include/atomic*.h and some other files from the
  * Linux Kernel. Ideally, this should be in an arch-dependent directory, and someone
@@ -28,9 +29,6 @@
 #ifndef _ASM_GENERIC_ATOMIC_LONG_H
 #define _ASM_GENERIC_ATOMIC_LONG_H
 /*
- * Copyright (C) 2005 Silicon Graphics, Inc.
- *	Christoph Lameter
- *
  * Allows to provide arch independent atomic definitions without the need to
  * edit all arch specific atomic.h files.
  */

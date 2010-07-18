@@ -26,8 +26,8 @@
 
 static int cs_lin2exp_process(jack_nframes_t nframes, void *arg) {
     cs_lin2exp_t *self = (cs_lin2exp_t *) arg;
-    float *in_buffer;
-    float *zero_buffer;
+    float *in_buffer = in_buffer; /* suppress uninitialized warning */
+    float *zero_buffer = zero_buffer; /* suppress uninitialized warning */
     float *out_buffer = (float *)jack_port_get_buffer(self->out_port, nframes);
     if(out_buffer == NULL) {
 	return -1;
@@ -46,7 +46,7 @@ static int cs_lin2exp_process(jack_nframes_t nframes, void *arg) {
 	    return -1;
 	}
     }
-    int i;
+    jack_nframes_t i;
     for(i = 0; i < nframes; i++) {
 	out_buffer[i] = ((double) (isnanf(zero) ? zero_buffer[i] : zero))*pow(2.0, (double) (isnanf(in) ? in_buffer[i] : in));
     }

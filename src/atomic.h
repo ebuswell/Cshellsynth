@@ -30,6 +30,7 @@
 #define _ASM_X86_ATOMIC_H
 
 #include "cshellsynth/atomic-types.h"
+#include "config.h"
 
 #ifdef __GNUC__
 #define barrier() __asm__ __volatile__("": : :"memory")
@@ -52,7 +53,7 @@
 # define __ASM_FORM(x)	" " #x " "
 #endif
 
-#ifdef __LP64__
+#ifdef ARCH_X86_64
 # define __ASM_SEL(a,b) __ASM_FORM(b)
 #else
 # define __ASM_SEL(a,b) __ASM_FORM(a)
@@ -101,7 +102,7 @@ static inline unsigned long __xchg(unsigned long x, volatile void *ptr,
 			     : "m" (*__xg(ptr)), "0" (x)
 			     : "memory");
 		break;
-#ifdef __LP64__
+#ifdef ARCH_X86_64
 	case 8:
 		asm volatile("xchgq %0,%1"
 			     : "=r" (x)
@@ -142,7 +143,7 @@ static inline unsigned long __cmpxchg(volatile void *ptr, unsigned long old,
 			     : "r"(new), "m"(*__xg(ptr)), "0"(old)
 			     : "memory");
 		return prev;
-#ifdef __LP64__
+#ifdef ARCH_X86_64
 	case 8:
 		asm volatile(LOCK_PREFIX "cmpxchgq %1,%2"
 			     : "=a"(prev)
@@ -340,7 +341,7 @@ static inline int atomic_sub_return(int i, atomic_t *v)
 #define atomic_inc_return(v)  (atomic_add_return(1, v))
 #define atomic_dec_return(v)  (atomic_sub_return(1, v))
 
-#ifdef __LP64__
+#ifdef ARCH_X86_64
 
 /* The 64-bit atomic type */
 
@@ -532,7 +533,7 @@ static inline long atomic64_xchg(atomic64_t *v, long new)
 	return xchg(&v->counter, new);
 }
 
-#endif /* #ifdef __LP64__ */
+#endif /* #ifdef ARCH_X86_64 */
 
 static inline long atomic_cmpxchg(atomic_t *v, int old, int new)
 {
@@ -570,7 +571,7 @@ static inline int atomic_add_unless(atomic_t *v, int a, int u)
 
 #define atomic_inc_not_zero(v) atomic_add_unless((v), 1, 0)
 
-#ifdef __LP64__
+#ifdef ARCH_X86_64
 
 /**
  * atomic64_add_unless - add unless the number is a given value
@@ -596,7 +597,7 @@ static inline int atomic64_add_unless(atomic64_t *v, long a, long u)
 	return c != (u);
 }
 
-#endif /* #ifdef __LP64__ */
+#endif /* #ifdef ARCH_X86_64 */
 
 /**
  * atomic_inc_short - increment of a short integer
@@ -624,11 +625,11 @@ static inline void atomic_or_long(unsigned long *v1, unsigned long v2)
 	asm(LOCK_PREFIX "orq %1, %0" : "+m" (*v1) : "r" (v2));
 }
 
-#ifdef __LP64__
+#ifdef ARCH_X86_64
 
 #define atomic64_inc_not_zero(v) atomic64_add_unless((v), 1, 0)
 
-#endif /* #ifdef __LP64__ */
+#endif /* #ifdef ARCH_X86_64 */
 
 /* These are x86-specific, used by some header files */
 #define atomic_clear_mask(mask, addr)					\

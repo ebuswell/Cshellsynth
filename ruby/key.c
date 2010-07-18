@@ -54,7 +54,7 @@ static VALUE rbcs_key_set_tuning(VALUE self, VALUE value) {
 	}
 	size_t tuning_length = RARRAY_LEN(value);
 	double *tuning = ALLOCA_N(double, tuning_length);
-	int i;
+	size_t i;
 	for(i = 0; i < tuning_length; i++) {
 	    tuning[i] = NUM2DBL(RARRAY_PTR(value)[i]);
 	}

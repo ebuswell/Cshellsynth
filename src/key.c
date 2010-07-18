@@ -119,8 +119,8 @@ static inline float cs_key_note2freq_param(float note, float root, cs_key_tuning
 static int cs_key_process(jack_nframes_t nframes, void *arg) {
     cs_key_t *self = (cs_key_t *) arg;
 
-    float *note_buffer;
-    float *root_buffer;
+    float *note_buffer = note_buffer; /* suppress uninitialized warning */
+    float *root_buffer = root_buffer; /* suppress uninitialized warning */
     float *freq_buffer = (float *) jack_port_get_buffer(self->freq_port, nframes);
     if(freq_buffer == NULL) {
 	return -1;
@@ -143,13 +143,13 @@ static int cs_key_process(jack_nframes_t nframes, void *arg) {
     atomic_inc(&self->tuning_sync);
     cs_key_tuning_t *tuning = atomic_ptr_read(&self->tuning);
     if(isnanf(note) || isnanf(root)) {
-	int i;
+	jack_nframes_t i;
 	for(i = 0; i < nframes; i++) {
 	    freq_buffer[i] = cs_key_note2freq_param((isnanf(note) ? note_buffer[i] : note), (isnanf(root) ? root_buffer[i] : root), tuning);
 	}
 	atomic_dec(&self->tuning_sync);
     } else {
-	int i;
+	jack_nframes_t i;
 	float freq = cs_key_note2freq_param(note, root, tuning);
 	atomic_dec(&self->tuning_sync);
 	for(i = 0; i < nframes; i++) {

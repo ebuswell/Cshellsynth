@@ -51,14 +51,14 @@ static int cs_envg_process(jack_nframes_t nframes, void *arg) {
     double release_t = atomic_double_read(&self->release_t);
     float release_a = atomic_float_read(&self->release_a);
     int linear = atomic_read(&self->linear);
-    double attack_adj;
+    double attack_adj = attack_adj; /* suppress uninitialized warning */
     if(!linear) {
 	/* Adjust attack_a */
 	attack_adj = (((double) attack_a) - ((double) release_a) * exp(-M_PI))
 		   /*---------------------------------------------------------*/
 		   /                  (1.0 - exp(-M_PI));
     }
-    int i;
+    jack_nframes_t i;
     for(i = 0; i < nframes; i++) {
 	float ctl = ctl_buffer[i];
 	if(isnanf(ctl)) {

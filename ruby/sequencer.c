@@ -35,7 +35,7 @@ static void rbcs_seq_make_sequence(VALUE self, VALUE roffset, VALUE rlength, VAL
     size_t sequence_length = RARRAY_LEN(rsequence);
     void *sequence = malloc(sizeof(float *) * (sequence_length + 1) + sizeof(float) * 3 * sequence_length);
     
-    int i;
+    size_t i;
     for(i = 0; i < sequence_length; i++) {
 	((float **) sequence)[i] = (float *) (sequence + sizeof(float *) * (sequence_length + 1) + sizeof(float) * 3 * i);
     }

@@ -26,8 +26,8 @@
 
 static int cs_mix_process(jack_nframes_t nframes, void *arg) {
     cs_mix_t *self = (cs_mix_t *) arg;
-    float *in1_buffer;
-    float *in2_buffer;
+    float *in1_buffer = in1_buffer; /* suppress uninitialized warning */
+    float *in2_buffer = in2_buffer; /* suppress uninitialized warning */
     float *out_buffer = (float *)jack_port_get_buffer(self->out_port, nframes);
     if(out_buffer == NULL) {
 	return -1;
@@ -48,7 +48,7 @@ static int cs_mix_process(jack_nframes_t nframes, void *arg) {
     }
     float in1_amp = atomic_float_read(&self->in1_amp);
     float in2_amp = atomic_float_read(&self->in2_amp);
-    int i;
+    jack_nframes_t i;
     for(i = 0; i < nframes; i++) {
 	out_buffer[i] = (isnanf(in1) ? in1_buffer[i] : in1) * in1_amp + (isnanf(in2) ? in2_buffer[i] : in2) * in2_amp;
     }

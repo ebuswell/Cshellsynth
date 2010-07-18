@@ -28,8 +28,8 @@
 
 static int cs_edho_process(jack_nframes_t nframes, void *arg) {
     cs_edho_t *self = (cs_edho_t *) arg;
-    float *freq_buffer;
-    float *bright_buffer;
+    float *freq_buffer = freq_buffer; /* suppress uninitialized warning */
+    float *bright_buffer = bright_buffer; /* suppress uninitialized warning */
     float *out_buffer = (float *) jack_port_get_buffer(self->out_port, nframes);
     if(out_buffer == NULL) {
 	return -1;
@@ -51,7 +51,7 @@ static int cs_edho_process(jack_nframes_t nframes, void *arg) {
     float offset = atomic_float_read(&self->offset);
     float amp = atomic_float_read(&self->amp);
     int scale = atomic_read(&self->scale);
-    int i;
+    jack_nframes_t i;
     for(i = 0; i < nframes; i++) {
 	double f = (double) (isnanf(freq) ? freq_buffer[i] : freq);
 	double m = (double) (isnanf(bright) ? bright_buffer[i] : bright);

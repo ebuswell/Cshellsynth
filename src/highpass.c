@@ -26,8 +26,8 @@
 
 static int cs_highpass_process(jack_nframes_t nframes, void *arg) {
     cs_highpass_t *self = (cs_highpass_t *) arg;
-    float *in_buffer;
-    float *freq_buffer;
+    float *in_buffer = in_buffer; /* suppress uninitialized warning */
+    float *freq_buffer = freq_buffer; /* suppress uninitialized warning */
     float *out_buffer = (float *)jack_port_get_buffer(self->out_port, nframes);
     if(out_buffer == NULL) {
 	return -1;
@@ -46,7 +46,7 @@ static int cs_highpass_process(jack_nframes_t nframes, void *arg) {
 	    return -1;
 	}
     }
-    int i;
+    jack_nframes_t i;
     for(i = 0; i < nframes; i++) {
 	double a = 1.0/((2.0 * M_PI * ((double) (isnanf(freq) ? freq_buffer[i] : freq))) + 1.0);
 	float c_in = (isnanf(in) ? in_buffer[i] : in);

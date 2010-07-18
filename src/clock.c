@@ -39,8 +39,8 @@ void cs_clock_set_rate(cs_clock_t *self, float rate) {
 
 static int cs_clock_process(jack_nframes_t nframes, void *arg) {
     cs_clock_t *self = (cs_clock_t *) arg;
-    float *rate_buffer;
-    float *meter_buffer;
+    float *rate_buffer = rate_buffer; /* suppress uninitialized warning */
+    float *meter_buffer = meter_buffer; /* suppress uninitialized warning */
     float *clock_buffer = (float *)jack_port_get_buffer(self->clock_port, nframes);
     if(clock_buffer == NULL) {
 	return -1;
@@ -59,7 +59,7 @@ static int cs_clock_process(jack_nframes_t nframes, void *arg) {
 	    return -1;
 	}
     }
-    int i;
+    jack_nframes_t i;
     for(i = 0; i < nframes; i++) {
 	double c_meter = isnanf(meter) ? meter_buffer[i] : meter;
 	while(self->current >= c_meter) {

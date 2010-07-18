@@ -26,8 +26,8 @@
 
 static int cs_distort_process(jack_nframes_t nframes, void *arg) {
     cs_distort_t *self = (cs_distort_t *) arg;
-    float *in_buffer;
-    float *gain_buffer;
+    float *in_buffer = in_buffer; /* suppress uninitialized warning */
+    float *gain_buffer = gain_buffer; /* suppress uninitialized warning */
     float *out_buffer = (float *)jack_port_get_buffer(self->out_port, nframes);
     if(out_buffer == NULL) {
 	return -1;
@@ -48,7 +48,7 @@ static int cs_distort_process(jack_nframes_t nframes, void *arg) {
     }
     double sharpness = (double) atomic_float_read(&self->sharpness);
     double factor = log(exp(sharpness) + 1.0);
-    int i;
+    jack_nframes_t i;
     for(i = 0; i < nframes; i++) {
 	double c_in = (double) (isnanf(in) ? in_buffer[i] : in);
 	double c_gain = (double) (isnanf(gain) ? gain_buffer[i] : gain);
