@@ -1,6 +1,10 @@
+/** @file noise.h
+ *
+ * Noise Generator
+ *
+ * Ruby version: @c Synths::Noise
+ */
 /*
- * noise.h
- * 
  * Copyright 2010 Evan Buswell
  * 
  * This file is part of Cshellsynth.
@@ -25,19 +29,52 @@
 #include <cshellsynth/jclient.h>
 #include <cshellsynth/atomic-types.h>
 
+/**
+ * Noise Generator
+ *
+ * Ruby version: @c Synths::Noise
+ * 
+ * See @ref cs_synth_t, although this is not a strict subclass since there's no @p freq input.
+ */
 typedef struct cs_noise_struct {
     jack_client_t *client;
     jack_port_t *out_port;
     atomic_float_t amp;
     atomic_float_t offset;
-    atomic_t kind;
-    float state[3];
+    atomic_t kind; /** pink, white, or red */
+    float state[3]; /** state information for the pink noise generator */
 } cs_noise_t;
 
+/**
+ * Destroy noise generator
+ */
 #define cs_noise_destroy(cs_noise) jclient_destroy((jclient_t *) (cs_noise))
+
+/**
+ * Initialize noise generator
+ */
 int cs_noise_init(cs_noise_t *self, const char *client_name, jack_options_t flags, char *server_name);
+
+/**
+ * Set which kind of noise to generate.
+ *
+ * Ruby version: @c kind=
+ *
+ * Ruby version of values is @c Synths::Noise::White, @c Synths::Noise::Pink, and @c Synths::Noise::Red
+ *
+ * @param kind CS_WHITE, CS_PINK, or CS_RED.  Red is currently unsupported.
+ *
+ */
 void cs_noise_set_kind(cs_noise_t *self, int kind);
+
+/**
+ * @ref cs_synth_set_offset
+ */
 void cs_noise_set_offset(cs_noise_t *self, float offset);
+
+/**
+ * @ref cs_synth_set_amp
+ */
 void cs_noise_set_amp(cs_noise_t *self, float amp);
 
 #define CS_WHITE 1

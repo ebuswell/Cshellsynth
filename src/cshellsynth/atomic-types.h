@@ -1,6 +1,6 @@
 /*
  * atomic-types.h
- * 
+ *
  * Copyright 2010 Evan Buswell
  * 
  * This file is part of Cshellsynth.

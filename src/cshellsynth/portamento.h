@@ -1,6 +1,13 @@
+/** @file portamento.h
+ *
+ * Portamento Filter
+ *
+ * Ruby version: @c Filters::Portamento
+ *
+ * Causes instantanous changes to instead linearly progress from the old to new value over
+ * a time lag.
+ */
 /*
- * portamento.h
- * 
  * Copyright 2010 Evan Buswell
  * 
  * This file is part of Cshellsynth.
@@ -25,21 +32,51 @@
 #include <cshellsynth/atomic-types.h>
 #include <cshellsynth/filter.h>
 
+/**
+ * Portamento Filter
+ *
+ * Ruby version: @c Filters::Portamento
+ *
+ * See @ref cs_filter_t
+ */
 typedef struct cs_porta_struct {
     jack_client_t *client;
     jack_port_t *in_port;
     atomic_float_t in;
     jack_port_t *out_port;
-    jack_port_t *lag_port;
-    atomic_float_t lag;
-    double start;
-    double target;
-    double last;
+    jack_port_t *lag_port; /** The lag, in samples */
+    atomic_float_t lag; /** Static version of lag */
+    double start; /** The value being progressed from */
+    double target; /** The value being progressed to */
+    double last; /** The previous value */
 } cs_porta_t;
 
+/**
+ * Destroy portamento filter
+ *
+ * See @ref cs_filter_destroy
+ */
 #define cs_porta_destroy(cs_porta) cs_filter_destroy((cs_filter_t *) (cs_porta))
+
+/**
+ * Initialize portamento filter
+ *
+ * See @ref cs_filter_init
+ */
 int cs_porta_init(cs_porta_t *self, const char *client_name, jack_options_t flags, char *server_name);
+
+/**
+ * @ref cs_filter_set_in
+ */
 #define cs_porta_set_in(self, in) cs_filter_set_in(self, in)
+
+/**
+ * Set lag
+ *
+ * Ruby version: @c lag=
+ *
+ * @param lag the number of seconds it takes to go from the old value to the new.
+ */
 void cs_porta_set_lag(cs_porta_t *self, float lag);
 
 #endif

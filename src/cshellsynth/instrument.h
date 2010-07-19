@@ -1,6 +1,12 @@
+/** @file instrument.h
+ *
+ * Instrument
+ *
+ * Ruby version: @c Controllers::Instrument
+ *
+ * A simple "instrument" interface, to use your quick typing skills to play notes.  Mostly useful to test things out.
+ */
 /*
- * instrument.h
- * 
  * Copyright 2010 Evan Buswell
  * 
  * This file is part of Cshellsynth.
@@ -25,17 +31,49 @@
 #include <cshellsynth/atomic-types.h>
 #include <cshellsynth/controller.h>
 
+/**
+ * Instrument
+ *
+ * Ruby version: @c Controllers::Instrument
+ *
+ * See @ref cs_ctlr_t
+ */
 typedef struct cs_inst_struct {
     jack_client_t *client;
     jack_port_t *ctl_port;
     jack_port_t *out_port;
-    atomic_float_t value;
-    atomic_float_t ctl;
+    atomic_float_t value; /** The current output value */
+    atomic_float_t ctl; /** The current control value */
 } cs_inst_t;
 
+/**
+ * Destroy instrument
+ *
+ * See @ref cs_ctlr_destroy
+ */
 #define cs_inst_destroy(cs_inst) cs_ctlr_destroy((cs_ctlr_t *) (cs_inst))
+
+/**
+ * Initialize instrument
+ *
+ * See @ref cs_ctlr_init
+ */
 int cs_inst_init(cs_inst_t *self, const char *client_name, jack_options_t flags, char *server_name);
+
+/**
+ * Play a note
+ *
+ * Ruby version: @c play
+ *
+ * @param value the note to play.
+ */
 void cs_inst_play(cs_inst_t *self, float value);
+
+/**
+ * Stop playing
+ *
+ * Ruby version: @c stop
+ */
 void cs_inst_stop(cs_inst_t *self);
 
 #endif

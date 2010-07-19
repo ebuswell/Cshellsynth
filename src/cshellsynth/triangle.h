@@ -1,6 +1,10 @@
+/** @file triangle.h
+ *
+ * Triangle Wave Synth
+ *
+ * Ruby version: @c Synths::Triangle
+ */
 /*
- * triangle.h
- * 
  * Copyright 2010 Evan Buswell
  * 
  * This file is part of Cshellsynth.
@@ -25,6 +29,13 @@
 #include <cshellsynth/atomic-types.h>
 #include <cshellsynth/synth.h>
 
+/**
+ * Triangle Wave Synth
+ *
+ * Ruby version: @c Synths::Triangle
+ *
+ * See @ref cs_synth_t
+ */
 typedef struct cs_triangle_struct {
     jack_client_t *client;
     jack_port_t *freq_port;
@@ -32,13 +43,36 @@ typedef struct cs_triangle_struct {
     jack_port_t *out_port;
     atomic_float_t amp;
     atomic_float_t offset;
-    double t;
+    double t; /** Time offset, as a fraction of wavelength */
 } cs_triangle_t;
 
+/**
+ * Destroy triangle synth
+ *
+ * See @ref cs_synth_destroy
+ */
 #define cs_triangle_destroy(cs_triangle) cs_synth_destroy((cs_synth_t *) (cs_triangle))
+
+/**
+ * Initialize triangle synth
+ *
+ * See @ref cs_synth_init
+ */
 int cs_triangle_init(cs_triangle_t *self, const char *client_name, jack_options_t flags, char *server_name);
+
+/**
+ * @ref cs_synth_set_freq
+ */
 #define cs_triangle_set_freq(cs_triangle, freq) cs_synth_set_freq((cs_synth_t *) (cs_triangle), (freq))
+
+/**
+ * @ref cs_synth_set_offset
+ */
 #define cs_triangle_set_offset(cs_triangle, offset) cs_synth_set_offset((cs_synth_t *) (cs_triangle), (offset))
+
+/**
+ * @ref cs_synth_set_amp
+ */
 #define cs_triangle_set_amp(cs_triangle, amp) cs_synth_set_amp((cs_synth_t *) (cs_triangle), (amp))
 
 #endif /* #ifndef CSHELLSYNTH_TRIANGLE_H */

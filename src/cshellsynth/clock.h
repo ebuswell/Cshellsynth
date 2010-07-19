@@ -1,6 +1,11 @@
+/** @file clock.h
+ * Clock
+ *
+ * Ruby version: @c Clock
+ *
+ * The clock outputs a timestamp for each sample, in the range from [0,meter)
+ */
 /*
- * clock.h
- * 
  * Copyright 2010 Evan Buswell
  * 
  * This file is part of Cshellsynth.
@@ -25,19 +30,55 @@
 #include <cshellsynth/atomic-types.h>
 #include <cshellsynth/jclient.h>
 
+/**
+ * Clock
+ *
+ * Ruby version: @c Clock
+ *
+ * The clock outputs a timestamp for each sample, in the range from [0,meter)
+ *
+ * See @ref jclient_t
+ */
 typedef struct cs_clock_struct {
     jack_client_t *client;
-    jack_port_t *clock_port;
-    jack_port_t *meter_port;
-    atomic_float_t meter;
-    jack_port_t *rate_port;
-    atomic_float_t rate;
-    double current;
+    jack_port_t *clock_port; /** Output clock port */
+    jack_port_t *meter_port; /** Input meter port */
+    atomic_float_t meter; /** Static version of meter */
+    jack_port_t *rate_port; /** Input rate port */
+    atomic_float_t rate; /** Static version of rate */
+    double current; /** The current value */
 } cs_clock_t;
 
+/**
+ * Destroy clock
+ *
+ * See @ref jclient_destroy
+ */
 #define cs_clock_destroy(cs_clock) jclient_destroy((jclient_t *) (cs_clock))
+
+/**
+ * Initialize clock
+ *
+ * See @ref jclient_init
+ */
 int cs_clock_init(cs_clock_t *self, const char *client_name, jack_options_t flags, char *server_name);
+
+/**
+ * Set meter
+ *
+ * Ruby version: @c meter=
+ */
 void cs_clock_set_meter(cs_clock_t *self, float meter);
+
+/**
+ * Set rate
+ *
+ * Ruby version: @c rate=
+ *
+ * @param rate the rate.  If <= 1, this is in beats per sample.  Otherwise, the value is
+ * converted from beats per minute.
+ *
+ */
 void cs_clock_set_rate(cs_clock_t *self, float rate);
 
 #endif

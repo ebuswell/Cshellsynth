@@ -1,6 +1,12 @@
+/** @file modulator.h
+ *
+ * Modulator
+ *
+ * Ruby version: @c Modulator
+ *
+ * Multiplies its inputs together.
+ */
 /*
- * modulator.h
- * 
  * Copyright 2010 Evan Buswell
  * 
  * This file is part of Cshellsynth.
@@ -25,6 +31,13 @@
 #include <cshellsynth/atomic-types.h>
 #include <cshellsynth/mixer.h>
 
+/**
+ * Modulator
+ *
+ * Ruby version: @c Modulator
+ *
+ * See @ref cs_mix_t
+ */
 typedef struct cs_modu_struct {
     jack_client_t *client;
     jack_port_t *in1_port;
@@ -36,11 +49,38 @@ typedef struct cs_modu_struct {
     atomic_float_t in2_amp;
 } cs_modu_t;
 
+/**
+ * Destroy modulator
+ *
+ * See @ref cs_mix_destroy
+ */
 #define cs_modu_destroy(cs_modu) cs_mix_destroy((cs_mix_t *) (cs_modu))
+
+/**
+ * Initialize modulator
+ *
+ * See @ref cs_mix_init
+ */
 int cs_modu_init(cs_modu_t *self, const char *client_name, jack_options_t flags, char *server_name);
+
+/**
+ * @ref cs_mix_set_in1
+ */
 #define cs_modu_set_in1(self, in1) cs_mix_set_in1((cs_mix_t *) (self), in1);
+
+/**
+ * @ref cs_mix_set_in2
+ */
 #define cs_modu_set_in2(self, in2) cs_mix_set_in2((cs_mix_t *) (self), in2);
+
+/**
+ * @ref cs_mix_set_in1_amp
+ */
 #define cs_modu_set_in1_amp(self, in1_amp) cs_mix_set_in1((cs_mix_t *) (self), in1_amp);
+
+/**
+ * @ref cs_mix_set_in2_amp
+ */
 #define cs_modu_set_in2_amp(self, in2_amp) cs_mix_set_in2((cs_mix_t *) (self), in2_amp);
 
 #endif

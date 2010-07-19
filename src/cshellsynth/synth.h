@@ -1,6 +1,10 @@
+/** @file synth.h
+ *
+ * Structure for generic synth functions
+ *
+ * Ruby version: @c Synths::Synth
+ */
 /*
- * synth.h
- * 
  * Copyright 2010 Evan Buswell
  * 
  * This file is part of Cshellsynth.
@@ -25,19 +29,61 @@
 #include <cshellsynth/atomic-types.h>
 #include <cshellsynth/jclient.h>
 
+/**
+ * Structure for generic synth functions
+ *
+ * Ruby version: @c Synths::Synth
+ *
+ * See @ref jclient_t
+ */
 typedef struct cs_synth_struct {
     jack_client_t *client;
-    jack_port_t *freq_port;
-    atomic_float_t freq;
-    jack_port_t *out_port;
-    atomic_float_t amp;
-    atomic_float_t offset;
+    jack_port_t *freq_port; /** Frequency divided by sample rate */
+    atomic_float_t freq; /** Static version of freq_port */
+    jack_port_t *out_port; /** Output */
+    atomic_float_t amp; /** Amplitude */
+    atomic_float_t offset; /** Offset of the wave from zero */
 } cs_synth_t;
 
+/**
+ * Destroy synth
+ *
+ * See @ref jclient_destroy
+ */
 #define cs_synth_destroy(cs_synth) jclient_destroy((jclient_t *) (cs_synth))
+
+/**
+ * Initialize synth
+ *
+ * See @ref jclient_init.
+ */
 int cs_synth_init(cs_synth_t *self, const char *client_name, jack_options_t flags, char *server_name);
+
+/**
+ * Set static synth frequency
+ *
+ * Ruby version @c freq=
+ *
+ * @param freq either a fraction of sampling frequency (<= 1.0) or an actual frequency (> 1.0)
+ */
 void cs_synth_set_freq(cs_synth_t *self, float freq);
+
+/**
+ * Set offset of the wave
+ *
+ * Ruby version @c offset=
+ *
+ * @param offset offset.  Default is 0.
+ */
 void cs_synth_set_offset(cs_synth_t *self, float offset);
+
+/**
+ * Set amplitude of the wave
+ *
+ * Ruby version @c amp=
+ *
+ * @param amp amplitude.  Default is 1.
+ */
 void cs_synth_set_amp(cs_synth_t *self, float amp);
 
 #endif

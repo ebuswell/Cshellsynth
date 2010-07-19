@@ -1,6 +1,14 @@
+/** @file filter.h
+ *
+ * Generic Filter
+ *
+ * Ruby version: @c Filters::Filter
+ *
+ * In Cshellsynth, a filter is just something which performs a transformation on the
+ * input.  It is not necessary for it to involve a frequency parameter, but it often
+ * does.
+ */
 /*
- * filter.h
- * 
  * Copyright 2010 Evan Buswell
  * 
  * This file is part of Cshellsynth.
@@ -25,15 +33,37 @@
 #include <cshellsynth/atomic-types.h>
 #include <cshellsynth/jclient.h>
 
+/**
+ * Generic Filter
+ *
+ * Ruby version: @c Filters::Filter
+ *
+ * See @ref jclient_t
+ */
 typedef struct cs_filter_struct {
     jack_client_t *client;
-    jack_port_t *in_port;
-    atomic_float_t in;
-    jack_port_t *out_port;
+    jack_port_t *in_port; /** Input */
+    atomic_float_t in; /** Static version of input */
+    jack_port_t *out_port; /** Output */
 } cs_filter_t;
 
+/**
+ * Destroy Filter
+ *
+ * See @ref jclient_destroy
+ */
 #define cs_filter_destroy(cs_filter) jclient_destroy((jclient_t *) (cs_filter))
+
+/**
+ * Initialize Filter
+ *
+ * See @ref jclient_init
+ */
 int cs_filter_init(cs_filter_t *self, const char *client_name, jack_options_t flags, char *server_name);
+
+/**
+ * Set static input
+ */
 void cs_filter_set_in(cs_filter_t *self, float in);
 
 #endif

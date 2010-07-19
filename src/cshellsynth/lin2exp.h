@@ -1,6 +1,23 @@
+/** @file lin2exp.h
+ *
+ * Linear to Exponential Filter
+ *
+ * Ruby version: @c Filters::Lin2Exp
+ *
+ * Translates a linear change into an exponential change according to the equation:
+ *
+ * @verbatim
+ *
+ *   x
+ * z2
+ *
+ * @endverbatim
+ *
+ * where x is the original input, and z is @c zero, the value when x is 0
+ *
+ * If z is a frequency, x is the number of octaves to shift that frequency.
+ */
 /*
- * lin2exp.h
- * 
  * Copyright 2010 Evan Buswell
  * 
  * This file is part of Cshellsynth.
@@ -25,18 +42,48 @@
 #include <cshellsynth/atomic-types.h>
 #include <cshellsynth/filter.h>
 
+/**
+ * Linear to Exponential Filter
+ *
+ * Ruby version: @c Filters::Lin2Exp
+ *
+ * See @ref cs_filter_t
+ */
 typedef struct cs_lin2exp_struct {
     jack_client_t *client;
     jack_port_t *in_port;
     atomic_float_t in;
     jack_port_t *out_port;
-    jack_port_t *zero_port;
-    atomic_float_t zero;
+    jack_port_t *zero_port; /** The value when the input is 0 */
+    atomic_float_t zero; /** Static version of zero */
 } cs_lin2exp_t;
 
+/**
+ * Destroy distortion filter
+ *
+ * See @ref cs_filter_destroy
+ */
 #define cs_lin2exp_destroy(cs_lin2exp) cs_filter_destroy((cs_filter_t *) (cs_lin2exp))
+
+/**
+ * Initialize distortion filter
+ *
+ * See @ref cs_filter_init
+ */
 int cs_lin2exp_init(cs_lin2exp_t *self, const char *client_name, jack_options_t flags, char *server_name);
-#define cs_lin2exp_set_in(self, in) cs_filter_set_in((cs_filter_t *) (self), in);
+
+/**
+ * @ref cs_filter_set_in
+ */
+#define cs_lin2exp_set_in(self, in) cs_filter_set_in((cs_filter_t *) (self), in)
+
+/**
+ * Set zero
+ *
+ * Ruby version: @c zero=
+ *
+ * @param zero the value when the input is 0.
+ */
 void cs_lin2exp_set_zero(cs_lin2exp_t *self, float zero);
 
 #endif

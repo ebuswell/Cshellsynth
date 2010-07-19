@@ -1,0 +1,196 @@
+/**
+   @mainpage Cshellsynth
+   
+   @section intro_sec Introduction
+   
+   Cshellsynth is library and a ruby module for software synthesis.  It utilizes the
+   <a href="http://jackaudio.org">jack api</a> for interaction with the sound card and
+   other utilities.  It also has one module---so far---that utilizes
+   <a href="http://www.mega-nerd.com/libsndfile/">libsndfile</a>.
+   
+   Cshellsynth is designed to be mathematically precise, yet with an incredibly simple
+   interface.  It is my hope that with the included <a href="http://ruby-lang.org">Ruby</a>
+   module, it will be useful for livecoding, but that is certainly not its only use.
+   
+   @section started_sec Getting Started
+   
+   This assumes you have already compiled and installed Cshellsynth.  If not, refer to the
+   README and INSTALL file for details.  This mainly pertains to using Cshellsynth through
+   the Ruby module, but it should be useful even to someone who only wishes to use C.
+   
+   Cshellsynth is a modular synthesizer.  That means that every aspect of synthesis here
+   is conceptually seperate, and synthesis takes part in stages.  Every module is (at
+   lease one) Jack client, but you probably don't need to think about that fact unless
+   you're having resource troubles.  What's important to know is that every module has one
+   or more out ports, and most modules have one or more in ports.  You connect them
+   together with jack_connect, or in Ruby, like:
+   
+   @code
+   
+   m1.port1 = m2.port2
+   
+   @endcode
+   
+   Note that although it is possible to have the left hand value be an out port, it is
+   preferable to use in ports as slightly more magic happens in that case.  This should be
+   fixed at some point.
+
+   To create a synthesizer, hook up all the modules you want, finally hooking into
+   @c "system:playback_1" and/or @c "system:playback_2" or whatever other jack port you
+   wish to connect to.  To get a list of ports on your system, type @c "c.ports," where
+   @c c is any Jack client.
+
+   In Cshellsynth, there are three main categories of modules: @c Filters, @c Controllers,
+   and @c Synths.
+
+   @c Controllers generate control data, like "do this," or "stop doing this."  A @c
+   Controllers::Sequencer (@ref sequencer.h) is the most useful controller, but
+   Cshellsynth also supplies a @c Controllers::Instrument (@ref instrument.h) to test
+   things out.  All controllers output data and control data.  The control data consists
+   of @c 0 (no change), @c 1 (begin), and @c -1 (end).  The output data can be whatever you want,
+   but usually this consists of note numbers.
+
+   @c Synths generate sound.  See below for the full list of synths.  Synths usually have
+   an input frequency port, @c freq, which takes frequency as cycles per sample, and an
+   output port, @c out.  Some synths have other parameters as well.  Only one synth
+   doesn't have any input: @c Synths::Noise (@ref noise.h).
+
+   @c Filters transform input to output.  These don't necessarily involve frequency, but
+   sometimes do.  A filter isn't strictly necessary, but most things sound better with at
+   least one filter.  @c Filters have at least an @c in and an @c out port, sometimes others.
+
+   In addition to these, there are a few important modules that aren't categorized.
+
+   @c Mixer (@ref mixer.h) takes an arbitrary number of inputs (<tt>in[0..x]</tt>) and adds them
+   all to produce one output.  Unless you're going monophonic, you'll probably want one of
+   these.  Note that Jack does this automatically for multiple clients connecting to one
+   port, but @c Mixer does this in a simpler manner.
+
+   @c EnvelopeGenerator (@ref envelope_generator.h) does something useful with control
+   data, generating an envelope for your sound.  This is usually used in conjunction with
+   a @c Modulator (@ref modulator.h) to control the amplitude envelope of a synth.
+
+   Lastly, @c Key (@ref key.h) transforms note data into frequency data.  You could just
+   hand-code the frequency in, but @c Key is a lot easier and more easily changeable.  For
+   example, you can change from minor to major or modulate keys with a single line of
+   code.
+
+   @section example_sec Example
+
+   Cshellsynth comes bundled with a class @c MiniSynth that is pre-configured to turn your
+   computer into a less-than-totally modular synth.  Play with it, then look at the source
+   code in @c ruby/cshellsynth/extra.rb to get an idea of how it works.
+
+   Start up ruby with @c irb, then type:
+   
+   @code
+
+   require 'cshellsynth'
+   s = MiniSynth.new
+   
+   @endcode
+
+   To play a note, type:
+
+   @code
+
+   s.inst.play [note number]
+
+   @endcode
+
+   Where <tt>[note number]</tt> is some number, positive or negative.  @c 0 is middle C.
+
+   This won't sound very good yet.  You need to mess with stuff to get it to sound like
+   anything.  Try @c s.envg first, then maybe @c s.fenvg.  Here's a full list:
+
+   @c MiniSynth\#inst Instrument
+
+   @c MiniSynth\#seq A sequencer to control it instead, if you prefer.
+
+   @c MiniSynth\#clock Clock for the sequencer
+
+   @c MiniSynth\#porta Portamento
+
+   @c MiniSynth\#envg Envelope generator
+
+   @c MiniSynth\#key Key
+
+   @c MiniSynth\#synth The synth currently in use
+
+   @c MiniSynth\#synth= To use a different synth
+
+   @c MiniSynth\#lfo The low-frequency sine wave oscillator, which modulates the
+   amplitude of the synth.
+
+   @c MiniSynth\#distort Distortion
+
+   @c MiniSynth\#fenvg Drives the frequency of the filter, in terms of number of
+   octaves above the frequency playing.
+
+   @c MiniSynth\#filter The filter currently in use
+
+   @c MiniSynth\#filter= To set a new filter
+
+   @section api_sec API
+
+   @subsection controllers_ssect Controllers
+
+   @c Controllers::Controller @ref controller.h
+
+   @c Controllers::Instrument @ref instrument.h
+
+   @c Controllers::Sequencer @ref sequencer.h
+
+   @subsection synths_ssect Synths
+
+   @c Synths::Synth @ref synth.h
+
+   @c Synths::Cotangent @ref cot.h
+
+   @c Synths::Edho @ref edho.h
+
+   @c Synths::Sine @ref sine.h
+
+   @c Synths::Noise @ref noise.h
+
+   @c Synths::Square @ref square.h
+
+   @c Synths::Triangle @ref triangle.h
+
+   @c Synths::FallingSaw @ref falling_saw.h
+
+   @c Synths::RisingSaw @ref rising_saw.h
+
+   @subsection filters_ssect Filters
+
+   @c Filters::Filter @ref filter.h
+
+   @c Filters::Bandpass @ref bandpass.h
+
+   @c Filters::Highpass @ref highpass.h
+
+   @c Filters::Lowpass @ref lowpass.h
+
+   @c Filters::Distortion @ref distortion.h
+
+   @c Filters::Lin2Exp @ref lin2exp.h
+
+   @c Filters::Portamento @ref portamento.h
+
+   @subsection misc_ssect Miscellaneous
+
+   @c JackClient @ref jclient.h
+
+   @c Clock @ref clock.h
+
+   @c EnvelopeGenerator @ref envelope_generator.h
+
+   @c Key @ref key.h
+
+   @c Mixer @ref mixer.h
+
+   @c Modulator @ref modulator.h
+
+   @c Sampler @ref sampler.h
+
+*/

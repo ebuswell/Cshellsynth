@@ -1,6 +1,13 @@
+/** @file sampler.h
+ *
+ * Simple Sampler
+ *
+ * Ruby version: @c Sampler
+ *
+ * Loads some sound file and then plays it when @c ctl is triggered.  Since there is no
+ * frequency parameter, obviously no resampling is done.
+ */
 /*
- * sampler.h
- * 
  * Copyright 2010 Evan Buswell
  * 
  * This file is part of Cshellsynth.
@@ -32,18 +39,43 @@ typedef struct cs_sampler_sndfile_struct {
     SF_INFO sf_info;
 } cs_sampler_sf_t;
 
+/**
+ * Simple Sampler
+ *
+ * Ruby version: @c Sampler
+ *
+ * @ref jclient_t
+ */
 typedef struct cs_sampler_struct {
     jack_client_t *client;
-    jack_port_t *ctl_port;
-    jack_port_t *outL_port;
-    jack_port_t *outR_port;
-    atomic_ptr_t sf;
-    atomic_t sf_sync;
-    bool playing;
+    jack_port_t *ctl_port; /** The port for the control signal */
+    jack_port_t *outL_port; /** Left output port */
+    jack_port_t *outR_port; /** Right output port */
+    atomic_ptr_t sf; /** The soundfile */
+    atomic_t sf_sync; /** A lock to synchronize sample changes */
+    bool playing; /** Whether the sampler is playing or not */
 } cs_sampler_t;
 
+/**
+ * Destroy sampler
+ *
+ * @ref jclient_destroy
+ */
 int cs_sampler_destroy(cs_sampler_t *self);
+
+/**
+ * Initialize sampler
+ *
+ * @ref jclient_init
+ */
 int cs_sampler_init(cs_sampler_t *self, const char *client_name, jack_options_t flags, char *server_name);
+
+/**
+ * Load a file into the sampler
+ *
+ * @param path the path where the sample is stored.  This will load anything that
+ * libsndfile can read---so <em>no proprietary formats</em>.
+ */
 int cs_sampler_load(cs_sampler_t *self, char *path);
 
 #endif

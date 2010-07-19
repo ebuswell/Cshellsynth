@@ -1,6 +1,26 @@
+/** @file distortion.h
+ *
+ * Distortion filter
+ *
+ * Ruby version: @c Filters::Distortion
+ *
+ * Limits input according to the equation:
+ *
+ * @verbatim
+ *          -s(gx - 1)
+ *     log(e             + 1)
+ * 1 - ----------------------
+ *          -s
+ *     log(e   + 1)
+ *
+ * @endverbatim
+ *
+ * where s is @c sharpness, g is @c gain, and x is the original input.  There is a
+ * symmetrical equation for when x is negative.
+ *
+ * Lower values of @c sharpness make the sound less "warm" and vice versa.
+ */
 /*
- * distortion.h
- * 
  * Copyright 2010 Evan Buswell
  * 
  * This file is part of Cshellsynth.
@@ -25,6 +45,13 @@
 #include <cshellsynth/atomic-types.h>
 #include <cshellsynth/filter.h>
 
+/**
+ * Distortion filter
+ *
+ * Ruby version: @c Filters::Distortion
+ *
+ * See @ref cs_filter_t
+ */
 typedef struct cs_distort_struct {
     jack_client_t *client;
     jack_port_t *in_port;
@@ -35,10 +62,43 @@ typedef struct cs_distort_struct {
     atomic_float_t sharpness;
 } cs_distort_t;
 
+/**
+ * Destroy distortion filter
+ *
+ * See @ref cs_filter_destroy
+ */
 #define cs_distort_destroy(cs_distort) cs_filter_destroy((cs_filter_t *) (cs_distort))
+
+/**
+ * Initialize distortion filter
+ *
+ * See @ref cs_filter_init
+ */
 int cs_distort_init(cs_distort_t *self, const char *client_name, jack_options_t flags, char *server_name);
+
+/**
+ * @ref cs_filter_set_in
+ */
 #define cs_distort_set_in(self, in) cs_filter_set_in(self, in)
+
+/**
+ * Set gain
+ *
+ * Ruby version: @c gain=
+ *
+ * @param gain the gain, from 0 to inf.  This is exactly equivalent to raising/lowering
+ * the amplitude before the distortion stage.
+ */
 void cs_distort_set_gain(cs_distort_t *self, float gain);
+
+/**
+ * Set sharpness
+ *
+ * Ruby version: @c sharpness=
+ *
+ * @param sharpness how sharply the transfer curve bends towards 1.0.  Lower values sound
+ * "warmer" and vice versa.
+ */
 void cs_distort_set_sharpness(cs_distort_t *self, float sharpness);
 
 #endif

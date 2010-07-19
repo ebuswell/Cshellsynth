@@ -1,6 +1,10 @@
+/** @file sine.h
+ *
+ * Sine Wave Synth
+ *
+ * Ruby version: @c Synths::Sine
+ */
 /*
- * sine.h
- * 
  * Copyright 2010 Evan Buswell
  * 
  * This file is part of Cshellsynth.
@@ -25,6 +29,15 @@
 #include <cshellsynth/atomic-types.h>
 #include <cshellsynth/synth.h>
 
+/** @file */
+
+/**
+ * Sine Wave Synth
+ *
+ * Ruby version: @c Synths::Sine
+ *
+ * See @ref cs_synth_t
+ */
 typedef struct cs_sine_struct {
     jack_client_t *client;
     jack_port_t *freq_port;
@@ -32,13 +45,36 @@ typedef struct cs_sine_struct {
     jack_port_t *out_port;
     atomic_float_t amp;
     atomic_float_t offset;
-    double t;
+    double t; /** Time offset, as a fraction of wavelength */
 } cs_sine_t;
 
+/**
+ * Destroy sine synth
+ *
+ * See @ref cs_synth_destroy
+ */
 #define cs_sine_destroy(cs_sine) cs_synth_destroy((cs_synth_t *) (cs_sine))
+
+/**
+ * Initialize sine synth
+ *
+ * See @ref cs_synth_destroy
+ */
 int cs_sine_init(cs_sine_t *self, const char *client_name, jack_options_t flags, char *server_name);
+
+/**
+ * @ref cs_synth_set_freq
+ */
 #define cs_sine_set_freq(cs_sine, freq) cs_synth_set_freq((cs_synth_t *) (cs_sine), (freq))
+
+/**
+ * @ref cs_synth_set_offset
+ */
 #define cs_sine_set_offset(cs_sine, offset) cs_synth_set_offset((cs_synth_t *) (cs_sine), (offset))
+
+/**
+ * @ref cs_synth_set_amp
+ */
 #define cs_sine_set_amp(cs_sine, amp) cs_synth_set_amp((cs_synth_t *) (cs_sine), (amp))
 
 #endif
