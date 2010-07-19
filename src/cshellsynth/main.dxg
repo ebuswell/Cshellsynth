@@ -11,6 +11,9 @@
    Cshellsynth is designed to be mathematically precise, yet with an incredibly simple
    interface.  It is my hope that with the included <a href="http://ruby-lang.org">Ruby</a>
    module, it will be useful for livecoding, but that is certainly not its only use.
+
+   To file a bug report, or for more information, see the github page:
+   http://github.com/ebuswell/Cshellsynth
    
    @section started_sec Getting Started
    
