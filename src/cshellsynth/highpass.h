@@ -57,8 +57,7 @@ typedef struct cs_highpass_struct {
     jack_port_t *out_port;
     jack_port_t *freq_port; /** The corner frequency */
     atomic_float_t freq; /** Static version of frequency */
-    double last_out; /** The last value output */
-    float last_in; /** The last value input */
+    double Ey; /** The sum of output values */
 } cs_highpass_t;
 
 /**

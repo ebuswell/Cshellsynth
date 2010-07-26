@@ -48,12 +48,16 @@ static int cs_highpass_process(jack_nframes_t nframes, void *arg) {
     }
     jack_nframes_t i;
     for(i = 0; i < nframes; i++) {
-	double a = 1.0/((2.0 * M_PI * ((double) (isnanf(freq) ? freq_buffer[i] : freq))) + 1.0);
-	float c_in = (isnanf(in) ? in_buffer[i] : in);
-	self->last_out = a * (((double) (c_in  - self->last_in))
-			      + self->last_out);
-	self->last_in = c_in;
-	out_buffer[i] = (float) self->last_out;
+	double w = (2.0 * M_PI * ((double) (isnanf(freq) ? freq_buffer[i] : freq)));
+	double x = isnanf(in) ? in_buffer[i] : in;
+	double y = (x - self->Ey)/(w + 1.0);
+	self->Ey += y;
+	if(self->Ey == INFINITY) {
+	    self->Ey = 1.0;
+	} else if(self->Ey == -INFINITY) {
+	    self->Ey = -1.0;
+	}
+	out_buffer[i] = y;
     }
     return 0;
 }
@@ -78,8 +82,7 @@ int cs_highpass_init(cs_highpass_t *self, const char *client_name, jack_options_
     };
 
     atomic_float_set(&self->freq, NAN);
-    self->last_out = 0.0;
-    self->last_in = 0.0f;
+    self->Ey = 0.0;
 
     r = jack_set_process_callback(self->client, cs_highpass_process, self);
     if(r != 0) {

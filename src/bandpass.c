@@ -58,23 +58,48 @@ static int cs_bandpass_process(jack_nframes_t nframes, void *arg) {
     jack_nframes_t i;
     for(i = 0; i < nframes; i++) {
 	double f = isnanf(freq) ? freq_buffer[i] : freq;
+	double x = isnanf(in) ? in_buffer[i] : in;
+	double y;
 	if(f > 1.0) {
 	    f = 1.0;
 	}
-	double w = 2.0 * M_PI * f;
-	double cQ = isnanf(Q) ? Q_buffer[i] : Q;
-	double out = (((double) (isnanf(in) ? in_buffer[i] : in)) * w
-		      + self->last_out * cQ * (1 + w * w)
-		      - self->out_accumulator * cQ * w * w)
-	    / (w + cQ + cQ * w * w);
-	self->out_accumulator += self->last_out;
-	if(self->out_accumulator == INFINITY) {
-	    self->out_accumulator = HUGE;
-	} else if(self->out_accumulator == -INFINITY) {
-	    self->out_accumulator = -HUGE;
+	if(f == 0.0) {
+	    y = 0.0;
+	} else {
+	    double w = 2.0 * M_PI * f;
+	    double c_Q = isnanf(Q) ? Q_buffer[i] : Q;
+	    double w_Q = w / c_Q;
+	    if(isnan(w_Q) || (w_Q > 1.0)) {
+		double Qw = c_Q * w;
+		y = ((x + self->Exy)
+		     - Qw * self->EEyy)
+		    / (1.0 + c_Q / w + Qw);
+	    } else {
+		double w2 = w * w;
+		y = (w_Q * (x + self->Exy)
+		     - w2 * (self->EEyy))
+		    / (w_Q + 1.0 + w2);
+	    }
 	}
-	self->last_out = out;
-	out_buffer[i] = out;
+	self->Exy += x - y;
+	if(self->Exy == INFINITY) {
+	    self->Exy = 1.0;
+	} else if(self->Exy == -INFINITY) {
+	    self->Exy = -1.0;
+	}
+	self->Ey += y;
+	self->EEyy += self->Ey + y;
+	if(self->Ey == INFINITY) {
+	    self->Ey = 1.0;
+	} else if(self->Ey == -INFINITY) {
+	    self->Ey = -1.0;
+	}
+	if(self->EEyy == INFINITY) {
+	    self->EEyy = 1.0;
+	} else if(self->EEyy == -INFINITY) {
+	    self->EEyy = -1.0;
+	}
+	out_buffer[i] = y;
     }
     return 0;
 }
@@ -110,8 +135,9 @@ int cs_bandpass_init(cs_bandpass_t *self, const char *client_name, jack_options_
 
     atomic_float_set(&self->freq, NAN);
     atomic_float_set(&self->Q, 0.5);
-    self->last_out = 0.0;
-    self->out_accumulator = 0.0;
+    self->Exy = 0.0;
+    self->Ey = 0.0;
+    self->EEyy = 0.0;
 
     r = jack_set_process_callback(self->client, cs_bandpass_process, self);
     if(r != 0) {

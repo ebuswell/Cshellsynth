@@ -59,8 +59,9 @@ typedef struct cs_bandpass_struct {
     atomic_float_t freq; /** The center frequency */
     jack_port_t *Q_port; /** The filter's Q */
     atomic_float_t Q; /** Static version of Q */
-    double last_out; /** The last value output */
-    double out_accumulator; /** The sum of all values output */
+    double Exy; /** Sum of input minus output */
+    double Ey; /** Sum of output */
+    double EEyy; /** Sum of @ref Ey plus output */
 } cs_bandpass_t;
 
 /**
