@@ -50,18 +50,12 @@ static int cs_lowpass_process(jack_nframes_t nframes, void *arg) {
     for(i = 0; i < nframes; i++) {
 	double w = 2.0 * M_PI * ((double) (isnanf(freq) ? freq_buffer[i] : freq));
 	double x = isnanf(in) ? in_buffer[i] : in;
-	double y = w * (x + self->Ex - self->Ey) / (w + 1);
-	self->Ex += x;
-	if(self->Ex == INFINITY) {
-	    self->Ex = 1.0;
-	} else if(self->Ex == -INFINITY) {
-	    self->Ex = -1.0;
-	}
-	self->Ey += y;
-	if(self->Ey == INFINITY) {
-	    self->Ey = 1.0;
-	} else if(self->Ey == -INFINITY) {
-	    self->Ey = -1.0;
+	double y = w * (self->Exy + x) / (1.0 + w);
+	self->Exy += x - y;
+	if(self->Exy == INFINITY) {
+	    self->Exy = 1.0;
+	} else if(self->Exy == -INFINITY) {
+	    self->Exy = -1.0;
 	}
 	out_buffer[i] = y;
     }
@@ -88,8 +82,7 @@ int cs_lowpass_init(cs_lowpass_t *self, const char *client_name, jack_options_t 
     };
 
     atomic_float_set(&self->freq, NAN);
-    self->Ex = 0.0;
-    self->Ey = 0.0;
+    self->Exy = 0.0;
 
     r = jack_set_process_callback(self->client, cs_lowpass_process, self);
     if(r != 0) {

@@ -57,8 +57,7 @@ typedef struct cs_lowpass_struct {
     jack_port_t *out_port;
     jack_port_t *freq_port; /** The corner frequency */
     atomic_float_t freq; /** Static version of frequency */
-    double Ex; /** Sum of input values */
-    double Ey; /** Sum of output values */
+    double Exy; /** Sum of input minus output values */
 } cs_lowpass_t;
 
 /**

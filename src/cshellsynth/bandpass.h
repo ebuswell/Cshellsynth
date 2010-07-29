@@ -59,6 +59,7 @@ typedef struct cs_bandpass_struct {
     atomic_float_t freq; /** The center frequency */
     jack_port_t *Q_port; /** The filter's Q */
     atomic_float_t Q; /** Static version of Q */
+    atomic_float_t atten; /** Attenuation, an alternative to Q */
     double Exy; /** Sum of input minus output */
     double Ey; /** Sum of output */
     double EEyy; /** Sum of @ref Ey plus output */
@@ -96,5 +97,15 @@ void cs_bandpass_set_freq(cs_bandpass_t *self, float freq);
  * Ruby version: @c Q=
  */
 void cs_bandpass_set_Q(cs_bandpass_t *self, float Q);
+
+/**
+ * Set filter attenuation
+ *
+ * You can either use atten or Q; not both.  Q = w/2a
+ *
+ * Ruby version: @c atten=
+ */
+void cs_bandpass_set_atten(cs_bandpass_t *self, float atten);
+
 
 #endif

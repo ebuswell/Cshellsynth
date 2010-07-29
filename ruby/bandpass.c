@@ -81,6 +81,13 @@ static VALUE rbcs_bandpass_set_Q(VALUE self, VALUE Q) {
     return Q;
 }
 
+static VALUE rbcs_bandpass_set_atten(VALUE self, VALUE atten) {
+    cs_bandpass_t *cself;
+    Data_Get_Struct(self, cs_bandpass_t, cself);
+    cs_bandpass_set_atten(cself, NUM2DBL(atten));
+    return atten;
+}
+
 void Init_bandpass() {
     cCSBandpass = rb_define_class_under(mCSFilters, "Bandpass", cCSFilter);
 
@@ -88,4 +95,5 @@ void Init_bandpass() {
     rb_define_method(cCSBandpass, "freq", rbcs_bandpass_freq, 0);
     rb_define_method(cCSBandpass, "freq=", rbcs_bandpass_set_freq, 1);
     rb_define_method(cCSBandpass, "Q=", rbcs_bandpass_set_Q, 1);
+    rb_define_method(cCSBandpass, "atten=", rbcs_bandpass_set_atten, 1);
 }

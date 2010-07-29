@@ -58,8 +58,8 @@ cs_mix_t mixer;
 destroy_func(mixer, mix);
 cs_bandpass_t bandpass;
 destroy_func(bandpass, bandpass);
-cs_key_t sweep;
-destroy_func(sweep, key);
+cs_lin2exp_t sweep;
+destroy_func(sweep, lin2exp);
 cs_envg_t sweep_envg;
 destroy_func(sweep_envg, envg);
 cs_distort_t distortion1;
@@ -81,24 +81,18 @@ int main(int argc, char **argv) {
     atexit(destroy_ ## x);
 
     init_and_check(bandpass, bandpass);
-    cs_bandpass_set_Q(&bandpass, 0.5);
-    init_and_check(sweep, key);
-    r = cs_key_set_tuning(&sweep, CS_EQUAL_TUNING, CS_EQUAL_TUNING_LENGTH);
-    if(r != 0) {
-    	perror("Could not set sweep tuning");
-    	exit(EXIT_FAILURE);
-    }
-    cs_key_set_root(&sweep, NAN);
+    cs_bandpass_set_Q(&bandpass, 10);
+    init_and_check(sweep, lin2exp);
     init_and_check(sweep_envg, envg);
     cs_envg_set_attack_t(&sweep_envg, 0.0625);
-    cs_envg_set_attack_a(&sweep_envg, 4*12.0);
+    cs_envg_set_attack_a(&sweep_envg, 5.0);
     cs_envg_set_decay_t(&sweep_envg, 0.5);
     cs_envg_set_sustain_a(&sweep_envg, 0.0f);
     cs_envg_set_release_t(&sweep_envg, 0.125);
     cs_envg_set_linear(&sweep_envg, 1);
 
     init_and_check(portamento, porta);
-    cs_porta_set_lag(&portamento, 0.125);
+    cs_porta_set_lag(&portamento, 0.0625);
 
     init_and_check(distortion1, distort);
     cs_distort_set_gain(&distortion1, exp(0.25));
@@ -170,10 +164,10 @@ int main(int argc, char **argv) {
     jack_connect(distortion2.client, "distortion2:out", "bandpass:in");
     jack_connect(bandpass.client, "bandpass:out", "envm2:in1");
 
-    jack_connect(portamento.client, "portamento:out", "sweep:root");
+    jack_connect(portamento.client, "portamento:out", "sweep:zero");
     jack_connect(seq2.client, "seq2:ctl", "sweep_envg:ctl");
-    jack_connect(sweep_envg.client, "sweep_envg:out", "sweep:note");
-    jack_connect(sweep.client, "sweep:freq", "bandpass:freq");
+    jack_connect(sweep_envg.client, "sweep_envg:out", "sweep:in");
+    jack_connect(sweep.client, "sweep:out", "bandpass:freq");
 
     jack_connect(distortion1.client, "distortion1:out", "mixer:in1");
     jack_connect(envm2.client, "envm2:out", "mixer:in2");
@@ -212,8 +206,8 @@ int main(int argc, char **argv) {
     }
     r = cs_seq_sequence_once(&seq2, 0.0f, 45.0f, 10, second_verse);
     if(r != 0) {
-	perror("Could not sequence seq2");
-	exit(EXIT_FAILURE);
+    	perror("Could not sequence seq2");
+    	exit(EXIT_FAILURE);
     }
     
     printf("Hit return to quit");

@@ -50,7 +50,7 @@ static int cs_highpass_process(jack_nframes_t nframes, void *arg) {
     for(i = 0; i < nframes; i++) {
 	double w = (2.0 * M_PI * ((double) (isnanf(freq) ? freq_buffer[i] : freq)));
 	double x = isnanf(in) ? in_buffer[i] : in;
-	double y = (x - self->Ey)/(w + 1.0);
+	double y = (x - w * self->Ey)/(1.0 + w);
 	self->Ey += y;
 	if(self->Ey == INFINITY) {
 	    self->Ey = 1.0;
