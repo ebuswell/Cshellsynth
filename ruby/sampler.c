@@ -126,7 +126,7 @@ static VALUE rbcs_sampler_new(int argc, VALUE *argv, VALUE klass) {
 }
 
 void Init_sampler() {
-    cCSSampler = rb_define_class("Sampler", cJackClient);
+    cCSSampler = rb_define_class("LLSampler", cJackClient);
 
     rb_define_singleton_method(cCSSampler, "new", rbcs_sampler_new, -1);
     rb_define_method(cCSSampler, "load", rbcs_sampler_load, 1);

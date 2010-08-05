@@ -75,7 +75,7 @@ static VALUE rbcs_highpass_set_freq(VALUE self, VALUE freq) {
 }
 
 void Init_highpass() {
-    cCSHighpass = rb_define_class_under(mCSFilters, "Highpass", cCSFilter);
+    cCSHighpass = rb_define_class_under(mCSFilters, "LLHighpass", cCSFilter);
 
     rb_define_singleton_method(cCSHighpass, "new", rbcs_highpass_new, -1);
     rb_define_method(cCSHighpass, "freq", rbcs_highpass_freq, 0);

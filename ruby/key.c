@@ -167,7 +167,7 @@ static VALUE rbcs_key_new(int argc, VALUE *argv, VALUE klass) {
 }
 
 void Init_key() {
-    cCSKey = rb_define_class("Key", cJackClient);
+    cCSKey = rb_define_class("LLKey", cJackClient);
 
     rb_define_singleton_method(cCSKey, "new", rbcs_key_new, -1);
     rb_define_method(cCSKey, "note", rbcs_key_note, 0);

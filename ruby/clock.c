@@ -126,7 +126,7 @@ static VALUE rbcs_clock_new(int argc, VALUE *argv, VALUE klass) {
 }
 
 void Init_clock() {
-    cCSClock = rb_define_class("Clock", cJackClient);
+    cCSClock = rb_define_class("LLClock", cJackClient);
 
     rb_define_singleton_method(cCSClock, "new", rbcs_clock_new, -1);
     rb_define_method(cCSClock, "meter=", rbcs_clock_set_meter, 1);

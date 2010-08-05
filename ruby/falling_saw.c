@@ -45,7 +45,7 @@ static VALUE rbcs_fsaw_new(int argc, VALUE *argv, VALUE klass) {
 }
 
 void Init_falling_saw() {
-    cCSFallingSaw = rb_define_class_under(mCSSynths, "FallingSaw", cCSSynth);
+    cCSFallingSaw = rb_define_class_under(mCSSynths, "LLFallingSaw", cCSSynth);
 
     rb_define_singleton_method(cCSFallingSaw, "new", rbcs_fsaw_new, -1);
 }

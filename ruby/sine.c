@@ -45,7 +45,7 @@ static VALUE rbcs_sine_new(int argc, VALUE *argv, VALUE klass) {
 }
 
 void Init_sine() {
-    cCSSine = rb_define_class_under(mCSSynths, "Sine", cCSSynth);
+    cCSSine = rb_define_class_under(mCSSynths, "LLSine", cCSSynth);
 
     rb_define_singleton_method(cCSSine, "new", rbcs_sine_new, -1);
 }

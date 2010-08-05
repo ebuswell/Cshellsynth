@@ -82,7 +82,7 @@ static VALUE rbcs_edho_new(int argc, VALUE *argv, VALUE klass) {
 }
 
 void Init_edho() {
-    cCSEdho = rb_define_class_under(mCSSynths, "Edho", cCSSynth);
+    cCSEdho = rb_define_class_under(mCSSynths, "LLEdho", cCSSynth);
 
     rb_define_singleton_method(cCSEdho, "new", rbcs_edho_new, -1);
     rb_define_method(cCSEdho, "bright", rbcs_edho_bright, 0);

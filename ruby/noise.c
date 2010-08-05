@@ -89,7 +89,7 @@ static VALUE rbcs_noise_new(int argc, VALUE *argv, VALUE klass) {
 }
 
 void Init_noise() {
-    cCSNoise = rb_define_class_under(mCSSynths, "Noise", cJackClient);
+    cCSNoise = rb_define_class_under(mCSSynths, "LLNoise", cJackClient);
 
     rb_define_singleton_method(cCSNoise, "new", rbcs_noise_new, -1);
     rb_define_method(cCSNoise, "out", rbcs_noise_out, 0);

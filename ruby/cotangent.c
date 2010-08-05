@@ -45,7 +45,7 @@ static VALUE rbcs_cot_new(int argc, VALUE *argv, VALUE klass) {
 }
 
 void Init_cotangent() {
-    cCSCotangent = rb_define_class_under(mCSSynths, "Cotangent", cCSSynth);
+    cCSCotangent = rb_define_class_under(mCSSynths, "LLCotangent", cCSSynth);
 
     rb_define_singleton_method(cCSCotangent, "new", rbcs_cot_new, -1);
 }

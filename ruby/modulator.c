@@ -44,7 +44,7 @@ static VALUE rbcs_modu_new(int argc, VALUE *argv, VALUE klass) {
 }
 
 void Init_modulator() {
-    cCSModulator = rb_define_class("Modulator", cCSMixer);
+    cCSModulator = rb_define_class("LLModulator", cCSMixer);
 
     rb_define_singleton_method(cCSModulator, "new", rbcs_modu_new, -1);
 }

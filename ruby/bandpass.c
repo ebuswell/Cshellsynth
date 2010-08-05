@@ -89,7 +89,7 @@ static VALUE rbcs_bandpass_set_atten(VALUE self, VALUE atten) {
 }
 
 void Init_bandpass() {
-    cCSBandpass = rb_define_class_under(mCSFilters, "Bandpass", cCSFilter);
+    cCSBandpass = rb_define_class_under(mCSFilters, "LLBandpass", cCSFilter);
 
     rb_define_singleton_method(cCSBandpass, "new", rbcs_bandpass_new, -1);
     rb_define_method(cCSBandpass, "freq", rbcs_bandpass_freq, 0);

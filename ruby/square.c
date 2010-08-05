@@ -52,7 +52,7 @@ static VALUE rbcs_square_set_duty_cycle(VALUE self, VALUE value) {
 }
 
 void Init_square() {
-    cCSSquare = rb_define_class_under(mCSSynths, "Square", cCSSynth);
+    cCSSquare = rb_define_class_under(mCSSynths, "LLSquare", cCSSynth);
 
     rb_define_singleton_method(cCSSquare, "new", rbcs_square_new, -1);
     rb_define_method(cCSSquare, "duty_cycle=", rbcs_square_set_duty_cycle, 1);

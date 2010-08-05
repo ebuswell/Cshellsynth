@@ -140,7 +140,7 @@ static VALUE rbcs_envg_new(int argc, VALUE *argv, VALUE klass) {
 }
 
 void Init_envelope_generator() {
-    cCSEnvelopeGenerator = rb_define_class("EnvelopeGenerator", cJackClient);
+    cCSEnvelopeGenerator = rb_define_class("LLEnvelopeGenerator", cJackClient);
 
     rb_define_singleton_method(cCSEnvelopeGenerator, "new", rbcs_envg_new, -1);
     rb_define_method(cCSEnvelopeGenerator, "ctl", rbcs_envg_ctl, 0);

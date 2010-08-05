@@ -45,7 +45,7 @@ static VALUE rbcs_triangle_new(int argc, VALUE *argv, VALUE klass) {
 }
 
 void Init_triangle() {
-    cCSTriangle = rb_define_class_under(mCSSynths, "Triangle", cCSSynth);
+    cCSTriangle = rb_define_class_under(mCSSynths, "LLTriangle", cCSSynth);
 
     rb_define_singleton_method(cCSTriangle, "new", rbcs_triangle_new, -1);
 }

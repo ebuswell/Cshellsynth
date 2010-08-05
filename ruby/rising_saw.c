@@ -45,7 +45,7 @@ static VALUE rbcs_rsaw_new(int argc, VALUE *argv, VALUE klass) {
 }
 
 void Init_rising_saw() {
-    cCSRisingSaw = rb_define_class_under(mCSSynths, "RisingSaw", cCSSynth);
+    cCSRisingSaw = rb_define_class_under(mCSSynths, "LLRisingSaw", cCSSynth);
 
     rb_define_singleton_method(cCSRisingSaw, "new", rbcs_rsaw_new, -1);
 }

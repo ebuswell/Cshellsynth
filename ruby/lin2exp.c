@@ -75,7 +75,7 @@ static VALUE rbcs_lin2exp_set_zero(VALUE self, VALUE zero) {
 }
 
 void Init_lin2exp() {
-    cCSLin2Exp = rb_define_class_under(mCSFilters, "Lin2Exp", cCSFilter);
+    cCSLin2Exp = rb_define_class_under(mCSFilters, "LLLin2Exp", cCSFilter);
 
     rb_define_singleton_method(cCSLin2Exp, "new", rbcs_lin2exp_new, -1);
     rb_define_method(cCSLin2Exp, "zero", rbcs_lin2exp_zero, 0);

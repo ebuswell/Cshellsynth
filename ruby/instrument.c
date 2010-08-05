@@ -59,7 +59,7 @@ static VALUE rbcs_inst_new(int argc, VALUE *argv, VALUE klass) {
 }
 
 void Init_instrument() {
-    cCSInstrument = rb_define_class_under(mCSControllers, "Instrument", cCSController);
+    cCSInstrument = rb_define_class_under(mCSControllers, "LLInstrument", cCSController);
 
     rb_define_singleton_method(cCSInstrument, "new", rbcs_inst_new, -1);
     rb_define_method(cCSInstrument, "play", rbcs_inst_play, 1);

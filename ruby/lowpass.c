@@ -75,7 +75,7 @@ static VALUE rbcs_lowpass_set_freq(VALUE self, VALUE freq) {
 }
 
 void Init_lowpass() {
-    cCSLowpass = rb_define_class_under(mCSFilters, "Lowpass", cCSFilter);
+    cCSLowpass = rb_define_class_under(mCSFilters, "LLLowpass", cCSFilter);
 
     rb_define_singleton_method(cCSLowpass, "new", rbcs_lowpass_new, -1);
     rb_define_method(cCSLowpass, "freq", rbcs_lowpass_freq, 0);

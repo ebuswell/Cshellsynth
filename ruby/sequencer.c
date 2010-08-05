@@ -26,10 +26,11 @@
 
 static VALUE cCSSequencer;
 
-static void rbcs_seq_make_sequence(VALUE self, VALUE roffset, VALUE rlength, VALUE rsequence, bool repeat) {
+static void rbcs_seq_make_sequence(VALUE self, VALUE roffset, VALUE rlength, VALUE rsequence, VALUE rrepeat) {
     cs_seq_t *cself;
     Data_Get_Struct(self, cs_seq_t, cself);
 
+    bool repeat = IS_TRUE(rrepeat);
     jack_default_audio_sample_t offset = NUM2DBL(roffset);
     jack_default_audio_sample_t length = NUM2DBL(rlength);
     size_t sequence_length = RARRAY_LEN(rsequence);
@@ -60,14 +61,14 @@ static void rbcs_seq_make_sequence(VALUE self, VALUE roffset, VALUE rlength, VAL
 static VALUE rbcs_seq_sequence(int argc, VALUE *argv, VALUE self) {
     VALUE roffset, rlength, rsequence;
     rb_scan_args(argc, argv, "2*", &roffset, &rlength, &rsequence);
-    rbcs_seq_make_sequence(self, roffset, rlength, rsequence, true);
+    rbcs_seq_make_sequence(self, roffset, rlength, rsequence, Qtrue);
     return self;
 }
 
 static VALUE rbcs_seq_sequence_once(int argc, VALUE *argv, VALUE self) {
     VALUE roffset, rlength, rsequence;
     rb_scan_args(argc, argv, "2*", &roffset, &rlength, &rsequence);
-    rbcs_seq_make_sequence(self, roffset, rlength, rsequence, true);
+    rbcs_seq_make_sequence(self, roffset, rlength, rsequence, Qfalse);
     return self;
 }
 
@@ -114,11 +115,12 @@ static VALUE rbcs_seq_set_clock(VALUE self, VALUE port) {
 }
 
 void Init_sequencer() {
-    cCSSequencer = rb_define_class_under(mCSControllers, "Sequencer", cCSController);
+    cCSSequencer = rb_define_class_under(mCSControllers, "LLSequencer", cCSController);
 
     rb_define_singleton_method(cCSSequencer, "new", rbcs_seq_new, -1);
     rb_define_method(cCSSequencer, "clock", rbcs_seq_clock, 0);
     rb_define_method(cCSSequencer, "clock=", rbcs_seq_set_clock, 1);
     rb_define_method(cCSSequencer, "sequence", rbcs_seq_sequence, -1);
     rb_define_method(cCSSequencer, "sequence_once", rbcs_seq_sequence_once, -1);
+    rb_define_method(cCSSequencer, "make_sequence", rbcs_seq_make_sequence, 4);
 }

@@ -75,7 +75,7 @@ static VALUE rbcs_porta_set_lag(VALUE self, VALUE lag) {
 }
 
 void Init_portamento() {
-    cCSPortamento = rb_define_class_under(mCSFilters, "Portamento", cCSFilter);
+    cCSPortamento = rb_define_class_under(mCSFilters, "LLPortamento", cCSFilter);
 
     rb_define_singleton_method(cCSPortamento, "new", rbcs_porta_new, -1);
     rb_define_method(cCSPortamento, "lag", rbcs_porta_lag, 0);

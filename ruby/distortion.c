@@ -82,7 +82,7 @@ static VALUE rbcs_distort_set_sharpness(VALUE self, VALUE sharpness) {
 }
 
 void Init_distortion() {
-    cCSDistortion = rb_define_class_under(mCSFilters, "Distortion", cCSFilter);
+    cCSDistortion = rb_define_class_under(mCSFilters, "LLDistortion", cCSFilter);
 
     rb_define_singleton_method(cCSDistortion, "new", rbcs_distort_new, -1);
     rb_define_method(cCSDistortion, "gain", rbcs_distort_gain, 0);
