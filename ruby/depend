@@ -20,6 +20,9 @@
 # along with Cshellsynth.  If not, see <http://www.gnu.org/licenses/>.
 
 distdir:
+	$(MAKEDIRS) $(distdir)/cshellsynth
+	$(COPY) *.c *.h depend extconf.rb $(distdir)
+	$(COPY) cshellsynth/*.rb $(distdir)/cshellsynth/
 install-data:
 install-exec: install
 uninstall:

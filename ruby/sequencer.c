@@ -26,7 +26,7 @@
 
 static VALUE cCSSequencer;
 
-static void rbcs_seq_make_sequence(VALUE self, VALUE roffset, VALUE rlength, VALUE rsequence, VALUE rrepeat) {
+static VALUE rbcs_seq_make_sequence(VALUE self, VALUE roffset, VALUE rlength, VALUE rsequence, VALUE rrepeat) {
     cs_seq_t *cself;
     Data_Get_Struct(self, cs_seq_t, cself);
 
@@ -56,6 +56,7 @@ static void rbcs_seq_make_sequence(VALUE self, VALUE roffset, VALUE rlength, VAL
     if(r != 0) {
 	rb_raise(eJackFailure, "Overall operation failed: %d", r);
     }
+    return rsequence;
 }
 
 static VALUE rbcs_seq_sequence(int argc, VALUE *argv, VALUE self) {
