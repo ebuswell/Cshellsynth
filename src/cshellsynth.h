@@ -47,6 +47,5 @@
 #include <cshellsynth/square.h>
 #include <cshellsynth/synth.h>
 #include <cshellsynth/triangle.h>
-#include <cshellsynth/vocalizer.h>
 
 #endif

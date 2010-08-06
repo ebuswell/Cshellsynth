@@ -44,12 +44,12 @@
 
 #ifndef __LP64__
 #define SPINLOCK(x)						\
-	while(unlikely(atomic_cmpxchg((atomic_t) x, 0, 1));	\
+	while(unlikely(atomic_cmpxchg((atomic_t *) x, 0, 1)));	\
 	barrier()
 
 #define SPINUNLOCK(x)					\
 	barrier();					\
-	atomic_set((atomic_t) x, 0)
+	atomic_set((atomic_t *) x, 0)
 #endif
 
 /**
