@@ -72,7 +72,7 @@ class Mixer
   end
   def next_free
     @mix.each_index do |i|
-      if ! @mix[i].connected?
+      if ! @mix[i].in1.connected?
         return i
       end
     end
@@ -89,7 +89,7 @@ class FullMixer
     end
     def create_up_to(num)
       for i in 1..num do
-        if @mixL[i] == nil
+        if @pan_a[i] == nil
           @mixL[i] = LLMixer.new
           @mixL[i - 1].in2 = @mixL[i].out
           @mixR[i] = LLMixer.new
@@ -167,12 +167,12 @@ class FullMixer
     @mixR[0].out = out
   end
   def next_free
-    @mixL.each_index do |i|
-      if ! @mixL[i].connected?
+    @pan_a.each_index do |i|
+      if ! @pan_a[i].in.connected?
         return i
       end
     end
-    return @mixL.length
+    return @pan_a.length
   end
 end
 
@@ -214,7 +214,6 @@ class PolyClient
             nargs << arg
           end
         end
-        puts symbol.to_s + nargs.inspect
         ret << @clients[i].send(symbol, *nargs)
       end
       return ret
@@ -420,6 +419,8 @@ class Clock < LLClock
   end
 end
 
+$clock = Clock.new
+
 module Controllers
   class Instrument < LLInstrument
     def out=(out)
@@ -443,8 +444,68 @@ module Controllers
   end
 
   class Sequencer < PolyClient
+    attr_accessor :granularity
     def initialize(*args)
       super(LLSequencer, 1, *args)
+      @granularity = 0.5
+    end
+    def <<(seq_string)
+      make_sequence_str(seq_string, true)
+    end
+    def >>(seq_string)
+      make_sequence_str(seq_string, false)
+    end
+    def make_sequence_str(seq_string, repeat)
+      seq = []
+      counter = 0.0
+      number = nil
+      sustain = nil
+      seq_string.each_char do |c|
+        if ((c[0] >= 48 && c[0] <= 57) || c == "." || c == "-") # numerical
+          if ! sustain.nil?
+            seq << [sustain, sustain + (counter - sustain) * 0.92, number.to_f]
+            sustain = nil
+            number = nil
+          end
+          if number.nil?
+            number = c
+          else
+            number += c
+          end
+        elsif c[0] <= 32 # Whitespace
+          if ! sustain.nil?
+            seq << [sustain, sustain + (counter - sustain) * 0.92, number.to_f]
+            sustain = nil
+            number = nil
+          elsif ! number.nil?
+            seq << [counter, counter + @granularity * 0.92, number.to_f]
+            number = nil
+            counter += @granularity # for the number
+          end
+          counter += @granularity # for the whitespace
+        elsif c == "~"
+          if number.nil?
+            raise "invalid syntax"
+          end
+          if sustain.nil?
+            sustain = counter
+            counter += @granularity
+          end
+          counter += @granularity
+        else
+          raise "invalid syntax"
+        end
+      end
+      if ! sustain.nil?
+        seq << [sustain, sustain + (counter - sustain) * 0.92, number.to_f]
+        sustain = nil
+        number = nil
+      elsif ! number.nil?
+        seq << [counter, counter + @granularity * 0.92, number.to_f]
+        counter += @granularity
+      end
+      puts "calling make_sequence(0.0, #{counter.inspect}, #{seq.inspect}, #{repeat.inspect})"
+      make_sequence(0.0, counter, seq, repeat)
     end
     def sequence(offset, length, *sequence)
       make_sequence(offset, length, sequence, true)
@@ -481,7 +542,7 @@ module Controllers
 end
 
 class MiniSynth
-  attr_reader :clock, :seq, :inst, :porta, :envg, :key, :synth, :lfo, :distort, :fenvg, :filter
+  attr_reader :clock, :seq, :inst, :porta, :envg, :key, :synth, :lfo, :distort, :fenvg, :filter, :out, :mixnum
   def synth=(synth)
     @synth.disconnect @synth.freq
     @synth.disconnect @synth.out
@@ -500,9 +561,7 @@ class MiniSynth
   end
   def initialize
     @inst = Controllers::Instrument.new
-    @clock = Clock.new
     @seq = Controllers::Sequencer.new
-    @seq.clock = @clock.clock
     @porta = Filters::Portamento.new
     @envg = EnvelopeGenerator.new
     @key = Key.new
@@ -541,7 +600,18 @@ class MiniSynth
     @distort.in = @em.out
     @distort.sharpness = 4
     @distort.gain = 1.0
-    @distort.connect @distort.out, "system:playback_1"
-    @distort.connect @distort.out, "system:playback_2"
+    @out = @distort.out
+    @mixnum = $mixer.next_free
+    $mixer.in[@mixnum] = @out
+    @seq.clock = $clock.clock
+  end
+  def amp=(arg)
+    $mixer.amp[@mixnum] = arg
+  end
+  def pan=(arg)
+    $mixer.pan[@mixnum] = arg
+  end
+  def out=(arg)
+    @distort.out = arg
   end
 end
