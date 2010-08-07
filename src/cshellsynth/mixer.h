@@ -12,6 +12,12 @@
  * @c in1* and @c in2*, there are <tt>in[0-x]</tt> and <tt>amp[0-x]</tt>.  These are created on
  * demand, but note that all intermediate values are filled in, so <tt>in[3]</tt> will ensure
  * that <tt>in[0]</tt>, <tt>in[1]</tt>, and <tt>in[2]</tt> exist.
+ *
+ * Additionally, there is a FullMixer class which also has <tt>pan[0-x]</tt>, with @c outL
+ * and @c outR instead of @c out.
+ *
+ * By default, $mixer is created as a FullMixer, with outL and outR connected to the
+ * default output.
  */
 /*
  * Copyright 2010 Evan Buswell
