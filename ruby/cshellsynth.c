@@ -9,6 +9,7 @@ void Init_mixer();
 void Init_filters();
 void Init_filter();
 void Init_sampler();
+void Init_pan();
 void Init_cotangent();
 void Init_rising_saw();
 void Init_lowpass();
@@ -40,6 +41,7 @@ void Init_cshellsynth() {
     Init_filters();
     Init_filter();
     Init_sampler();
+    Init_pan();
     Init_cotangent();
     Init_rising_saw();
     Init_lowpass();

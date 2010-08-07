@@ -16,6 +16,7 @@
 # 
 # You should have received a copy of the GNU General Public License
 # along with Cshellsynth.  If not, see <http://www.gnu.org/licenses/>.
+
 class Mixer
   module MixerHelp
     def initialize(mix)
@@ -57,11 +58,11 @@ class Mixer
       @mix[index].in1_amp = value
     end
   end
-  attr_reader :in, :in_amp
+  attr_reader :in, :amp
   def initialize
     @mix = [LLMixer.new]
     @in = Inself.new(@mix)
-    @in_amp = InAmpself.new(@mix)
+    @amp = InAmpself.new(@mix)
   end
   def out
     @mix[0].out
@@ -69,7 +70,115 @@ class Mixer
   def out=(out)
     @mix[0].out = out
   end
+  def next_free
+    @mix.each_index do |i|
+      if ! @mix[i].connected?
+        return i
+      end
+    end
+    return @mix.length
+  end
 end
+
+class FullMixer
+  module MixerHelp
+    def initialize(mixL, mixR, pan_a)
+      @mixL = mixL
+      @mixR = mixR
+      @pan_a = pan_a
+    end
+    def create_up_to(num)
+      for i in 1..num do
+        if @mixL[i] == nil
+          @mixL[i] = LLMixer.new
+          @mixL[i - 1].in2 = @mixL[i].out
+          @mixR[i] = LLMixer.new
+          @mixR[i - 1].in2 = @mixR[i].out
+          @pan_a[i] = LLPan.new
+          @pan_a[i].outL = @mixL[i].in1
+          @pan_a[i].outR = @mixR[i].in1
+        end
+      end
+    end
+  end
+  class Inself
+    include MixerHelp
+    def [](index)
+      create_up_to(index)
+      @pan_a[index].in
+    end
+    def []=(index, value)
+      create_up_to(index)
+      if value.instance_of? Array
+        value.each do |one|
+          @pan_a[index].in = one
+        end
+      else
+        @pan_a[index].in = value
+      end
+    end
+  end
+  class InAmpself
+    include MixerHelp
+    def []=(index, value)
+      create_up_to(index)
+      @mixL[index].in1_amp = value
+      @mixR[index].in1_amp = value
+    end
+  end
+  class Panself
+    include MixerHelp
+    def [](index)
+      create_up_to(index)
+      @pan_a[index].pan
+    end
+    def []=(index, value)
+      create_up_to(index)
+      if value.instance_of? Array
+        value.each do |one|
+          @pan_a[index].pan = one
+        end
+      else
+        @pan_a[index].pan = value
+      end
+    end
+  end
+  attr_reader :in, :amp, :pan
+  def initialize
+    @mixL = [LLMixer.new]
+    @mixR = [LLMixer.new]
+    @pan_a = [LLPan.new]
+    @pan_a[0].outL = @mixL[0].in1
+    @pan_a[0].outR = @mixR[0].in1
+    @in = Inself.new(@mixL, @mixR, @pan_a)
+    @amp = InAmpself.new(@mixL, @mixR, @pan_a)
+    @pan = Panself.new(@mixL, @mixR, @pan_a)
+  end
+  def outL
+    @mixL[0].out
+  end
+  def outL=(out)
+    @mixL[0].out = out
+  end
+  def outR
+    @mixR[0].out
+  end
+  def outR=(out)
+    @mixR[0].out = out
+  end
+  def next_free
+    @mixL.each_index do |i|
+      if ! @mixL[i].connected?
+        return i
+      end
+    end
+    return @mixL.length
+  end
+end
+
+$mixer ||= FullMixer.new
+$mixer.outL = "system:playback_1"
+$mixer.outR = "system:playback_2"
 
 class PolyClient
   attr_reader :polyphony
@@ -239,6 +348,11 @@ end
 class Modulator < PolyClient
   def initialize(*args)
     super(LLModulator, 1, *args)
+  end
+end
+class Pan < PolyClient
+  def initialize(*args)
+    super(LLPan, 1, *args)
   end
 end
 class EnvelopeGenerator < PolyClient
