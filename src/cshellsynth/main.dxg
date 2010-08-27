@@ -155,7 +155,7 @@
 
    @c Synths::Cotangent @ref cot.h
 
-   @c Synths::Edho @ref edho.h
+   @c Synths::Dsf @ref dsf.h
 
    @c Synths::Sine @ref sine.h
 

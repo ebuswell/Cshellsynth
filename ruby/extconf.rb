@@ -58,5 +58,6 @@ if(!have_library('jack', 'jack_client_open'))
 end
 
 $libs = append_library($libs, 'cshellsynth')
+$distcleanfiles << "cshellsynth.c"
 
 create_makefile('cshellsynth')

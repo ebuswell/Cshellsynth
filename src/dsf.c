@@ -1,5 +1,5 @@
 /*
- * edho.c Exponentially Decreasing Harmonics Oscillator
+ * dsf.c Discrete Summation Formula
  * 
  * Copyright 2010 Evan Buswell
  * 
@@ -20,15 +20,15 @@
  */
 #include <jack/jack.h>
 #include <math.h>
-#include "cshellsynth/edho.h"
+#include "cshellsynth/dsf.h"
 #include "cshellsynth/synth.h"
 #include "cshellsynth/jclient.h"
 #include "atomic-float.h"
 #include "atomic.h"
 #include "util.h"
 
-static int cs_edho_process(jack_nframes_t nframes, void *arg) {
-    cs_edho_t *self = (cs_edho_t *) arg;
+static int cs_dsf_process(jack_nframes_t nframes, void *arg) {
+    cs_dsf_t *self = (cs_dsf_t *) arg;
     float *freq_buffer = freq_buffer; /* suppress uninitialized warning */
     float *bright_buffer = bright_buffer; /* suppress uninitialized warning */
     float *out_buffer = (float *) jack_port_get_buffer(self->out_port, nframes);
@@ -106,15 +106,15 @@ static int cs_edho_process(jack_nframes_t nframes, void *arg) {
     return 0;
 }
 
-void cs_edho_set_bright(cs_edho_t *self, float bright) {
+void cs_dsf_set_bright(cs_dsf_t *self, float bright) {
     atomic_float_set(&self->bright, bright);
 }
 
-void cs_edho_set_scale(cs_edho_t *self, int scale) {
+void cs_dsf_set_scale(cs_dsf_t *self, int scale) {
     atomic_set(&self->scale, scale);
 }
 
-int cs_edho_init(cs_edho_t *self, const char *client_name, jack_options_t flags, char *server_name) {
+int cs_dsf_init(cs_dsf_t *self, const char *client_name, jack_options_t flags, char *server_name) {
     int r = cs_synth_init((cs_synth_t *) self, client_name, flags, server_name);
     if(r != 0) {
 	return r;
@@ -128,7 +128,7 @@ int cs_edho_init(cs_edho_t *self, const char *client_name, jack_options_t flags,
     atomic_set(&self->scale, 0);
     atomic_float_set(&self->bright, 0.5);
     self->t = 0.0;
-    r = jack_set_process_callback(self->client, cs_edho_process, self);
+    r = jack_set_process_callback(self->client, cs_dsf_process, self);
     if(r != 0) {
 	cs_synth_destroy((cs_synth_t *) self);
 	return r;

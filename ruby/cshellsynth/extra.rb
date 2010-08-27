@@ -262,9 +262,9 @@ module Synths
       super(LLParabola, 1, *args)
     end
   end
-  class Edho < PolyClient
+  class Dsf < PolyClient
     def initialize(*args)
-      super(LLEdho, 1, *args)
+      super(LLDsf, 1, *args)
     end
   end
   class Cotangent < PolyClient
