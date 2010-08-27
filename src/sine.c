@@ -52,7 +52,7 @@ static int cs_sine_process(jack_nframes_t nframes, void *arg) {
 	    if(self->t >= 1.0) {
 		self->t -= 1.0;
 	    }
-	    out_buffer[i] = ((cos(2.0 * M_PI * self->t) - cos(2.0 * M_PI * (self->t + f))) / (2.0 * M_PI * f)) * amp + offset;
+	    out_buffer[i] = sin(2.0 * M_PI * self->t) * amp + offset;
 	    self->t += (double) f;
 	}
     }

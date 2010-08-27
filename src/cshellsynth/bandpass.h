@@ -4,17 +4,7 @@
  *
  * Ruby version: @c Filters::Bandpass
  *
- * The discrete equivalent of an RLC circuit, like so:
- *
- * @verbatim
- *
- * o--@-@-@---| |-----o
- *                 |
- *                 \
- *                 /
- *                 \
- *                _|_
- *                 -
+ * H(s) = (s/Q) / (s^2 + s/Q + 1)
  *
  * @endverbatim
  */
@@ -42,28 +32,16 @@
 #include <jack/jack.h>
 #include <cshellsynth/atomic-types.h>
 #include <cshellsynth/filter.h>
+#include <cshellsynth/lowpass.h>
 
 /**
  * Bandpass filter
  *
  * Ruby version: @c Filters::Bandpass
  *
- * See @ref cs_filter_t
+ * See @ref cs_lowpass_t
  */
-typedef struct cs_bandpass_struct {
-    jack_client_t *client;
-    jack_port_t *in_port;
-    atomic_float_t in;
-    jack_port_t *out_port;
-    jack_port_t *freq_port; /** The corner frequency */
-    atomic_float_t freq; /** The center frequency */
-    jack_port_t *Q_port; /** The filter's Q */
-    atomic_float_t Q; /** Static version of Q */
-    atomic_float_t atten; /** Attenuation, an alternative to Q */
-    double Exy; /** Sum of input minus output */
-    double Ey; /** Sum of output */
-    double EEyy; /** Sum of @ref Ey plus output */
-} cs_bandpass_t;
+typedef cs_lowpass_t cs_bandpass_t;
 
 /**
  * Destroy bandpass filter
@@ -85,27 +63,18 @@ int cs_bandpass_init(cs_bandpass_t *self, const char *client_name, jack_options_
 #define cs_bandpass_set_in(self, in) cs_filter_set_in(self, in)
 
 /**
- * Set center frequency
- *
- * Ruby version: @c freq=
+ * @ref cs_lowpass_set_freq
  */
-void cs_bandpass_set_freq(cs_bandpass_t *self, float freq);
+#define cs_bandpass_set_freq(self, freq) cs_lowpass_set_freq(self, freq)
 
 /**
- * Set filter Q
- *
- * Ruby version: @c Q=
+ * @ref cs_lowpass_set_Q
  */
-void cs_bandpass_set_Q(cs_bandpass_t *self, float Q);
+#define cs_bandpass_set_Q(self, Q) cs_lowpass_set_Q(self, Q)
 
 /**
- * Set filter attenuation
- *
- * You can either use atten or Q; not both.  Q = w/2a
- *
- * Ruby version: @c atten=
+ * @ref cs_lowpass_set_atten
  */
-void cs_bandpass_set_atten(cs_bandpass_t *self, float atten);
-
+#define cs_bandpass_set_atten(self, atten) cs_lowpass_set_atten(self, atten)
 
 #endif

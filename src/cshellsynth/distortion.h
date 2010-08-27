@@ -60,6 +60,7 @@ typedef struct cs_distort_struct {
     jack_port_t *gain_port;
     atomic_float_t gain;
     atomic_float_t sharpness;
+    atomic_t kind;
 } cs_distort_t;
 
 /**
@@ -75,6 +76,18 @@ typedef struct cs_distort_struct {
  * See @ref cs_filter_init
  */
 int cs_distort_init(cs_distort_t *self, const char *client_name, jack_options_t flags, char *server_name);
+
+/**
+ * Set which kind of distortion to use.
+ *
+ * Ruby version: @c kind=
+ *
+ * Ruby version of values is @c Filters::Distortion::Exponential, @c Filters::Distortion::Hyperbolic, and @c Filters::Distortion::Arctangent
+ *
+ * @param kind CS_EXP, CS_HYP, CS_ATAN
+ *
+ */
+void cs_distort_set_kind(cs_distort_t *self, int kind);
 
 /**
  * @ref cs_filter_set_in
@@ -100,5 +113,10 @@ void cs_distort_set_gain(cs_distort_t *self, float gain);
  * "warmer" and vice versa.
  */
 void cs_distort_set_sharpness(cs_distort_t *self, float sharpness);
+
+#define CS_EXP 1
+#define CS_HYP 2
+#define CS_ATAN 3
+#define CS_TUBE 4
 
 #endif

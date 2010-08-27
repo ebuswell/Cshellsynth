@@ -44,8 +44,16 @@ static VALUE rbcs_triangle_new(int argc, VALUE *argv, VALUE klass) {
     return Data_Wrap_Struct(klass, 0, cs_triangle_free, cself);
 }
 
+static VALUE rbcs_triangle_set_slope(VALUE self, VALUE value) {
+    cs_triangle_t *cself;
+    Data_Get_Struct(self, cs_triangle_t, cself);
+    cs_triangle_set_slope(cself, NUM2DBL(value));
+    return value;
+}
+
 void Init_triangle() {
     cCSTriangle = rb_define_class_under(mCSSynths, "LLTriangle", cCSSynth);
 
     rb_define_singleton_method(cCSTriangle, "new", rbcs_triangle_new, -1);
+    rb_define_method(cCSTriangle, "slope=", rbcs_triangle_set_slope, 1);
 }

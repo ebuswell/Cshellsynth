@@ -4,17 +4,7 @@
  *
  * Ruby version: @c Filters::Lowpass
  *
- * The discrete equivalent of an RL circuit, like so:
- *
- * @verbatim
- *
- * o--@-@-@------o
- *            |
- *            \
- *            /
- *            \
- *           _|_
- *            -
+ * H(s) = 1 / (s^2 + s/Q + 1)
  *
  * @endverbatim
  */
@@ -56,8 +46,14 @@ typedef struct cs_lowpass_struct {
     atomic_float_t in;
     jack_port_t *out_port;
     jack_port_t *freq_port; /** The corner frequency */
-    atomic_float_t freq; /** Static version of frequency */
-    double Exy; /** Sum of input minus output values */
+    atomic_float_t freq; /** The center frequency */
+    jack_port_t *Q_port; /** The filter's Q */
+    atomic_float_t Q; /** Static version of Q */
+    atomic_float_t atten; /** Attenuation, an alternative to Q */
+    double x1; /** Previous input */
+    double x2; /** Previous previous input */
+    double y1; /** Previous output */
+    double y2; /** Previous previous output */
 } cs_lowpass_t;
 
 /**
@@ -66,6 +62,13 @@ typedef struct cs_lowpass_struct {
  * See @ref cs_filter_destroy
  */
 #define cs_lowpass_destroy(cs_lowpass) cs_filter_destroy((cs_filter_t *) (cs_lowpass))
+
+/**
+ * Initialize lowpass filter, for subclasses
+ *
+ * See @ref cs_filter_init
+ */
+int cs_lowpass_subclass_init(cs_lowpass_t *self, const char *client_name, jack_options_t flags, char *server_name);
 
 /**
  * Initialize lowpass filter
@@ -80,10 +83,27 @@ int cs_lowpass_init(cs_lowpass_t *self, const char *client_name, jack_options_t 
 #define cs_lowpass_set_in(self, in) cs_filter_set_in(self, in)
 
 /**
- * Set corner frequency
+ * Set center frequency
  *
  * Ruby version: @c freq=
  */
 void cs_lowpass_set_freq(cs_lowpass_t *self, float freq);
+
+/**
+ * Set filter Q
+ *
+ * Ruby version: @c Q=
+ */
+void cs_lowpass_set_Q(cs_lowpass_t *self, float Q);
+
+/**
+ * Set filter attenuation
+ *
+ * You can either use atten or Q; not both.  Q = w/2a
+ *
+ * Ruby version: @c atten=
+ */
+void cs_lowpass_set_atten(cs_lowpass_t *self, float atten);
+
 
 #endif

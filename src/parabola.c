@@ -1,5 +1,5 @@
 /*
- * cot.c
+ * parabola.c
  * 
  * Copyright 2010 Evan Buswell
  * 
@@ -20,14 +20,46 @@
  */
 #include <jack/jack.h>
 #include <math.h>
-#include "util.h"
-#include "cshellsynth/cot.h"
+#include "cshellsynth/parabola.h"
+#include "parabola.h"
 #include "cshellsynth/synth.h"
 #include "cshellsynth/jclient.h"
 #include "atomic-float.h"
 
-static int cs_cot_process(jack_nframes_t nframes, void *arg) {
-    cs_cot_t *self = (cs_cot_t *) arg;
+#define CS_PARAB_MAGIC 4.59693112360818
+
+inline double cs_parab_exec(double t, double n, double na) {
+    double wt = 2.0 * M_PI * t;
+    if(n == 1.0) {
+	return -cos(wt);
+    }
+    double out;
+    if(na < 1.0) {
+	out = (1.0 - L2ESCALE(na)) * (cos(n * wt) / (n*n));
+    } else {
+	out = 0.0;
+    }
+    if(n <= 5.0) {
+	double j;
+	for(j = 1.0; j <= n; j += 1.0) {
+	    out += -cos(j * wt) / (j * j);
+	}
+	return out;
+    } else {
+	t = (1 - fabs(1 - 2 * t)) / 2; /* keeps t between 0 and 0.5 */
+	double n_21 = 2.0 * n + 1.0;
+	double n_22 = n_21 + 1.0;
+	double cf = (M_PI / (1.0 + 2.0 / (n_22 * CS_PARAB_MAGIC)));
+	double s_off_d = M_PI / asin(cos(cf / CS_PARAB_MAGIC) / (n_21)) - 2.0;
+	double adj = 2*cos(cf * (n_22 * t + 1.0 / CS_PARAB_MAGIC)) / (n_21*n_21 * sin(M_PI * (t + 1.0 / s_off_d) / (1.0 + 2.0 / s_off_d)));
+	t -= 0.5;
+	double raw = M_PI * M_PI * (1/12 - t * t);
+	return out + (raw + adj);
+    }
+}
+
+static int cs_parab_process(jack_nframes_t nframes, void *arg) {
+    cs_parab_t *self = (cs_parab_t *) arg;
     float *freq_buffer = freq_buffer; /* suppress uninitialized warning */
     float *out_buffer = (float *) jack_port_get_buffer(self->out_port, nframes);
     if(out_buffer == NULL) {
@@ -44,46 +76,29 @@ static int cs_cot_process(jack_nframes_t nframes, void *arg) {
     float amp = atomic_float_read(&self->amp);
     jack_nframes_t i;
     for(i = 0; i < nframes; i++) {
-	double f = (double) (isnanf(freq) ? freq_buffer[i] : freq);
-	if(f == 0.0 || isnan(f)) {
+	float f = isnanf(freq) ? freq_buffer[i] : freq;
+	if(f == 0.0f || isnanf(f)) {
 	    self->t = 0.0;
-	    out_buffer[i] = offset;
+	    out_buffer[i] = 0.0;
 	} else {
-	    if(self->t >= 1.0) {
+	    while(self->t >= 1.0) {
 		self->t -= 1.0;
 	    }
-	    /* bandlimited cot(wt/2)/2 is equivalent to sin(nwt/2)sin((n + 1)wt/2)
-	     *                                          --------------------------
-	     *                                                  sin(wt/2)
-	     * where n is the maximum multiple of f that is less than the nyquist:
-	     * f * n <= 1/2; n = floor(1/2f)
-	     * na scales the last frequency component so that changes in frequency are gradual. */
 	    double n = floor(1.0 / (2.0 * f));
 	    double na = (0.5 - n*f) / 0.0003;
-	    if(n == 1.0) {
-		out_buffer[i] = sin(2.0* M_PI * self->t) * amp + offset;
-	    } else {
-		na -= n;
-		double wt = M_PI * self->t;
-		double out = sin(n * wt) * sin((n + 1.0) * wt)
-		    / sin(wt);
-		if(na < 1.0) {
-		    out -= (1.0 - L2ESCALE(na))*sin(2 * n * wt);
-		}
-		out_buffer[i] = out * amp + offset;
-		self->t += f;
-	    }
+	    out_buffer[i] = cs_parab_exec(self->t, n, na) * amp + offset;
+	    self->t += f;
 	}
     }
     return 0;
 }
 
-int cs_cot_init(cs_cot_t *self, const char *client_name, jack_options_t flags, char *server_name) {
+int cs_parab_init(cs_parab_t *self, const char *client_name, jack_options_t flags, char *server_name) {
     int r = cs_synth_init((cs_synth_t *) self, client_name, flags, server_name);
     if(r != 0) {
 	return r;
     }
-    r = jack_set_process_callback(self->client, cs_cot_process, self);
+    r = jack_set_process_callback(self->client, cs_parab_process, self);
     if(r != 0) {
 	cs_synth_destroy((cs_synth_t *) self);
 	return r;

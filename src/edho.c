@@ -25,6 +25,7 @@
 #include "cshellsynth/jclient.h"
 #include "atomic-float.h"
 #include "atomic.h"
+#include "util.h"
 
 static int cs_edho_process(jack_nframes_t nframes, void *arg) {
     cs_edho_t *self = (cs_edho_t *) arg;
@@ -63,6 +64,9 @@ static int cs_edho_process(jack_nframes_t nframes, void *arg) {
 		self->t -= 1.0;
 	    }
 	    double out;
+	    double n = floor(1.0 / (2.0 * f));
+	    double na = (0.5 - n*f) / 0.0003;
+	    double wt = 2.0 * M_PI * self->t;
 	    if(scale) {
 		/* the reason it's different when we scale is because eventually the peak
 		 * is not visible within the sample resolution.  This value should keep
@@ -74,24 +78,26 @@ static int cs_edho_process(jack_nframes_t nframes, void *arg) {
 		 * unexpected way.  Formula is (cos(4pi(15/sample_rate))/(1 +
 		 * sin(4pi(15/sample_rate))) - 3.0517578125e-05 */
 		m = m * 0.9957043154589819 + 3.0517578125e-05;
-		double m_1_m_2 = 2.0 * m / (1.0 + m * m);
-		out =
-		    /* (sin(2.0 * M_PI * self->t) / (1.0 - m * m))
-		       / (1.0 - 2.0 * m * cos(2.0 * M_PI * self->t) / (1.0 - m * m)); */
-		    log(  (1 - m_1_m_2 * cos(2.0 * M_PI * (self->t + f)))
-			  /*-----------------------------------------------*/
-			  /  (1 - m_1_m_2 * cos(2.0 * M_PI * self->t))
-			) * (1.0 - m * m) / (4.0 * M_PI * f * m);
+		if(n == 1.0) {
+		    out = sin(wt) * (1.0 - m * m);
+		} else {
+		    out = (sin(wt) - pow(m,n) * (sin((n + 1.0) * wt) - m * sin(n * wt)))
+			/ (1.0 + m*m - 2.0*m*cos(wt));
+		    if(na < 1.0) {
+			out -= (1.0 - L2ESCALE(na))*pow(m,n)*sin(n * wt);
+		    }
+		    out *= (1.0 - m * m);
+		}
 	    } else {
-		m = m * 0.99993896484375 + 3.0517578125e-05;
-		double m_1_m_2 = 2.0 * m / (1.0 + m * m);
-		out =
-		    /* (sin(2.0 * M_PI * self->t) / (1.0 - m * m))
-		       / (1.0 - 2.0 * m * cos(2.0 * M_PI * self->t) / (1.0 - m * m)); */
-		    log(  (1 - m_1_m_2 * cos(2.0 * M_PI * (self->t + f)))
-			  /*-----------------------------------------------*/
-			  /  (1 - m_1_m_2 * cos(2.0 * M_PI * self->t))
-			) / (4.0 * M_PI * f * m);
+		if(n == 1.0) {
+		    out = sin(wt);
+		} else {
+		    out = (sin(wt) - pow(m,n) * (sin((n + 1.0) * wt) - m * sin(n * wt)))
+			/ (1.0 + m*m - 2.0*m*cos(wt));
+		    if(na < 1.0) {
+			out -= (1.0 - L2ESCALE(na)) * pow(m,n) * sin(n * wt);
+		    }
+		}
 	    }
 	    out_buffer[i] = out * amp + offset;
 	    self->t += f;

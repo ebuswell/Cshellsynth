@@ -21,9 +21,38 @@
 #include <jack/jack.h>
 #include <math.h>
 #include "cshellsynth/falling_saw.h"
+#include "falling_saw.h"
 #include "cshellsynth/synth.h"
 #include "cshellsynth/jclient.h"
 #include "atomic-float.h"
+
+#define CS_FSAW_MAGIC 7.52134027348215
+
+inline double cs_fsaw_exec(double t, double n, double na) {
+    double wt = 2.0 * M_PI * t;
+    double out;
+    if(na < 1.0) {
+	out = -(1.0 - F2ESCALE(na)) * sin(n * wt) / n;
+    } else {
+	out = 0.0;
+    }
+    if(n <= 5) {
+	double j;
+	for(j = 1.0; j <= n; j += 1.0) {
+	    out += sin(j * wt) / j;
+	}
+	return out;
+    } else {
+	double sign = signbit(0.5 - t);
+	t = (1 - fabs(1 - 2 * t)) / 2; /* keeps t between 0 and 0.5 */
+	double n_21 = 2.0 * n + 1.0;
+	double cf = (M_PI / (1.0 - 2.0 / (n_21 * CS_FSAW_MAGIC)));
+	double s_off_d = M_PI / asin(2.0 * cos(cf / CS_FSAW_MAGIC) / (M_PI * n_21)) - 2.0;
+	double adj = cos(cf * (n_21 * t - 1.0 / CS_FSAW_MAGIC)) / (n_21 * sin(M_PI * (t + 1.0 / s_off_d) / (1.0 + 2.0 / s_off_d)));
+	double raw = M_PI * (0.5 - t);
+	return out + sign * (raw - adj);
+    }
+}
 
 static int cs_fsaw_process(jack_nframes_t nframes, void *arg) {
     cs_fsaw_t *self = (cs_fsaw_t *) arg;
@@ -45,21 +74,15 @@ static int cs_fsaw_process(jack_nframes_t nframes, void *arg) {
     for(i = 0; i < nframes; i++) {
 	float f = isnanf(freq) ? freq_buffer[i] : freq;
 	if(f == 0.0f || isnanf(f)) {
-	    self->t = 0.5;
-	    out_buffer[i] = offset;
+	    self->t = 0.0;
+	    out_buffer[i] = 0.0;
 	} else {
-	    /*
-	     *  |\ 
-	     * \|
-	     * 0 1
-	     * \ |
-	     *  \|
-	     * 10
-	     */
 	    while(self->t >= 1.0) {
 		self->t -= 1.0;
 	    }
-	    out_buffer[i] = (1.0f - ((float) 2.0 * self->t)) * amp + offset;
+	    double n = floor(1.0 / (2.0 * f));
+	    double na = (0.5 - n*f) / 0.0003;
+	    out_buffer[i] = cs_fsaw_exec(self->t, n, na) * amp + offset;
 	    self->t += f;
 	}
     }
@@ -76,7 +99,7 @@ int cs_fsaw_init(cs_fsaw_t *self, const char *client_name, jack_options_t flags,
 	cs_synth_destroy((cs_synth_t *) self);
 	return r;
     }
-    self->t = 0.5;
+    self->t = 0.0;
     r = jack_activate(self->client);
     if(r != 0) {
 	cs_synth_destroy((cs_synth_t *) self);

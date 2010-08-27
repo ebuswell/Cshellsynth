@@ -48,23 +48,63 @@ static int cs_distort_process(jack_nframes_t nframes, void *arg) {
     }
     double sharpness = (double) atomic_float_read(&self->sharpness);
     double factor = log(exp(sharpness) + 1.0);
+    int kind = atomic_read(&self->kind);
     jack_nframes_t i;
     for(i = 0; i < nframes; i++) {
 	double c_in = (double) (isnanf(in) ? in_buffer[i] : in);
 	double c_gain = (double) (isnanf(gain) ? gain_buffer[i] : gain);
-	if(c_in >= 0.0f) {
+	double E;
+	int k;
+	switch(kind) {
+	case CS_EXP:
+	    if(c_in >= 0.0f) {
+		out_buffer[i] = (float) (
+		    1.0
+		    - log(exp(-sharpness * ((c_in * c_gain) - 1.0)) + 1.0)
+		    / factor);
+	    } else {
+		out_buffer[i] = (float) (
+		    log(exp(sharpness * ((c_in * c_gain) + 1.0)) + 1.0)
+		    / factor
+		    - 1.0);
+	    }
+	    break;
+	case CS_TUBE:
+	    E = c_in;
+	    for(k = 0; k < 5; k++) { /* five stages */
+		double t;
+	    	t = E * c_gain + 1.0;
+	    	E = pow((t * sqrt(t * (9.0 * t - (4.0 * 0.01)))
+	    		 - (2.0*0.01*0.01 - 6.0*0.01*t + 3.0*t*t))*0.01/2.0,
+	    		1.0/3.0);
+	    	E = 1.27 * (E - ((2.0*t - 0.01) * 0.01) / E + t - 0.01) - 1.0;
+	    	if(isnan(E) || (E < 1.0)) {
+	    	    E = -1.0;
+	    	} else if(E > 1.0) {
+	    	    E = 1.0;
+	    	}
+	    }
+	    out_buffer[i] = E;
+	    break;
+	case CS_HYP:
 	    out_buffer[i] = (float) (
-		1.0
-		- log(exp(-sharpness * ((c_in * c_gain) - 1.0)) + 1.0)
-		  / factor);
-	} else {
+		(c_in * c_gain)
+		/ pow(pow(fabs(c_in * c_gain), sharpness) + 1.0, 1.0 / sharpness));
+	    break;
+	case CS_ATAN:
 	    out_buffer[i] = (float) (
-		log(exp(sharpness * ((c_in * c_gain) + 1.0)) + 1.0)
-		/ factor
-		- 1.0);
+		2.0 * atan(sharpness * c_in * c_gain)
+		/ M_PI);
+	    break;
+	default:
+	    return -1;
 	}
     }
     return 0;
+}
+
+void cs_distort_set_kind(cs_distort_t *self, int kind) {
+    atomic_set(&self->kind, kind);
 }
 
 void cs_distort_set_gain(cs_distort_t *self, float gain) {
@@ -89,6 +129,7 @@ int cs_distort_init(cs_distort_t *self, const char *client_name, jack_options_t 
 
     atomic_float_set(&self->gain, 1.0f);
     atomic_float_set(&self->sharpness, 2.0f);
+    atomic_set(&self->kind, CS_EXP);
 
     r = jack_set_process_callback(self->client, cs_distort_process, self);
     if(r != 0) {

@@ -24,8 +24,9 @@
 #include "jackruby.h"
 #include "filters.h"
 #include "filter.h"
+#include "lowpass.h"
 
-static VALUE cCSLowpass;
+VALUE cCSLowpass;
 
 static void cs_lowpass_free(void *mem) {
     cs_lowpass_t *cself = (cs_lowpass_t *) mem;
@@ -74,10 +75,26 @@ static VALUE rbcs_lowpass_set_freq(VALUE self, VALUE freq) {
     return freq;
 }
 
+static VALUE rbcs_lowpass_set_Q(VALUE self, VALUE Q) {
+    cs_lowpass_t *cself;
+    Data_Get_Struct(self, cs_lowpass_t, cself);
+    cs_lowpass_set_Q(cself, NUM2DBL(Q));
+    return Q;
+}
+
+static VALUE rbcs_lowpass_set_atten(VALUE self, VALUE atten) {
+    cs_lowpass_t *cself;
+    Data_Get_Struct(self, cs_lowpass_t, cself);
+    cs_lowpass_set_atten(cself, NUM2DBL(atten));
+    return atten;
+}
+
 void Init_lowpass() {
     cCSLowpass = rb_define_class_under(mCSFilters, "LLLowpass", cCSFilter);
 
     rb_define_singleton_method(cCSLowpass, "new", rbcs_lowpass_new, -1);
     rb_define_method(cCSLowpass, "freq", rbcs_lowpass_freq, 0);
     rb_define_method(cCSLowpass, "freq=", rbcs_lowpass_set_freq, 1);
+    rb_define_method(cCSLowpass, "Q=", rbcs_lowpass_set_Q, 1);
+    rb_define_method(cCSLowpass, "atten=", rbcs_lowpass_set_atten, 1);
 }

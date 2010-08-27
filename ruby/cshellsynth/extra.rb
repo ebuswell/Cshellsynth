@@ -257,6 +257,11 @@ module Synths
       super(LLFallingSaw, 1, *args)
     end
   end
+  class Parabola < PolyClient
+    def initialize(*args)
+      super(LLParabola, 1, *args)
+    end
+  end
   class Edho < PolyClient
     def initialize(*args)
       super(LLEdho, 1, *args)
@@ -296,6 +301,10 @@ module Filters
     end
   end
   class Distortion < PolyClient
+    Exponential = LLDistortion::Exponential
+    Hyperbolic = LLDistortion::Hyperbolic
+    Arctangent = LLDistortion::Arctangent
+    Tube = LLDistortion::Tube
     def initialize(*args)
       super(LLDistortion, 1, *args)
     end
@@ -303,6 +312,11 @@ module Filters
   class Bandpass < PolyClient
     def initialize(*args)
       super(LLBandpass, 1, *args)
+    end
+  end
+  class Notch < PolyClient
+    def initialize(*args)
+      super(LLNotch, 1, *args)
     end
   end
 end

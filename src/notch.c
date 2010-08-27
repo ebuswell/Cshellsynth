@@ -1,5 +1,5 @@
 /*
- * highpass.c
+ * notch.c
  * 
  * Copyright 2010 Evan Buswell
  * 
@@ -20,13 +20,13 @@
  */
 #include <jack/jack.h>
 #include <math.h>
-#include "cshellsynth/highpass.h"
+#include "cshellsynth/notch.h"
 #include "cshellsynth/filter.h"
 #include "atomic-float.h"
 #include "atomic-double.h"
 
-static int cs_highpass_process(jack_nframes_t nframes, void *arg) {
-    cs_highpass_t *self = (cs_highpass_t *) arg;
+static int cs_notch_process(jack_nframes_t nframes, void *arg) {
+    cs_notch_t *self = (cs_notch_t *) arg;
     float *in_buffer = in_buffer; /* suppress uninitialized warning */
     float *freq_buffer = freq_buffer; /* suppress uninitialized warning */
     float *Q_buffer = Q_buffer; /* suppress uninitialized warning */
@@ -59,17 +59,17 @@ static int cs_highpass_process(jack_nframes_t nframes, void *arg) {
     jack_nframes_t i;
     for(i = 0; i < nframes; i++) {
 	double f = isnanf(freq) ? freq_buffer[i] : freq;
-	if(f > 0.5) {
-	    f = 0.5;
+	if(f > 0.4999909) {
+	    f = 0.4999909;
 	}
 	double x = isnanf(in) ? in_buffer[i] : in;
 	double w = 2.0 * M_PI * f;
 	if(isnanf(a)) {
 	    a = sin(w)/(2*(isnanf(Q) ? Q_buffer[i] : Q));
 	}
-	double cosw = cos(w);
-	double y = (((1.0 + cosw)/2)/(1.0 + a)) * x - ((1.0 + cosw)/(1.0 + a)) * self->x1 + (((1.0 + cosw)/2)/(1.0 + a)) * self->x2
-	    + (2*cosw/(1.0 + a)) * self->y1 - ((1 - a)/(1 + a)) * self->y2;
+	double cosw2 = 2*cos(w);
+	double y = x/(1.0 + a) - (cosw2/(1.0 + a)) * self->x1 + self->x2 / (1.0 + a)
+	    + (cosw2/(1.0 + a)) * self->y1 - ((1 - a)/(1 + a)) * self->y2;
 
 	self->x2 = self->x1;
 	self->x1 = x;
@@ -86,12 +86,12 @@ static int cs_highpass_process(jack_nframes_t nframes, void *arg) {
     return 0;
 }
 
-int cs_highpass_init(cs_highpass_t *self, const char *client_name, jack_options_t flags, char *server_name) {
+int cs_notch_init(cs_notch_t *self, const char *client_name, jack_options_t flags, char *server_name) {
     int r = cs_lowpass_subclass_init((cs_lowpass_t *) self, client_name, flags, server_name);
     if(r != 0) {
 	return r;
     }
-    r = jack_set_process_callback(self->client, cs_highpass_process, self);
+    r = jack_set_process_callback(self->client, cs_notch_process, self);
     if(r != 0) {
 	cs_filter_destroy((cs_filter_t *) self);
 	return r;

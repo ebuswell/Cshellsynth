@@ -59,100 +59,37 @@ static int cs_bandpass_process(jack_nframes_t nframes, void *arg) {
     jack_nframes_t i;
     for(i = 0; i < nframes; i++) {
 	double f = isnanf(freq) ? freq_buffer[i] : freq;
+	if(f > 0.5) {
+	    f = 0.5;
+	}
 	double x = isnanf(in) ? in_buffer[i] : in;
-	double y;
-	if(f > 1.0) {
-	    f = 1.0;
+	double w = 2.0 * M_PI * f;
+	if(isnanf(a)) {
+	    a = sin(w)/(2*(isnanf(Q) ? Q_buffer[i] : Q));
 	}
-	if(f == 0.0) {
-	    y = 0.0;
+	double y = (a/(1.0 + a)) * x - (a/(1.0 + a)) * self->x2
+	    + (2*cos(w)/(1.0 + a)) * self->y1 - ((1 - a)/(1 + a)) * self->y2;
+
+	self->x2 = self->x1;
+	self->x1 = x;
+	self->y2 = self->y1;
+	if(y == INFINITY) {
+	    self->y1 = 1.0;
+	} else if (y == -INFINITY) {
+	    self->y1 = -1.0;
 	} else {
-	    double w = 2.0 * M_PI * f;
-	    if(isnanf(a)) {
-		double c_Q = isnanf(Q) ? Q_buffer[i] : Q;
-		double w_Q = w / c_Q;
-		if(isnan(w_Q) || (w_Q > 1.0)) {
-		    double Qw = c_Q * w;
-		    y = ((self->Exy + x)
-			 - Qw * self->EEyy)
-			/ (c_Q / w + Qw + 1.0);
-		} else {
-		    double w2 = w * w;
-		    y = (w_Q * (self->Exy + x)
-			 - w2 * (self->EEyy))
-			/ (w_Q + w2 + 1.0);
-		}
-	    } else {
-		double w2 = w * w;
-		double a_2 = 2.0 * ((double) a);
-		y = (a_2 * (self->Exy + x)
-		     - w2 * (self->EEyy))
-		    / (a_2 + w2 + 1.0);
-	    }
-	}
-	self->Exy += x - y;
-	if(self->Exy == INFINITY) {
-	    self->Exy = 1.0;
-	} else if(self->Exy == -INFINITY) {
-	    self->Exy = -1.0;
-	}
-	self->EEyy += self->Ey + 2.0 * y;
-	self->Ey += y;
-	if(self->Ey == INFINITY) {
-	    self->Ey = 1.0;
-	} else if(self->Ey == -INFINITY) {
-	    self->Ey = -1.0;
-	}
-	if(self->EEyy == INFINITY) {
-	    self->EEyy = 1.0;
-	} else if(self->EEyy == -INFINITY) {
-	    self->EEyy = -1.0;
+	    self->y1 = y;
 	}
 	out_buffer[i] = y;
     }
     return 0;
 }
 
-void cs_bandpass_set_freq(cs_bandpass_t *self, float freq) {
-    if(freq > 1.0) {
-	freq = freq / jack_get_sample_rate(self->client);
-    }
-    atomic_float_set(&self->freq, freq);
-}
-
-void cs_bandpass_set_Q(cs_bandpass_t *self, float Q) {
-    atomic_float_set(&self->Q, Q);
-}
-
-void cs_bandpass_set_atten(cs_bandpass_t *self, float atten) {
-    atomic_float_set(&self->atten, atten);
-}
-
 int cs_bandpass_init(cs_bandpass_t *self, const char *client_name, jack_options_t flags, char *server_name) {
-    int r = cs_filter_init((cs_filter_t *) self, client_name, flags, server_name);
+    int r = cs_lowpass_subclass_init((cs_lowpass_t *) self, client_name, flags, server_name);
     if(r != 0) {
 	return r;
     }
-
-    self->freq_port = jack_port_register(self->client, "freq", JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
-    if(self->freq_port == NULL) {
-	cs_filter_destroy((cs_filter_t *) self);
-	return -1;
-    };
-
-    self->Q_port = jack_port_register(self->client, "Q", JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
-    if(self->Q_port == NULL) {
-	cs_filter_destroy((cs_filter_t *) self);
-	return -1;
-    };
-
-    atomic_float_set(&self->freq, NAN);
-    atomic_float_set(&self->Q, 0.5);
-    atomic_float_set(&self->atten, NAN);
-    self->Exy = 0.0;
-    self->Ey = 0.0;
-    self->EEyy = 0.0;
-
     r = jack_set_process_callback(self->client, cs_bandpass_process, self);
     if(r != 0) {
 	cs_filter_destroy((cs_filter_t *) self);

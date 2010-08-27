@@ -29,6 +29,25 @@
 const float A[] = { 0.02109238, 0.07113478, 0.68873558 }; // rescaled by (1+P)/(1-P)
 const float P[] = { 0.3190,  0.7756,  0.9613  };
 
+struct float2 {
+    float a;
+    float b;
+};
+
+static inline struct float2 gaussian_random() {
+    float s, u1, u2;
+    struct float2 r;
+    do {
+	u1 = ((float) random()) / ((float) (RAND_MAX >> 1)) - 1.0f;
+	u2 = ((float) random()) / ((float) (RAND_MAX >> 1)) - 1.0f;
+	s = u1 * u1 + u2 * u2;
+    } while(s >= 1.0);
+    s = sqrtf(-2.0 * logf(s) / s);
+    r.a = s * u1;
+    r.b = s * u2;
+    return r;
+}
+
 static inline float pink_random(float state[3]) {
     static const float RMI2 = 2.0 / ((float) RAND_MAX);
     static const float offset = 0.02109238 + 0.07113478 + 0.68873558;
@@ -52,10 +71,14 @@ static int cs_noise_process(jack_nframes_t nframes, void *arg) {
     float offset = atomic_float_read(&self->offset);
     float amp = atomic_float_read(&self->amp);
     jack_nframes_t i;
+    struct float2 r;
     for(i = 0; i < nframes; i++) {
 	switch(kind) {
 	case CS_WHITE:
-	    out_buffer[i] = (((float) random()) / ((float) RAND_MAX)) * amp + offset;
+	    r = gaussian_random();
+	    out_buffer[i] = r.a * amp + offset;
+	    i += 1;
+	    out_buffer[i] = r.b * amp + offset;
 	    break;
 	case CS_PINK:
 	    out_buffer[i] = pink_random(self->state) * amp + offset;

@@ -43,6 +43,7 @@ typedef struct cs_triangle_struct {
     jack_port_t *out_port;
     atomic_float_t amp;
     atomic_float_t offset;
+    atomic_double_t slope; /** See @cs_triangle_set_slope */
     double t; /** Time offset, as a fraction of wavelength */
 } cs_triangle_t;
 
@@ -74,6 +75,17 @@ int cs_triangle_init(cs_triangle_t *self, const char *client_name, jack_options_
  * @ref cs_synth_set_amp
  */
 #define cs_triangle_set_amp(cs_triangle, amp) cs_synth_set_amp((cs_synth_t *) (cs_triangle), (amp))
+
+/**
+ * Sets the relative rising and falling slope.  For a normal triangle, this is 0.5.  For a
+ * rising or falling saw, this is 0 or 1.  Note, however, that since this is implemented
+ * as a comb filter, at 0 or 1 you will get silence.
+ *
+ * Ruby version: @c slope=
+ *
+ * @param slope relative slope.  0.5 by default.
+ */
+void cs_triangle_set_slope(cs_triangle_t *self, double slope);
 
 #endif /* #ifndef CSHELLSYNTH_TRIANGLE_H */
 

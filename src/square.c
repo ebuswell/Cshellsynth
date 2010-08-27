@@ -23,6 +23,7 @@
 #include "cshellsynth/square.h"
 #include "cshellsynth/synth.h"
 #include "cshellsynth/jclient.h"
+#include "falling_saw.h"
 #include "atomic-float.h"
 #include "atomic-double.h"
 
@@ -53,29 +54,13 @@ static int cs_square_process(jack_nframes_t nframes, void *arg) {
 	    while(self->t >= 1.0) {
 		self->t -= 1.0;
 	    }
-	    if(self->t >= duty_cycle) {
-		if(self->t + f > 1.0) {
-		    // percentage of sample before transition
-		    double diff = (1.0 - self->t) / f;
-		    // average value is (1.0 * diff) + (-1.0 * (1 - diff))
-		    // diff - 1 + diff
-		    // 2*diff - 1
-		    out_buffer[i] = ((2.0 * diff) - 1.0f) * amp + offset;
-		} else {
-		    out_buffer[i] = 1.0f * amp + offset;
-		}
-	    } else {
-		if(self->t + f > duty_cycle) {
-		    // percentage of sample before transition
-		    float diff = (duty_cycle - self->t) / f;
-		    // average value is (-1.0 * diff) + (1.0 * (1 - diff))
-		    // -diff + 1 - diff
-		    // 1 - 2*diff
-		    out_buffer[i] = (1.0f - (2.0 * diff)) * amp + offset;
-		} else {
-		    out_buffer[i] = (-1.0f) * amp + offset;
-		}
+	    double n = floor(1.0 / (2.0 * f));
+	    double na = (0.5 - n*f) / 0.0003;
+	    double t2 = self->t + duty_cycle;
+	    if(t2 >= 1.0) {
+		t2 -= 1.0;
 	    }
+	    out_buffer[i] = (cs_fsaw_exec(self->t, n, na) - cs_fsaw_exec(t2, n, na)) * amp + offset;
 	    self->t += f;
 	}
     }

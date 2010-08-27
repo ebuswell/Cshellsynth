@@ -45,6 +45,13 @@ static VALUE rbcs_distort_new(int argc, VALUE *argv, VALUE klass) {
     return Data_Wrap_Struct(klass, 0, cs_distort_free, cself);
 }
 
+static VALUE rbcs_distort_set_kind(VALUE self, VALUE kind) {
+    cs_distort_t *cself;
+    Data_Get_Struct(self, cs_distort_t, cself);
+    cs_distort_set_kind(cself, NUM2INT(kind));
+    return kind;
+}
+
 static VALUE rbcs_distort_gain(VALUE self) {
     cs_distort_t *cself;
     Data_Get_Struct(self, cs_distort_t, cself);
@@ -88,4 +95,9 @@ void Init_distortion() {
     rb_define_method(cCSDistortion, "gain", rbcs_distort_gain, 0);
     rb_define_method(cCSDistortion, "gain=", rbcs_distort_set_gain, 1);
     rb_define_method(cCSDistortion, "sharpness=", rbcs_distort_set_sharpness, 1);
+    rb_define_method(cCSDistortion, "kind=", rbcs_distort_set_kind, 1);
+    rb_define_const(cCSDistortion, "Exponential", INT2NUM(CS_EXP));
+    rb_define_const(cCSDistortion, "Hyperbolic", INT2NUM(CS_HYP));
+    rb_define_const(cCSDistortion, "Arctangent", INT2NUM(CS_ATAN));
+    rb_define_const(cCSDistortion, "Tube", INT2NUM(CS_TUBE));
 }
