@@ -31,6 +31,7 @@
 #include <cshellsynth/filter.h>
 #include <cshellsynth/cot.h>
 #include <cshellsynth/highpass.h>
+#include <cshellsynth/impulse_train.h>
 #include <cshellsynth/instrument.h>
 #include <cshellsynth/jclient.h>
 #include <cshellsynth/key.h>

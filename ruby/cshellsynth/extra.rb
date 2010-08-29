@@ -272,6 +272,11 @@ module Synths
       super(LLCotangent, 1, *args)
     end
   end
+  class ImpulseTrain < PolyClient
+    def initialize(*args)
+      super(LLImpulseTrain, 1, *args)
+    end
+  end
 end
 
 module Filters
