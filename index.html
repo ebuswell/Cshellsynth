@@ -38,11 +38,11 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </div>
 </div>
 <div class="contents">
-<h1>Cshellsynth </h1><h3 class="version">0.5 </h3><h2><a class="anchor" id="intro_sec">
+<h1>Cshellsynth </h1><h3 class="version">0.55 </h3><h2><a class="anchor" id="intro_sec">
 Introduction</a></h2>
 <p>Cshellsynth is library and a ruby module for software synthesis. It utilizes the <a href="http://jackaudio.org">jack api</a> for interaction with the sound card and other utilities. It also has one module---so far---that utilizes <a href="http://www.mega-nerd.com/libsndfile/">libsndfile</a>.</p>
 <p>Cshellsynth is designed to be mathematically precise, yet with an incredibly simple interface. It is my hope that with the included <a href="http://ruby-lang.org">Ruby</a> module, it will be useful for livecoding, but that is certainly not its only use.</p>
-<p>The source code for Cshellsynth can be downloaded <a href="http://github.com/downloads/ebuswell/Cshellsynth/cshellsynth-0.5.tar.gz">here</a>. Please refer to the enclosed documentation for compilation instructions.</p>
+<p>The source code for Cshellsynth can be downloaded <a href="http://github.com/downloads/ebuswell/Cshellsynth/cshellsynth-0.55.tar.gz">here</a>. Please refer to the enclosed documentation for compilation instructions.</p>
 <p>To file a bug report, or for more information, see the github page: <a href="http://github.com/ebuswell/Cshellsynth">http://github.com/ebuswell/Cshellsynth</a></p>
 <p>To offer feedback of any sort, or to help with the development process, please join in at <a href="mailto:cshellsynth-dev@googlegroups.com">cshellsynth-dev@googlegroups.com</a></p>
 <h2><a class="anchor" id="bugs_sec">
@@ -68,7 +68,7 @@ Getting Started</a></h2>
 <p><code>Mixer</code> (<a class="el" href="mixer_8h.html">mixer.h</a>) takes an arbitrary number of inputs (<code>in[0..x]</code>) and adds them all to produce one output. Note that Jack will automatically mix together multiple incoming connectoins to a given port, but <code>Mixer</code> allows for more explicit control.</p>
 <p><code>Modulator</code> (<a class="el" href="modulator_8h.html">modulator.h</a>) takes two inputs and creates an output equal to the multiplication of one input by the other input.</p>
 <p><code>Pan</code> (<a class="el" href="pan_8h.html">pan.h</a>) takes one input and provides a left and right output, controlled by a pan control.</p>
-<p><code>FullMixer</code> is a combination of mixers and panners to make a studio-like mixer. By default, cshellsynth creates a FullMixer "@c $mixer," with outputs connected to your sound card out.</p>
+<p><code>FullMixer</code> is a combination of mixers and pan controls to make something like a studio mixer. By default, cshellsynth creates a FullMixer "@c $mixer," with outputs connected to your sound card out.</p>
 <p><code>EnvelopeGenerator</code> (<a class="el" href="envelope__generator_8h.html">envelope_generator.h</a>) does something useful with control data, generating an envelope for your sound. This is usually used in conjunction with a <code>Modulator</code> (<a class="el" href="modulator_8h.html">modulator.h</a>) to control the amplitude envelope of a synth.</p>
 <p>Lastly, <code>Key</code> (<a class="el" href="key_8h.html">key.h</a>) transforms note data into frequency data. You could just hand-code the frequency in, but <code>Key</code> is a lot easier and more easily changeable. For example, you can change from minor to major or modulate keys with a single line of code.</p>
 <h2><a class="anchor" id="para_port">
@@ -88,7 +88,8 @@ Sequencers, Clocks, and Polyphony</a></h2>
 <div class="fragment"><pre class="fragment">   seq &lt;&lt; <span class="stringliteral">&quot;0~1~2~3~4 3 2 1 0~2~4 2 0~~~~~  &quot;</span>
 </pre></div><p>will play a simple warm-up excercise. The length of time that a given token takes up is given by <code>Sequencer#granularity</code>, where a beat (quarter note) is 1, an eighth note is 0.5, etc.</p>
 <p>Since the target use is livecoding, by default both of these methods will repeat once they are finished. If you don't want this, use <code>Sequencer#sequence_once</code> or <code>Sequencer#&gt;&gt;</code>.</p>
-<p>A sequencer will only start to do anything once a <code>Clock</code> is connected. All <code>Sequencers</code> should (probably) be connected to the same <code>Clock</code>. A <code>Clock</code> runs from 0 to <code>Clock#meter</code> at <code>Clock#rate</code> beats per sample (when setting <code>Clock#rate</code>, values greater than 1 are interpreted as beats per minute).</p>
+<p>A sequencer will only start to do anything once a <code>Clock</code> is connected. All <code>Sequencers</code> should (probably) be connected to the same <code>Clock</code>. There is a default global clock created as <code>$clock</code>.</p>
+<p>A <code>Clock</code> runs from 0 to <code>Clock#meter</code> at <code>Clock#rate</code>. If Clock#rate is set via port, it is always in beats per sample. If the <code>rate</code> parameter is set instead, values greater than 1 are interpreted as beats per minute, less than one as beats per sample.</p>
 <h2><a class="anchor" id="example_sec">
 Example</a></h2>
 <p>Cshellsynth comes bundled with a class <code>MiniSynth</code> that is pre-configured to turn your computer into a less-than-totally modular synth. Play with it, then look at the source code in <code>ruby/cshellsynth/extra.rb</code> to get an idea of how it works.</p>
@@ -167,7 +168,7 @@ Miscellaneous</a></h3>
 </iframe>
 </div>
 
-<hr class="footer"/><address style="text-align: right;"><small>Generated on Mon Aug 30 08:49:48 2010 for cshellsynth by&nbsp;
+<hr class="footer"/><address style="text-align: right;"><small>Generated on Mon Aug 30 14:26:16 2010 for cshellsynth by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.3 </small></address>
 </body>
