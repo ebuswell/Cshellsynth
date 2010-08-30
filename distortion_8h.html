@@ -55,25 +55,45 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <tr><td colspan="2"><h2>Defines</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="distortion_8h.html#aeefce06972053df4ec8167ae9ca3cb0c">cs_distort_destroy</a>(cs_distort)&nbsp;&nbsp;&nbsp;cs_filter_destroy((<a class="el" href="structcs__filter__t.html">cs_filter_t</a> *) (cs_distort))</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="distortion_8h.html#a77e9b598d1f7befe9d760a666e2bead4">cs_distort_set_in</a>(self, in)&nbsp;&nbsp;&nbsp;cs_filter_set_in(self, in)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a569237181520f0b24da7e16f403d1107"></a><!-- doxytag: member="distortion.h::CS_EXP" ref="a569237181520f0b24da7e16f403d1107" args="" -->
+#define&nbsp;</td><td class="memItemRight" valign="bottom"><b>CS_EXP</b>&nbsp;&nbsp;&nbsp;1</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a78941adbcea8b40c7774fa96e912e068"></a><!-- doxytag: member="distortion.h::CS_HYP" ref="a78941adbcea8b40c7774fa96e912e068" args="" -->
+#define&nbsp;</td><td class="memItemRight" valign="bottom"><b>CS_HYP</b>&nbsp;&nbsp;&nbsp;2</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6672e07501bac5fe7400aeb6d1aaa7cc"></a><!-- doxytag: member="distortion.h::CS_ATAN" ref="a6672e07501bac5fe7400aeb6d1aaa7cc" args="" -->
+#define&nbsp;</td><td class="memItemRight" valign="bottom"><b>CS_ATAN</b>&nbsp;&nbsp;&nbsp;3</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aeb5e6f214a5457492d7f17f2cf1e4f4c"></a><!-- doxytag: member="distortion.h::CS_TUBE" ref="aeb5e6f214a5457492d7f17f2cf1e4f4c" args="" -->
+#define&nbsp;</td><td class="memItemRight" valign="bottom"><b>CS_TUBE</b>&nbsp;&nbsp;&nbsp;4</td></tr>
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="distortion_8h.html#aa92d8e91a9ef06f0977563934823b32f">cs_distort_init</a> (<a class="el" href="structcs__distort__t.html">cs_distort_t</a> *self, const char *client_name, jack_options_t flags, char *server_name)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="distortion_8h.html#a753bc07b0bfc79f13b4ab5455b04338a">cs_distort_set_kind</a> (<a class="el" href="structcs__distort__t.html">cs_distort_t</a> *self, int kind)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="distortion_8h.html#afd1fa0d9622d4fe29a7ef1b46fed35c3">cs_distort_set_gain</a> (<a class="el" href="structcs__distort__t.html">cs_distort_t</a> *self, float gain)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="distortion_8h.html#a7e7a0fc8dc9561e91a2d0910238fce79">cs_distort_set_sharpness</a> (<a class="el" href="structcs__distort__t.html">cs_distort_t</a> *self, float sharpness)</td></tr>
 </table>
 <hr/><a name="_details"></a><h2>Detailed Description</h2>
 <p>Distortion filter</p>
 <p>Ruby version: <code>Filters::Distortion</code> </p>
-<p>Limits input according to the equation:</p>
+<p>Limits input according to one of the following equations, where s is <code>sharpness</code>, g is <code>gain</code>, and x is the original input.</p>
+<p>Lower values of <code>sharpness</code> make the sound less "warm" and vice versa.</p>
+<p>For <code>Exponential</code>:</p>
 <div class="fragment"><pre class="fragment">
- *          -s(gx - 1)
- *     log(e             + 1)
- * 1 - ----------------------
- *          -s
- *     log(e   + 1)
- *
- * </pre></div><p>where s is <code>sharpness</code>, g is <code>gain</code>, and x is the original input. There is a symmetrical equation for when x is negative.</p>
-<p>Lower values of <code>sharpness</code> make the sound less "warm" and vice versa. </p>
-<hr/><h2>Define Documentation</h2>
+         -s(gx - 1)
+    log(e           + 1)
+1 - --------------------
+            -s
+       log(e   + 1)
+</pre></div><p>With a symmetrical equation for a negative x.</p>
+<p>For <code>Hyperbolic</code>:</p>
+<div class="fragment"><pre class="fragment">
+      gx
+--------------
+     s     1/s
+(|gx|  + 1)
+</pre></div><p>For <code>Arctangent</code>:</p>
+<div class="fragment"><pre class="fragment">
+2atan(sgx)
+----------
+    π
+</pre></div> <hr/><h2>Define Documentation</h2>
 <a class="anchor" id="aeefce06972053df4ec8167ae9ca3cb0c"></a><!-- doxytag: member="distortion.h::cs_distort_destroy" ref="aeefce06972053df4ec8167ae9ca3cb0c" args="(cs_distort)" -->
 <div class="memitem">
 <div class="memproto">
@@ -195,6 +215,42 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 </div>
 </div>
+<a class="anchor" id="a753bc07b0bfc79f13b4ab5455b04338a"></a><!-- doxytag: member="distortion.h::cs_distort_set_kind" ref="a753bc07b0bfc79f13b4ab5455b04338a" args="(cs_distort_t *self, int kind)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void cs_distort_set_kind </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structcs__distort__t.html">cs_distort_t</a> *&nbsp;</td>
+          <td class="paramname"> <em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&nbsp;</td>
+          <td class="paramname"> <em>kind</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Set which kind of distortion to use.</p>
+<p>Ruby version: <code>kind=</code> </p>
+<p>Ruby version of values is <code>Filters::Distortion::Exponential</code>, <code>Filters::Distortion::Hyperbolic</code>, and <code>Filters::Distortion::Arctangent</code> </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>kind</em>&nbsp;</td><td>CS_EXP, CS_HYP, CS_ATAN </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a class="anchor" id="a7e7a0fc8dc9561e91a2d0910238fce79"></a><!-- doxytag: member="distortion.h::cs_distort_set_sharpness" ref="a7e7a0fc8dc9561e91a2d0910238fce79" args="(cs_distort_t *self, float sharpness)" -->
 <div class="memitem">
 <div class="memproto">
@@ -236,7 +292,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&nbsp;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&nbsp;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&nbsp;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&nbsp;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&nbsp;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&nbsp;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&nbsp;</span>Defines</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&nbsp;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&nbsp;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&nbsp;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&nbsp;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&nbsp;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&nbsp;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&nbsp;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&nbsp;</span>Defines</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -245,7 +301,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-<hr class="footer"/><address style="text-align: right;"><small>Generated on Sun Jul 18 22:45:56 2010 for cshellsynth by&nbsp;
+<hr class="footer"/><address style="text-align: right;"><small>Generated on Mon Aug 30 08:49:48 2010 for cshellsynth by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.3 </small></address>
 </body>

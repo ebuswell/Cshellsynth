@@ -44,21 +44,51 @@ Introduction</a></h2>
 <p>Cshellsynth is designed to be mathematically precise, yet with an incredibly simple interface. It is my hope that with the included <a href="http://ruby-lang.org">Ruby</a> module, it will be useful for livecoding, but that is certainly not its only use.</p>
 <p>The source code for Cshellsynth can be downloaded <a href="http://github.com/downloads/ebuswell/Cshellsynth/cshellsynth-0.5.tar.gz">here</a>. Please refer to the enclosed documentation for compilation instructions.</p>
 <p>To file a bug report, or for more information, see the github page: <a href="http://github.com/ebuswell/Cshellsynth">http://github.com/ebuswell/Cshellsynth</a></p>
-<h2><a class="anchor" id="started_sec">
+<p>To offer feedback of any sort, or to help with the development process, please join in at <a href="mailto:cshellsynth-dev@googlegroups.com">cshellsynth-dev@googlegroups.com</a></p>
+<h2><a class="anchor" id="bugs_sec">
+Bugs</a></h2>
+<p>When installed to <code>/usr/local</code>, you must set <code>LD_LIBRARY_PATH=/usr/local/lib</code> when running ruby, e.g.</p>
+<div class="fragment"><pre class="fragment">   LD_LIBRARY_PATH=/usr/local/lib irb
+</pre></div><p>If you're doing something heavily polyphonic, Jack may run out of clients or ports. You can use</p>
+<div class="fragment"><pre class="fragment">   jackd -p [maximum number of ports]
+</pre></div><p>to raise the maximum number of ports. Unfortunately, the only way to raise the maximum number of clients is to recompile jack2. Run waf with</p>
+<div class="fragment"><pre class="fragment">   ./waf [other options] --clients=512
+</pre></div><h2><a class="anchor" id="started_sec">
 Getting Started</a></h2>
 <p>This assumes you have already compiled and installed Cshellsynth. If not, refer to the README and INSTALL file for details. This mainly pertains to using Cshellsynth through the Ruby module, but it should be useful even to someone who only wishes to use C.</p>
-<p>Cshellsynth is a modular synthesizer. That means that every aspect of synthesis here is conceptually seperate, and synthesis takes part in stages. Every module is (at lease one) Jack client, but you probably don't need to think about that fact unless you're having resource troubles. What's important to know is that every module has one or more out ports, and most modules have one or more in ports. You connect them together with jack_connect, or in Ruby, like:</p>
+<p>Cshellsynth is a modular synthesizer. That means that every aspect of synthesis here is conceptually separate, and synthesis takes part in stages. Every module is (at lease one) Jack client, but you probably don't need to think about that fact unless you're having resource troubles. What's important to know is that every module has one or more out ports, and most modules have one or more in ports. You connect them together with jack_connect, or in Ruby, like:</p>
 <div class="fragment"><pre class="fragment">   m1.port1 = m2.port2
-</pre></div><p>Note that although it is possible to have the left hand value be an out port, it is preferable to use in ports as slightly more magic happens in that case. This should be fixed at some point.</p>
-<p>To create a synthesizer, hook up all the modules you want, finally hooking into <code>"system:playback_1"</code> and/or <code>"system:playback_2"</code> or whatever other jack port you wish to connect to. To get a list of ports on your system, type <code>"c.ports,"</code> where <code>c</code> is any Jack client.</p>
+</pre></div><p>Note that although it is possible to have the left hand value be an out port, it is preferable to use in ports as the lvalue as slightly more magic happens in that case. This should be fixed at some point.</p>
+<p>To create a synthesizer, hook up all the modules you want, finally hooking into <code>$mixer.in</code>[N] or whatever other external jack port you wish to connect to. To get a list of ports on your system, type "@c c.ports," where <code>c</code> is any Jack client.</p>
 <p>In Cshellsynth, there are three main categories of modules: <code>Filters</code>, <code>Controllers</code>, and <code>Synths</code>.</p>
 <p><code>Controllers</code> generate control data, like "do this," or "stop doing this." A <code>Controllers::Sequencer</code> (<a class="el" href="sequencer_8h.html">sequencer.h</a>) is the most useful controller, but Cshellsynth also supplies a <code>Controllers::Instrument</code> (<a class="el" href="instrument_8h.html">instrument.h</a>) to test things out. All controllers output data and control data. The control data consists of <code>0</code> (no change), <code>1</code> (begin), and <code>-1</code> (end). The output data can be whatever you want, but usually this consists of note numbers.</p>
 <p><code>Synths</code> generate sound. See below for the full list of synths. Synths usually have an input frequency port, <code>freq</code>, which takes frequency as cycles per sample, and an output port, <code>out</code>. Some synths have other parameters as well. Only one synth doesn't have any input: <code>Synths::Noise</code> (<a class="el" href="noise_8h.html">noise.h</a>).</p>
-<p><code>Filters</code> transform input to output. These don't necessarily involve frequency, but sometimes do. A filter isn't strictly necessary, but most things sound better with at least one filter. <code>Filters</code> have at least an <code>in</code> and an <code>out</code> port, sometimes others.</p>
+<p><code>Filters</code> transform input to output. These don't necessarily involve frequency, as per the more usual usage of the term "filter." If a filter based on frequency is meant, I will specify "frequency filter". A filter isn't strictly necessary, but most things sound better with at least one filter. <code>Filters</code> have at least an <code>in</code> and an <code>out</code> port, sometimes others.</p>
 <p>In addition to these, there are a few important modules that aren't categorized.</p>
-<p><code>Mixer</code> (<a class="el" href="mixer_8h.html">mixer.h</a>) takes an arbitrary number of inputs (<code>in[0..x]</code>) and adds them all to produce one output. Unless you're going monophonic, you'll probably want one of these. Note that Jack does this automatically for multiple clients connecting to one port, but <code>Mixer</code> does this in a simpler manner.</p>
+<p><code>Mixer</code> (<a class="el" href="mixer_8h.html">mixer.h</a>) takes an arbitrary number of inputs (<code>in[0..x]</code>) and adds them all to produce one output. Note that Jack will automatically mix together multiple incoming connectoins to a given port, but <code>Mixer</code> allows for more explicit control.</p>
+<p><code>Modulator</code> (<a class="el" href="modulator_8h.html">modulator.h</a>) takes two inputs and creates an output equal to the multiplication of one input by the other input.</p>
+<p><code>Pan</code> (<a class="el" href="pan_8h.html">pan.h</a>) takes one input and provides a left and right output, controlled by a pan control.</p>
+<p><code>FullMixer</code> is a combination of mixers and panners to make a studio-like mixer. By default, cshellsynth creates a FullMixer "@c $mixer," with outputs connected to your sound card out.</p>
 <p><code>EnvelopeGenerator</code> (<a class="el" href="envelope__generator_8h.html">envelope_generator.h</a>) does something useful with control data, generating an envelope for your sound. This is usually used in conjunction with a <code>Modulator</code> (<a class="el" href="modulator_8h.html">modulator.h</a>) to control the amplitude envelope of a synth.</p>
 <p>Lastly, <code>Key</code> (<a class="el" href="key_8h.html">key.h</a>) transforms note data into frequency data. You could just hand-code the frequency in, but <code>Key</code> is a lot easier and more easily changeable. For example, you can change from minor to major or modulate keys with a single line of code.</p>
+<h2><a class="anchor" id="para_port">
+Parameters, Ports, and Units</a></h2>
+<p>Every module is configurable with parameters and ports. In most cases, ports and parameters are interchangable, e.g. <code>synth.freq = key.freq</code> will connect the <code>synth</code> object's frequency input port to the <code>key</code> object's frequency output port, and <code>synth.freq = 440.0</code> will set the <code>synth</code> object's frequency parameter to a constant 440. There are, however, some ports with no corresponding parameter, and some parameters with no corresponding port. However, this should only be the case with parameters for which a dynamic setting is useless, and ports for which a static setting is useless. Otherwise, it's a bug and should be reported; please include the use case.</p>
+<p>At the moment, this is implemented by use of the <code>NaN</code> (Not a Number) values. If a parameter is set to a number, the port is not used; otherwise values are read from the port. In most cases, you won't have to think about this, as normally, when you connect a port the parameter will automatically be set to NaN. However, as Jack is somewhat independent, many things can happen whereby a port will be connected but a parameter will not be set to NaN. In that case, you can manually set the parameter to NaN (via something like <code>synth.param = 0.0/0.0</code>), and the port will start working. This works fine, but is considered a low-priority bug.</p>
+<p>The default units for parameters and ports allow for maximum control. Wherever possible, they are also intuitive, but control is always a priority over ease. With data sent over the ports, time units are always in samples, frequency units are always cycles per sample; when setting parameters, however, time units are always in seconds, frequency units are always in Hz, EXCEPT for values &lt; 1 Hz, which are per sample. The reason for this is so that functions like <code>Key#note2freq</code> (<a class="el" href="key_8h.html#a524e9ed220ff3b729830adf484098cd2">cs_key_note2freq</a>) can be used for setting static parameters in a way that is identical to the ports. Unless a <code>Synth</code> has a <code>scale</code> parameter, amplitude is normalized so that the root frequency of a given wave is 1. This means that by default most synths have a maximum amplitude of more than 1 and should be mixed accordingly; e.g. a sawtooth wave (ideally) has a maximum amplitude of π/2, and a parabolic wave has a maximum amplitude of π<sup>2</sup>/6. The actual maximums are usually even greater from the effects of bandlimiting.</p>
+<h2><a class="anchor" id="seq_sec">
+Sequencers, Clocks, and Polyphony</a></h2>
+<p>All modules (except <code>Mixer</code>) have a <code>polyphony</code> parameter, that controls the maximum number of simultaneous notes that can be played. All modules in a given chain should have the same value for polyphony. <code>Sequencer</code>s will sequence round-robin over each polyphonic node of a module. Currently, this has limitations. Polyphony is implemented purely by multiplexing sequencer commands using multiple <code>Sequencer</code>s, and so certain types of dynamic changes to the sequencing will end up screwing with the round-robin order.</p>
+<p>The <code>Sequencer</code> is probably the most volatile object at this point and is subject to change in future versions. This description is only valid for the time being.</p>
+<p>Sequencers can be sequenced using two forms. The first is to use a time range and a list of triples, like:</p>
+<div class="fragment"><pre class="fragment">   seq.sequence(start, stop, [start_time1, stop_time1, value1],
+                             [start_time2, stop_time2, value2],
+                             [start_time3, stop_time3, value3], ...)
+</pre></div><p>The second form uses a mini-language. You pass the sequencer a string where every token takes up a fixed amount of time, a space indicates a silence, a number indicates a value, and a tilde indicates the continuation of a note, e.g.:</p>
+<div class="fragment"><pre class="fragment">   seq &lt;&lt; <span class="stringliteral">&quot;0~1~2~3~4 3 2 1 0~2~4 2 0~~~~~  &quot;</span>
+</pre></div><p>will play a simple warm-up excercise. The length of time that a given token takes up is given by <code>Sequencer#granularity</code>, where a beat (quarter note) is 1, an eighth note is 0.5, etc.</p>
+<p>Since the target use is livecoding, by default both of these methods will repeat once they are finished. If you don't want this, use <code>Sequencer#sequence_once</code> or <code>Sequencer#&gt;&gt;</code>.</p>
+<p>A sequencer will only start to do anything once a <code>Clock</code> is connected. All <code>Sequencers</code> should (probably) be connected to the same <code>Clock</code>. A <code>Clock</code> runs from 0 to <code>Clock#meter</code> at <code>Clock#rate</code> beats per sample (when setting <code>Clock#rate</code>, values greater than 1 are interpreted as beats per minute).</p>
 <h2><a class="anchor" id="example_sec">
 Example</a></h2>
 <p>Cshellsynth comes bundled with a class <code>MiniSynth</code> that is pre-configured to turn your computer into a less-than-totally modular synth. Play with it, then look at the source code in <code>ruby/cshellsynth/extra.rb</code> to get an idea of how it works.</p>
@@ -93,19 +123,22 @@ Controllers</a></h3>
 Synths</a></h3>
 <p><code>Synths::Synth</code> <a class="el" href="synth_8h.html">synth.h</a></p>
 <p><code>Synths::Cotangent</code> <a class="el" href="cot_8h.html">cot.h</a></p>
-<p><code>Synths::Edho</code> <a class="el" href="edho_8h.html">edho.h</a></p>
+<p><code>Synths::Dsf</code> <a class="el" href="dsf_8h.html">dsf.h</a></p>
 <p><code>Synths::Sine</code> <a class="el" href="sine_8h.html">sine.h</a></p>
 <p><code>Synths::Noise</code> <a class="el" href="noise_8h.html">noise.h</a></p>
 <p><code>Synths::Square</code> <a class="el" href="square_8h.html">square.h</a></p>
+<p><code>Synths::Parabola</code> <a class="el" href="parabola_8h.html">parabola.h</a></p>
 <p><code>Synths::Triangle</code> <a class="el" href="triangle_8h.html">triangle.h</a></p>
 <p><code>Synths::FallingSaw</code> <a class="el" href="falling__saw_8h.html">falling_saw.h</a></p>
 <p><code>Synths::RisingSaw</code> <a class="el" href="rising__saw_8h.html">rising_saw.h</a></p>
+<p><code>Synths::ImpulseTrain</code> <a class="el" href="impulse__train_8h.html">impulse_train.h</a></p>
 <h3><a class="anchor" id="filters_ssect">
 Filters</a></h3>
 <p><code>Filters::Filter</code> <a class="el" href="filter_8h.html">filter.h</a></p>
 <p><code>Filters::Bandpass</code> <a class="el" href="bandpass_8h.html">bandpass.h</a></p>
 <p><code>Filters::Highpass</code> <a class="el" href="highpass_8h.html">highpass.h</a></p>
 <p><code>Filters::Lowpass</code> <a class="el" href="lowpass_8h.html">lowpass.h</a></p>
+<p><code>Filters::Notch</code> <a class="el" href="notch_8h.html">notch.h</a></p>
 <p><code>Filters::Distortion</code> <a class="el" href="distortion_8h.html">distortion.h</a></p>
 <p><code>Filters::Lin2Exp</code> <a class="el" href="lin2exp_8h.html">lin2exp.h</a></p>
 <p><code>Filters::Portamento</code> <a class="el" href="portamento_8h.html">portamento.h</a></p>
@@ -117,6 +150,7 @@ Miscellaneous</a></h3>
 <p><code>Key</code> <a class="el" href="key_8h.html">key.h</a></p>
 <p><code>Mixer</code> <a class="el" href="mixer_8h.html">mixer.h</a></p>
 <p><code>Modulator</code> <a class="el" href="modulator_8h.html">modulator.h</a></p>
+<p><code>Pan</code> <a class="el" href="pan_8h.html">pan.h</a></p>
 <p><code>Sampler</code> <a class="el" href="sampler_8h.html">sampler.h</a> </p>
 </div>
 <!--- window showing the filter options -->
@@ -124,7 +158,7 @@ Miscellaneous</a></h3>
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&nbsp;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&nbsp;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&nbsp;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&nbsp;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&nbsp;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&nbsp;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&nbsp;</span>Defines</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&nbsp;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&nbsp;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&nbsp;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&nbsp;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&nbsp;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&nbsp;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&nbsp;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&nbsp;</span>Defines</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -133,7 +167,7 @@ Miscellaneous</a></h3>
 </iframe>
 </div>
 
-<hr class="footer"/><address style="text-align: right;"><small>Generated on Sun Jul 18 22:45:56 2010 for cshellsynth by&nbsp;
+<hr class="footer"/><address style="text-align: right;"><small>Generated on Mon Aug 30 08:49:48 2010 for cshellsynth by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.3 </small></address>
 </body>

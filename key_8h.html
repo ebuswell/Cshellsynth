@@ -98,24 +98,19 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>Key translates notes into frequencies, scaled by the sample frequency.</p>
 <p>It does so according to an array which corresponds to the scale:</p>
 <div class="fragment"><pre class="fragment">
- *              n/l
- * rt[n % l] * 2
- *
- * </pre></div><p>where r is the root, t is the tuning array, n is the note, and l is the length of the array. Note that n / l is truncated integer arithmetic, such that n / l is the integer amount, n % l the remainder.</p>
+             n/l
+rt[n % l] * 2
+</pre></div><p>where r is the root, t is the tuning array, n is the note, and l is the length of the array. Note that n / l is truncated integer arithmetic, such that n / l is the integer amount, n % l the remainder.</p>
 <p>Additionally, notes may be fractional. Fractional notes correspond to the equation:</p>
 <div class="fragment"><pre class="fragment">
- *
- *       f
- * p(n/p)
- *
- * </pre></div><p>where p is the previous note, n is the next note, and f is the fractional portion.</p>
+      f
+p(n/p)
+</pre></div><p>where p is the previous note, n is the next note, and f is the fractional portion.</p>
 <p>Note that in the case of equal temperament, this all just reduces to:</p>
 <div class="fragment"><pre class="fragment">
- *
- *    n
- * r*2
- *
- * </pre></div><p>Key comes with a number of pre-defined scales. Minor, Major, Equal-Tempered, and Pythagorean. If you wish to define your own, pass an array of fractional values between 1 and 2 that correspond to the notes in your scale. If you have a favorite somewhat conventional scale that you think should be predefined, file a bug with the fractional coefficients of each note, and I'll probably add it. </p>
+   n
+r*2
+</pre></div><p>Key comes with a number of pre-defined scales. Minor, Major, Equal-Tempered, and Pythagorean. If you wish to define your own, pass an array of fractional values between 1 and 2 that correspond to the notes in your scale. If you have a favorite somewhat conventional scale that you think should be predefined, file a bug or send an email with the fractional coefficients of each note, and I'll probably add it. </p>
 <hr/><h2>Define Documentation</h2>
 <a class="anchor" id="af4901539e49d4e27ab405858d74d3b3c"></a><!-- doxytag: member="key.h::CS_A" ref="af4901539e49d4e27ab405858d74d3b3c" args="" -->
 <div class="memitem">
@@ -751,7 +746,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&nbsp;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&nbsp;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&nbsp;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&nbsp;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&nbsp;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&nbsp;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&nbsp;</span>Defines</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&nbsp;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&nbsp;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&nbsp;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&nbsp;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&nbsp;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&nbsp;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&nbsp;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&nbsp;</span>Defines</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -760,7 +755,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-<hr class="footer"/><address style="text-align: right;"><small>Generated on Sun Jul 18 22:45:56 2010 for cshellsynth by&nbsp;
+<hr class="footer"/><address style="text-align: right;"><small>Generated on Mon Aug 30 08:49:48 2010 for cshellsynth by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.3 </small></address>
 </body>

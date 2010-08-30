@@ -56,24 +56,18 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="lowpass_8h.html#abcba07b108ecd926d87b418ebd543608">cs_lowpass_destroy</a>(cs_lowpass)&nbsp;&nbsp;&nbsp;cs_filter_destroy((<a class="el" href="structcs__filter__t.html">cs_filter_t</a> *) (cs_lowpass))</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="lowpass_8h.html#a748db9d3753cfe1b331f0bed372a29c3">cs_lowpass_set_in</a>(self, in)&nbsp;&nbsp;&nbsp;cs_filter_set_in(self, in)</td></tr>
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="lowpass_8h.html#a214685d0d967023e14cf16d564c67bec">cs_lowpass_subclass_init</a> (<a class="el" href="structcs__lowpass__t.html">cs_lowpass_t</a> *self, const char *client_name, jack_options_t flags, char *server_name)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="lowpass_8h.html#a59de1c72aba2ff8f1fee8d638e4f2677">cs_lowpass_init</a> (<a class="el" href="structcs__lowpass__t.html">cs_lowpass_t</a> *self, const char *client_name, jack_options_t flags, char *server_name)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="lowpass_8h.html#a09bc8a32e4b780dfc5dd41cdfa1b5846">cs_lowpass_set_freq</a> (<a class="el" href="structcs__lowpass__t.html">cs_lowpass_t</a> *self, float freq)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="lowpass_8h.html#a635fa289ee675468a2711cf96828a9fb">cs_lowpass_set_Q</a> (<a class="el" href="structcs__lowpass__t.html">cs_lowpass_t</a> *self, float Q)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="lowpass_8h.html#a90dc71cd80d3d2dcff70d73b40206bf1">cs_lowpass_set_atten</a> (<a class="el" href="structcs__lowpass__t.html">cs_lowpass_t</a> *self, float atten)</td></tr>
 </table>
 <hr/><a name="_details"></a><h2>Detailed Description</h2>
 <p>Lowpass filter</p>
 <p>Ruby version: <code>Filters::Lowpass</code> </p>
-<p>The discrete equivalent of an RL circuit, like so:</p>
 <div class="fragment"><pre class="fragment">
- *
- * o--@-@-@------o
- *            |
- *            \
- *            /
- *            \
- *           _|_
- *            -
- *
- * </pre></div> <hr/><h2>Define Documentation</h2>
+H(s) = 1 / (s^2 + s/Q + 1)
+</pre></div> <hr/><h2>Define Documentation</h2>
 <a class="anchor" id="abcba07b108ecd926d87b418ebd543608"></a><!-- doxytag: member="lowpass.h::cs_lowpass_destroy" ref="abcba07b108ecd926d87b418ebd543608" args="(cs_lowpass)" -->
 <div class="memitem">
 <div class="memproto">
@@ -160,6 +154,36 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 </div>
 </div>
+<a class="anchor" id="a90dc71cd80d3d2dcff70d73b40206bf1"></a><!-- doxytag: member="lowpass.h::cs_lowpass_set_atten" ref="a90dc71cd80d3d2dcff70d73b40206bf1" args="(cs_lowpass_t *self, float atten)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void cs_lowpass_set_atten </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structcs__lowpass__t.html">cs_lowpass_t</a> *&nbsp;</td>
+          <td class="paramname"> <em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&nbsp;</td>
+          <td class="paramname"> <em>atten</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Set filter attenuation</p>
+<p>You can either use atten or Q; not both. Q = w/2a</p>
+<p>Ruby version: <code>atten=</code> </p>
+
+</div>
+</div>
 <a class="anchor" id="a09bc8a32e4b780dfc5dd41cdfa1b5846"></a><!-- doxytag: member="lowpass.h::cs_lowpass_set_freq" ref="a09bc8a32e4b780dfc5dd41cdfa1b5846" args="(cs_lowpass_t *self, float freq)" -->
 <div class="memitem">
 <div class="memproto">
@@ -184,8 +208,78 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </table>
 </div>
 <div class="memdoc">
-<p>Set corner frequency</p>
+<p>Set center frequency</p>
 <p>Ruby version: <code>freq=</code> </p>
+
+</div>
+</div>
+<a class="anchor" id="a635fa289ee675468a2711cf96828a9fb"></a><!-- doxytag: member="lowpass.h::cs_lowpass_set_Q" ref="a635fa289ee675468a2711cf96828a9fb" args="(cs_lowpass_t *self, float Q)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void cs_lowpass_set_Q </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structcs__lowpass__t.html">cs_lowpass_t</a> *&nbsp;</td>
+          <td class="paramname"> <em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&nbsp;</td>
+          <td class="paramname"> <em>Q</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Set filter Q</p>
+<p>Ruby version: <code>Q=</code> </p>
+
+</div>
+</div>
+<a class="anchor" id="a214685d0d967023e14cf16d564c67bec"></a><!-- doxytag: member="lowpass.h::cs_lowpass_subclass_init" ref="a214685d0d967023e14cf16d564c67bec" args="(cs_lowpass_t *self, const char *client_name, jack_options_t flags, char *server_name)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int cs_lowpass_subclass_init </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structcs__lowpass__t.html">cs_lowpass_t</a> *&nbsp;</td>
+          <td class="paramname"> <em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&nbsp;</td>
+          <td class="paramname"> <em>client_name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">jack_options_t&nbsp;</td>
+          <td class="paramname"> <em>flags</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&nbsp;</td>
+          <td class="paramname"> <em>server_name</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Initialize lowpass filter, for subclasses</p>
+<p>See <a class="el" href="filter_8h.html#a85816e20a8920ea00dc5c5a37b60e232">cs_filter_init</a> </p>
 
 </div>
 </div>
@@ -195,7 +289,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&nbsp;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&nbsp;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&nbsp;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&nbsp;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&nbsp;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&nbsp;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&nbsp;</span>Defines</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&nbsp;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&nbsp;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&nbsp;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&nbsp;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&nbsp;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&nbsp;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&nbsp;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&nbsp;</span>Defines</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -204,7 +298,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-<hr class="footer"/><address style="text-align: right;"><small>Generated on Sun Jul 18 22:45:56 2010 for cshellsynth by&nbsp;
+<hr class="footer"/><address style="text-align: right;"><small>Generated on Mon Aug 30 08:49:48 2010 for cshellsynth by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.3 </small></address>
 </body>

@@ -43,59 +43,67 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     </ul>
   </div>
 <h1>src/cshellsynth/distortion.h</h1><a href="distortion_8h.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 
-<a name="l00023"></a>00023 <span class="comment">/*</span>
-<a name="l00024"></a>00024 <span class="comment"> * Copyright 2010 Evan Buswell</span>
-<a name="l00025"></a>00025 <span class="comment"> * </span>
-<a name="l00026"></a>00026 <span class="comment"> * This file is part of Cshellsynth.</span>
-<a name="l00027"></a>00027 <span class="comment"> * </span>
-<a name="l00028"></a>00028 <span class="comment"> * Cshellsynth is free software: you can redistribute it and/or modify</span>
-<a name="l00029"></a>00029 <span class="comment"> * it under the terms of the GNU General Public License as published by</span>
-<a name="l00030"></a>00030 <span class="comment"> * the Free Software Foundation, either version 2 of the License, or</span>
-<a name="l00031"></a>00031 <span class="comment"> * (at your option) any later version.</span>
-<a name="l00032"></a>00032 <span class="comment"> * </span>
-<a name="l00033"></a>00033 <span class="comment"> * Cshellsynth is distributed in the hope that it will be useful,</span>
-<a name="l00034"></a>00034 <span class="comment"> * but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
-<a name="l00035"></a>00035 <span class="comment"> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
-<a name="l00036"></a>00036 <span class="comment"> * GNU General Public License for more details.</span>
-<a name="l00037"></a>00037 <span class="comment"> * </span>
-<a name="l00038"></a>00038 <span class="comment"> * You should have received a copy of the GNU General Public License</span>
-<a name="l00039"></a>00039 <span class="comment"> * along with Cshellsynth.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
-<a name="l00040"></a>00040 <span class="comment"> */</span>
-<a name="l00041"></a>00041 <span class="preprocessor">#ifndef CSHELLSYNTH_DISTORTION_H</span>
-<a name="l00042"></a>00042 <span class="preprocessor"></span><span class="preprocessor">#define CSHELLSYNTH_DISTORTION_H 1</span>
-<a name="l00043"></a>00043 <span class="preprocessor"></span>
-<a name="l00044"></a>00044 <span class="preprocessor">#include &lt;jack/jack.h&gt;</span>
-<a name="l00045"></a>00045 <span class="preprocessor">#include &lt;cshellsynth/atomic-types.h&gt;</span>
-<a name="l00046"></a>00046 <span class="preprocessor">#include &lt;<a class="code" href="filter_8h.html">cshellsynth/filter.h</a>&gt;</span>
-<a name="l00047"></a>00047 
-<a name="l00055"></a><a class="code" href="structcs__distort__t.html">00055</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>cs_distort_struct {
-<a name="l00056"></a>00056     jack_client_t *client;
-<a name="l00057"></a>00057     jack_port_t *in_port;
-<a name="l00058"></a>00058     atomic_float_t in;
-<a name="l00059"></a>00059     jack_port_t *out_port;
-<a name="l00060"></a>00060     jack_port_t *gain_port;
-<a name="l00061"></a>00061     atomic_float_t gain;
-<a name="l00062"></a>00062     atomic_float_t sharpness;
-<a name="l00063"></a>00063 } <a class="code" href="structcs__distort__t.html">cs_distort_t</a>;
-<a name="l00064"></a>00064 
-<a name="l00070"></a><a class="code" href="distortion_8h.html#aeefce06972053df4ec8167ae9ca3cb0c">00070</a> <span class="preprocessor">#define cs_distort_destroy(cs_distort) cs_filter_destroy((cs_filter_t *) (cs_distort))</span>
-<a name="l00071"></a>00071 <span class="preprocessor"></span>
-<a name="l00077"></a>00077 <span class="keywordtype">int</span> <a class="code" href="distortion_8h.html#aa92d8e91a9ef06f0977563934823b32f">cs_distort_init</a>(<a class="code" href="structcs__distort__t.html">cs_distort_t</a> *<span class="keyword">self</span>, <span class="keyword">const</span> <span class="keywordtype">char</span> *client_name, jack_options_t flags, <span class="keywordtype">char</span> *server_name);
-<a name="l00078"></a>00078 
-<a name="l00082"></a><a class="code" href="distortion_8h.html#a77e9b598d1f7befe9d760a666e2bead4">00082</a> <span class="preprocessor">#define cs_distort_set_in(self, in) cs_filter_set_in(self, in)</span>
-<a name="l00083"></a>00083 <span class="preprocessor"></span>
-<a name="l00092"></a>00092 <span class="keywordtype">void</span> <a class="code" href="distortion_8h.html#afd1fa0d9622d4fe29a7ef1b46fed35c3">cs_distort_set_gain</a>(<a class="code" href="structcs__distort__t.html">cs_distort_t</a> *<span class="keyword">self</span>, <span class="keywordtype">float</span> gain);
-<a name="l00093"></a>00093 
-<a name="l00102"></a>00102 <span class="keywordtype">void</span> <a class="code" href="distortion_8h.html#a7e7a0fc8dc9561e91a2d0910238fce79">cs_distort_set_sharpness</a>(<a class="code" href="structcs__distort__t.html">cs_distort_t</a> *<span class="keyword">self</span>, <span class="keywordtype">float</span> sharpness);
-<a name="l00103"></a>00103 
-<a name="l00104"></a>00104 <span class="preprocessor">#endif</span>
+<a name="l00042"></a>00042 <span class="comment">/*</span>
+<a name="l00043"></a>00043 <span class="comment"> * Copyright 2010 Evan Buswell</span>
+<a name="l00044"></a>00044 <span class="comment"> * </span>
+<a name="l00045"></a>00045 <span class="comment"> * This file is part of Cshellsynth.</span>
+<a name="l00046"></a>00046 <span class="comment"> * </span>
+<a name="l00047"></a>00047 <span class="comment"> * Cshellsynth is free software: you can redistribute it and/or modify</span>
+<a name="l00048"></a>00048 <span class="comment"> * it under the terms of the GNU General Public License as published by</span>
+<a name="l00049"></a>00049 <span class="comment"> * the Free Software Foundation, either version 2 of the License, or</span>
+<a name="l00050"></a>00050 <span class="comment"> * (at your option) any later version.</span>
+<a name="l00051"></a>00051 <span class="comment"> * </span>
+<a name="l00052"></a>00052 <span class="comment"> * Cshellsynth is distributed in the hope that it will be useful,</span>
+<a name="l00053"></a>00053 <span class="comment"> * but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<a name="l00054"></a>00054 <span class="comment"> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<a name="l00055"></a>00055 <span class="comment"> * GNU General Public License for more details.</span>
+<a name="l00056"></a>00056 <span class="comment"> * </span>
+<a name="l00057"></a>00057 <span class="comment"> * You should have received a copy of the GNU General Public License</span>
+<a name="l00058"></a>00058 <span class="comment"> * along with Cshellsynth.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<a name="l00059"></a>00059 <span class="comment"> */</span>
+<a name="l00060"></a>00060 <span class="preprocessor">#ifndef CSHELLSYNTH_DISTORTION_H</span>
+<a name="l00061"></a>00061 <span class="preprocessor"></span><span class="preprocessor">#define CSHELLSYNTH_DISTORTION_H 1</span>
+<a name="l00062"></a>00062 <span class="preprocessor"></span>
+<a name="l00063"></a>00063 <span class="preprocessor">#include &lt;jack/jack.h&gt;</span>
+<a name="l00064"></a>00064 <span class="preprocessor">#include &lt;cshellsynth/atomic-types.h&gt;</span>
+<a name="l00065"></a>00065 <span class="preprocessor">#include &lt;<a class="code" href="filter_8h.html">cshellsynth/filter.h</a>&gt;</span>
+<a name="l00066"></a>00066 
+<a name="l00074"></a><a class="code" href="structcs__distort__t.html">00074</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>cs_distort_struct {
+<a name="l00075"></a>00075     jack_client_t *client;
+<a name="l00076"></a>00076     jack_port_t *in_port;
+<a name="l00077"></a>00077     atomic_float_t in;
+<a name="l00078"></a>00078     jack_port_t *out_port;
+<a name="l00079"></a>00079     jack_port_t *gain_port;
+<a name="l00080"></a>00080     atomic_float_t gain;
+<a name="l00081"></a>00081     atomic_float_t sharpness;
+<a name="l00082"></a>00082     atomic_t kind;
+<a name="l00083"></a>00083 } <a class="code" href="structcs__distort__t.html">cs_distort_t</a>;
+<a name="l00084"></a>00084 
+<a name="l00090"></a><a class="code" href="distortion_8h.html#aeefce06972053df4ec8167ae9ca3cb0c">00090</a> <span class="preprocessor">#define cs_distort_destroy(cs_distort) cs_filter_destroy((cs_filter_t *) (cs_distort))</span>
+<a name="l00091"></a>00091 <span class="preprocessor"></span>
+<a name="l00097"></a>00097 <span class="keywordtype">int</span> <a class="code" href="distortion_8h.html#aa92d8e91a9ef06f0977563934823b32f">cs_distort_init</a>(<a class="code" href="structcs__distort__t.html">cs_distort_t</a> *<span class="keyword">self</span>, <span class="keyword">const</span> <span class="keywordtype">char</span> *client_name, jack_options_t flags, <span class="keywordtype">char</span> *server_name);
+<a name="l00098"></a>00098 
+<a name="l00109"></a>00109 <span class="keywordtype">void</span> <a class="code" href="distortion_8h.html#a753bc07b0bfc79f13b4ab5455b04338a">cs_distort_set_kind</a>(<a class="code" href="structcs__distort__t.html">cs_distort_t</a> *<span class="keyword">self</span>, <span class="keywordtype">int</span> kind);
+<a name="l00110"></a>00110 
+<a name="l00114"></a><a class="code" href="distortion_8h.html#a77e9b598d1f7befe9d760a666e2bead4">00114</a> <span class="preprocessor">#define cs_distort_set_in(self, in) cs_filter_set_in(self, in)</span>
+<a name="l00115"></a>00115 <span class="preprocessor"></span>
+<a name="l00124"></a>00124 <span class="keywordtype">void</span> <a class="code" href="distortion_8h.html#afd1fa0d9622d4fe29a7ef1b46fed35c3">cs_distort_set_gain</a>(<a class="code" href="structcs__distort__t.html">cs_distort_t</a> *<span class="keyword">self</span>, <span class="keywordtype">float</span> gain);
+<a name="l00125"></a>00125 
+<a name="l00134"></a>00134 <span class="keywordtype">void</span> <a class="code" href="distortion_8h.html#a7e7a0fc8dc9561e91a2d0910238fce79">cs_distort_set_sharpness</a>(<a class="code" href="structcs__distort__t.html">cs_distort_t</a> *<span class="keyword">self</span>, <span class="keywordtype">float</span> sharpness);
+<a name="l00135"></a>00135 
+<a name="l00136"></a>00136 <span class="preprocessor">#define CS_EXP 1</span>
+<a name="l00137"></a>00137 <span class="preprocessor"></span><span class="preprocessor">#define CS_HYP 2</span>
+<a name="l00138"></a>00138 <span class="preprocessor"></span><span class="preprocessor">#define CS_ATAN 3</span>
+<a name="l00139"></a>00139 <span class="preprocessor"></span><span class="preprocessor">#define CS_TUBE 4</span>
+<a name="l00140"></a>00140 <span class="preprocessor"></span>
+<a name="l00141"></a>00141 <span class="preprocessor">#endif</span>
 </pre></div></div>
 <!--- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&nbsp;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&nbsp;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&nbsp;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&nbsp;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&nbsp;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&nbsp;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&nbsp;</span>Defines</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&nbsp;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&nbsp;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&nbsp;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&nbsp;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&nbsp;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&nbsp;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&nbsp;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&nbsp;</span>Defines</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -104,7 +112,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-<hr class="footer"/><address style="text-align: right;"><small>Generated on Sun Jul 18 22:45:56 2010 for cshellsynth by&nbsp;
+<hr class="footer"/><address style="text-align: right;"><small>Generated on Mon Aug 30 08:49:48 2010 for cshellsynth by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.3 </small></address>
 </body>

@@ -43,122 +43,122 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     </ul>
   </div>
 <h1>src/cshellsynth/key.h</h1><a href="key_8h.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 
-<a name="l00047"></a>00047 <span class="comment">/*</span>
-<a name="l00048"></a>00048 <span class="comment"> * Copyright 2010 Evan Buswell</span>
-<a name="l00049"></a>00049 <span class="comment"> * </span>
-<a name="l00050"></a>00050 <span class="comment"> * This file is part of Cshellsynth.</span>
+<a name="l00042"></a>00042 <span class="comment">/*</span>
+<a name="l00043"></a>00043 <span class="comment"> * Copyright 2010 Evan Buswell</span>
+<a name="l00044"></a>00044 <span class="comment"> * </span>
+<a name="l00045"></a>00045 <span class="comment"> * This file is part of Cshellsynth.</span>
+<a name="l00046"></a>00046 <span class="comment"> * </span>
+<a name="l00047"></a>00047 <span class="comment"> * Cshellsynth is free software: you can redistribute it and/or modify</span>
+<a name="l00048"></a>00048 <span class="comment"> * it under the terms of the GNU General Public License as published by</span>
+<a name="l00049"></a>00049 <span class="comment"> * the Free Software Foundation, either version 2 of the License, or</span>
+<a name="l00050"></a>00050 <span class="comment"> * (at your option) any later version.</span>
 <a name="l00051"></a>00051 <span class="comment"> * </span>
-<a name="l00052"></a>00052 <span class="comment"> * Cshellsynth is free software: you can redistribute it and/or modify</span>
-<a name="l00053"></a>00053 <span class="comment"> * it under the terms of the GNU General Public License as published by</span>
-<a name="l00054"></a>00054 <span class="comment"> * the Free Software Foundation, either version 2 of the License, or</span>
-<a name="l00055"></a>00055 <span class="comment"> * (at your option) any later version.</span>
+<a name="l00052"></a>00052 <span class="comment"> * Cshellsynth is distributed in the hope that it will be useful,</span>
+<a name="l00053"></a>00053 <span class="comment"> * but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<a name="l00054"></a>00054 <span class="comment"> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<a name="l00055"></a>00055 <span class="comment"> * GNU General Public License for more details.</span>
 <a name="l00056"></a>00056 <span class="comment"> * </span>
-<a name="l00057"></a>00057 <span class="comment"> * Cshellsynth is distributed in the hope that it will be useful,</span>
-<a name="l00058"></a>00058 <span class="comment"> * but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
-<a name="l00059"></a>00059 <span class="comment"> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
-<a name="l00060"></a>00060 <span class="comment"> * GNU General Public License for more details.</span>
-<a name="l00061"></a>00061 <span class="comment"> * </span>
-<a name="l00062"></a>00062 <span class="comment"> * You should have received a copy of the GNU General Public License</span>
-<a name="l00063"></a>00063 <span class="comment"> * along with Cshellsynth.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
-<a name="l00064"></a>00064 <span class="comment"> */</span>
-<a name="l00065"></a>00065 <span class="preprocessor">#ifndef CSHELLSYNTH_KEY_H</span>
-<a name="l00066"></a>00066 <span class="preprocessor"></span><span class="preprocessor">#define CSHELLSYNTH_KEY_H 1</span>
-<a name="l00067"></a>00067 <span class="preprocessor"></span>
-<a name="l00068"></a>00068 <span class="preprocessor">#include &lt;jack/jack.h&gt;</span>
-<a name="l00069"></a>00069 <span class="preprocessor">#include &lt;cshellsynth/atomic-types.h&gt;</span>
-<a name="l00070"></a>00070 <span class="preprocessor">#include &lt;<a class="code" href="jclient_8h.html">cshellsynth/jclient.h</a>&gt;</span>
-<a name="l00071"></a>00071 
-<a name="l00075"></a><a class="code" href="structcs__key__tuning__t.html">00075</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>cs_key_tuning_struct {
-<a name="l00076"></a>00076     <span class="keywordtype">size_t</span> tuning_length; 
-<a name="l00077"></a><a class="code" href="structcs__key__tuning__t.html#ad41224d5c3fce894ade69556e0c266be">00077</a>     <span class="keyword">const</span> <span class="keywordtype">double</span> *tuning; 
-<a name="l00078"></a>00078 } <a class="code" href="structcs__key__tuning__t.html">cs_key_tuning_t</a>;
-<a name="l00079"></a>00079 
-<a name="l00087"></a><a class="code" href="structcs__key__t.html">00087</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>cs_key_struct {
-<a name="l00088"></a>00088     jack_client_t *client;
-<a name="l00089"></a>00089     jack_port_t *note_port; 
-<a name="l00090"></a><a class="code" href="structcs__key__t.html#aa75da342c3a3e1345532c4e7e24b26b5">00090</a>     atomic_float_t note; 
-<a name="l00091"></a><a class="code" href="structcs__key__t.html#abd40bccc8eba0eef9e965d925bbdc9bf">00091</a>     jack_port_t *root_port; 
-<a name="l00092"></a><a class="code" href="structcs__key__t.html#aba513c54ad91fc297c54c0053f9a1226">00092</a>     atomic_float_t root; 
-<a name="l00093"></a><a class="code" href="structcs__key__t.html#a364a183568a6a0f9b9b5afd9c0848578">00093</a>     jack_port_t *freq_port; 
-<a name="l00094"></a><a class="code" href="structcs__key__t.html#a31165655ff099c212910f09fa21ac046">00094</a>     atomic_ptr_t tuning; 
-<a name="l00095"></a><a class="code" href="structcs__key__t.html#aa77eeb565943881e93dc286e6a6e6091">00095</a>     atomic_t tuning_sync; 
-<a name="l00096"></a>00096 } <a class="code" href="structcs__key__t.html">cs_key_t</a>;
-<a name="l00097"></a>00097 
-<a name="l00103"></a>00103 <span class="keywordtype">int</span> <a class="code" href="key_8h.html#a3057fbb4b52c43414a258adbcf5f3f4e">cs_key_destroy</a>(<a class="code" href="structcs__key__t.html">cs_key_t</a> *cs_key);
-<a name="l00104"></a>00104 
-<a name="l00110"></a>00110 <span class="keywordtype">int</span> <a class="code" href="key_8h.html#a69f6f212a88847d0935ef6acedc79dd9">cs_key_init</a>(<a class="code" href="structcs__key__t.html">cs_key_t</a> *<span class="keyword">self</span>, <span class="keyword">const</span> <span class="keywordtype">char</span> *client_name, jack_options_t flags, <span class="keywordtype">char</span> *server_name);
-<a name="l00111"></a>00111 
-<a name="l00121"></a>00121 <span class="keywordtype">void</span> <a class="code" href="key_8h.html#aaa9b578aaed227959ec6c6b7a04e5868">cs_key_set_root</a>(<a class="code" href="structcs__key__t.html">cs_key_t</a> *<span class="keyword">self</span>, <span class="keywordtype">float</span> root);
-<a name="l00122"></a>00122 
-<a name="l00134"></a>00134 <span class="keywordtype">int</span> <a class="code" href="key_8h.html#adb233778d0024cd630bd7166ba1cec87">cs_key_set_tuning</a>(<a class="code" href="structcs__key__t.html">cs_key_t</a> *<span class="keyword">self</span>, <span class="keyword">const</span> <span class="keywordtype">double</span> *tuning, <span class="keywordtype">size_t</span> tuning_length);
-<a name="l00135"></a>00135 
-<a name="l00141"></a>00141 <span class="keywordtype">float</span> <a class="code" href="key_8h.html#a524e9ed220ff3b729830adf484098cd2">cs_key_note2freq</a>(<a class="code" href="structcs__key__t.html">cs_key_t</a> *<span class="keyword">self</span>, <span class="keywordtype">float</span> note);
+<a name="l00057"></a>00057 <span class="comment"> * You should have received a copy of the GNU General Public License</span>
+<a name="l00058"></a>00058 <span class="comment"> * along with Cshellsynth.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<a name="l00059"></a>00059 <span class="comment"> */</span>
+<a name="l00060"></a>00060 <span class="preprocessor">#ifndef CSHELLSYNTH_KEY_H</span>
+<a name="l00061"></a>00061 <span class="preprocessor"></span><span class="preprocessor">#define CSHELLSYNTH_KEY_H 1</span>
+<a name="l00062"></a>00062 <span class="preprocessor"></span>
+<a name="l00063"></a>00063 <span class="preprocessor">#include &lt;jack/jack.h&gt;</span>
+<a name="l00064"></a>00064 <span class="preprocessor">#include &lt;cshellsynth/atomic-types.h&gt;</span>
+<a name="l00065"></a>00065 <span class="preprocessor">#include &lt;<a class="code" href="jclient_8h.html">cshellsynth/jclient.h</a>&gt;</span>
+<a name="l00066"></a>00066 
+<a name="l00070"></a><a class="code" href="structcs__key__tuning__t.html">00070</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>cs_key_tuning_struct {
+<a name="l00071"></a>00071     <span class="keywordtype">size_t</span> tuning_length; 
+<a name="l00072"></a><a class="code" href="structcs__key__tuning__t.html#ad41224d5c3fce894ade69556e0c266be">00072</a>     <span class="keyword">const</span> <span class="keywordtype">double</span> *tuning; 
+<a name="l00073"></a>00073 } <a class="code" href="structcs__key__tuning__t.html">cs_key_tuning_t</a>;
+<a name="l00074"></a>00074 
+<a name="l00082"></a><a class="code" href="structcs__key__t.html">00082</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>cs_key_struct {
+<a name="l00083"></a>00083     jack_client_t *client;
+<a name="l00084"></a>00084     jack_port_t *note_port; 
+<a name="l00085"></a><a class="code" href="structcs__key__t.html#aa75da342c3a3e1345532c4e7e24b26b5">00085</a>     atomic_float_t note; 
+<a name="l00086"></a><a class="code" href="structcs__key__t.html#abd40bccc8eba0eef9e965d925bbdc9bf">00086</a>     jack_port_t *root_port; 
+<a name="l00087"></a><a class="code" href="structcs__key__t.html#aba513c54ad91fc297c54c0053f9a1226">00087</a>     atomic_float_t root; 
+<a name="l00088"></a><a class="code" href="structcs__key__t.html#a364a183568a6a0f9b9b5afd9c0848578">00088</a>     jack_port_t *freq_port; 
+<a name="l00089"></a><a class="code" href="structcs__key__t.html#a31165655ff099c212910f09fa21ac046">00089</a>     atomic_ptr_t tuning; 
+<a name="l00090"></a><a class="code" href="structcs__key__t.html#aa77eeb565943881e93dc286e6a6e6091">00090</a>     atomic_t tuning_sync; 
+<a name="l00091"></a>00091 } <a class="code" href="structcs__key__t.html">cs_key_t</a>;
+<a name="l00092"></a>00092 
+<a name="l00098"></a>00098 <span class="keywordtype">int</span> <a class="code" href="key_8h.html#a3057fbb4b52c43414a258adbcf5f3f4e">cs_key_destroy</a>(<a class="code" href="structcs__key__t.html">cs_key_t</a> *cs_key);
+<a name="l00099"></a>00099 
+<a name="l00105"></a>00105 <span class="keywordtype">int</span> <a class="code" href="key_8h.html#a69f6f212a88847d0935ef6acedc79dd9">cs_key_init</a>(<a class="code" href="structcs__key__t.html">cs_key_t</a> *<span class="keyword">self</span>, <span class="keyword">const</span> <span class="keywordtype">char</span> *client_name, jack_options_t flags, <span class="keywordtype">char</span> *server_name);
+<a name="l00106"></a>00106 
+<a name="l00116"></a>00116 <span class="keywordtype">void</span> <a class="code" href="key_8h.html#aaa9b578aaed227959ec6c6b7a04e5868">cs_key_set_root</a>(<a class="code" href="structcs__key__t.html">cs_key_t</a> *<span class="keyword">self</span>, <span class="keywordtype">float</span> root);
+<a name="l00117"></a>00117 
+<a name="l00129"></a>00129 <span class="keywordtype">int</span> <a class="code" href="key_8h.html#adb233778d0024cd630bd7166ba1cec87">cs_key_set_tuning</a>(<a class="code" href="structcs__key__t.html">cs_key_t</a> *<span class="keyword">self</span>, <span class="keyword">const</span> <span class="keywordtype">double</span> *tuning, <span class="keywordtype">size_t</span> tuning_length);
+<a name="l00130"></a>00130 
+<a name="l00136"></a>00136 <span class="keywordtype">float</span> <a class="code" href="key_8h.html#a524e9ed220ff3b729830adf484098cd2">cs_key_note2freq</a>(<a class="code" href="structcs__key__t.html">cs_key_t</a> *<span class="keyword">self</span>, <span class="keywordtype">float</span> note);
+<a name="l00137"></a>00137 
+<a name="l00141"></a>00141 <span class="keywordtype">void</span> <a class="code" href="key_8h.html#a98d299ed5c5ec7163341fb0dc133ac72">cs_key_set_note</a>(<a class="code" href="structcs__key__t.html">cs_key_t</a> *<span class="keyword">self</span>, <span class="keywordtype">float</span> note);
 <a name="l00142"></a>00142 
-<a name="l00146"></a>00146 <span class="keywordtype">void</span> <a class="code" href="key_8h.html#a98d299ed5c5ec7163341fb0dc133ac72">cs_key_set_note</a>(<a class="code" href="structcs__key__t.html">cs_key_t</a> *<span class="keyword">self</span>, <span class="keywordtype">float</span> note);
-<a name="l00147"></a>00147 
-<a name="l00153"></a><a class="code" href="key_8h.html#af4901539e49d4e27ab405858d74d3b3c">00153</a> <span class="preprocessor">#define CS_A 220.0</span>
-<a name="l00154"></a>00154 <span class="preprocessor"></span>
-<a name="l00160"></a><a class="code" href="key_8h.html#a9e1e6620f1798928d6165c0b9ffc8769">00160</a> <span class="preprocessor">#define CS_A_SHARP 233.081880759045</span>
-<a name="l00161"></a>00161 <span class="preprocessor"></span>
-<a name="l00167"></a><a class="code" href="key_8h.html#a8643068b06a9e336cb5aa98e5c157ff7">00167</a> <span class="preprocessor">#define CS_B_FLAT 233.081880759045</span>
-<a name="l00168"></a>00168 <span class="preprocessor"></span>
-<a name="l00174"></a><a class="code" href="key_8h.html#a0db50a98f254f7b1eaafeae1d35adb40">00174</a> <span class="preprocessor">#define CS_B 246.941650628062</span>
-<a name="l00175"></a>00175 <span class="preprocessor"></span>
-<a name="l00181"></a><a class="code" href="key_8h.html#a5d579baa0e3aae7675516dfb25a955d4">00181</a> <span class="preprocessor">#define CS_C_FLAT 246.941650628062</span>
-<a name="l00182"></a>00182 <span class="preprocessor"></span>
-<a name="l00188"></a><a class="code" href="key_8h.html#aa4c3de89c8d998c8efec30f5a6b9e057">00188</a> <span class="preprocessor">#define CS_C 261.625565300599</span>
-<a name="l00189"></a>00189 <span class="preprocessor"></span>
-<a name="l00195"></a><a class="code" href="key_8h.html#a7638ea59317ad6151dc3b2bc67a0dd83">00195</a> <span class="preprocessor">#define CS_B_SHARP 261.625565300599</span>
-<a name="l00196"></a>00196 <span class="preprocessor"></span>
-<a name="l00202"></a><a class="code" href="key_8h.html#ae4b96c1a6dc1efbed706149aee650412">00202</a> <span class="preprocessor">#define CS_C_SHARP 277.182630976872</span>
-<a name="l00203"></a>00203 <span class="preprocessor"></span>
-<a name="l00209"></a><a class="code" href="key_8h.html#a689ca356a1c47b52fb8599db4da6b576">00209</a> <span class="preprocessor">#define CS_D_FLAT 277.182630976872</span>
-<a name="l00210"></a>00210 <span class="preprocessor"></span>
-<a name="l00216"></a><a class="code" href="key_8h.html#a88ba9eb6bce51bf28d63c1fa9461b8f5">00216</a> <span class="preprocessor">#define CS_D 293.664767917408</span>
-<a name="l00217"></a>00217 <span class="preprocessor"></span>
-<a name="l00223"></a><a class="code" href="key_8h.html#a524e63195e3fffc35345d66b37f1e8b8">00223</a> <span class="preprocessor">#define CS_D_SHARP 311.126983722081</span>
-<a name="l00224"></a>00224 <span class="preprocessor"></span>
-<a name="l00230"></a><a class="code" href="key_8h.html#a632ec57c0a0224e25c59af68ab4a179b">00230</a> <span class="preprocessor">#define CS_E_FLAT 311.126983722081</span>
-<a name="l00231"></a>00231 <span class="preprocessor"></span>
-<a name="l00237"></a><a class="code" href="key_8h.html#a047b9c007413e69a12bfe19b36a84dac">00237</a> <span class="preprocessor">#define CS_E 329.62755691287</span>
-<a name="l00238"></a>00238 <span class="preprocessor"></span>
-<a name="l00244"></a><a class="code" href="key_8h.html#a4f41dd3573e93074af5e07f69f415dc0">00244</a> <span class="preprocessor">#define CS_F_FLAT 329.62755691287</span>
-<a name="l00245"></a>00245 <span class="preprocessor"></span>
-<a name="l00251"></a><a class="code" href="key_8h.html#a94f90b1df5b2be165a315f43065e9df5">00251</a> <span class="preprocessor">#define CS_F 349.228231433004</span>
-<a name="l00252"></a>00252 <span class="preprocessor"></span>
-<a name="l00258"></a><a class="code" href="key_8h.html#a3f3c955ca9de8eb92ea914fba54ec797">00258</a> <span class="preprocessor">#define CS_E_SHARP 349.228231433004</span>
-<a name="l00259"></a>00259 <span class="preprocessor"></span>
-<a name="l00265"></a><a class="code" href="key_8h.html#a11d962dadee7eb2374c27e3707b27866">00265</a> <span class="preprocessor">#define CS_F_SHARP 369.994422711634</span>
-<a name="l00266"></a>00266 <span class="preprocessor"></span>
-<a name="l00272"></a><a class="code" href="key_8h.html#aa3cd1f08c7ddca88c705b5bcacbdec10">00272</a> <span class="preprocessor">#define CS_G_FLAT 369.994422711634</span>
-<a name="l00273"></a>00273 <span class="preprocessor"></span>
-<a name="l00279"></a><a class="code" href="key_8h.html#a51ea48d27cbd0b211372697a5c813069">00279</a> <span class="preprocessor">#define CS_G 391.995435981749</span>
-<a name="l00280"></a>00280 <span class="preprocessor"></span>
-<a name="l00286"></a><a class="code" href="key_8h.html#ae37c59919f827690b7571029ed47ac50">00286</a> <span class="preprocessor">#define CS_G_SHARP 415.304697579945</span>
-<a name="l00287"></a>00287 <span class="preprocessor"></span>
-<a name="l00293"></a><a class="code" href="key_8h.html#aac8c82452fa9f266dcc517e6ff6d93b4">00293</a> <span class="preprocessor">#define CS_A_FLAT 415.304697579945</span>
-<a name="l00294"></a>00294 <span class="preprocessor"></span>
-<a name="l00300"></a>00300 <span class="keyword">extern</span> <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code" href="key_8h.html#afcea7b939fcb677b67c61796a3ba5f14">CS_MAJOR_TUNING</a>[];
-<a name="l00304"></a><a class="code" href="key_8h.html#a013514b959383ce340a932900e2b9c75">00304</a> <span class="preprocessor">#define CS_MAJOR_TUNING_LENGTH 7</span>
-<a name="l00305"></a>00305 <span class="preprocessor"></span>
-<a name="l00311"></a>00311 <span class="keyword">extern</span> <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code" href="key_8h.html#ad84466f5ff1d60bc30077528a93d558b">CS_MINOR_TUNING</a>[];
-<a name="l00315"></a><a class="code" href="key_8h.html#ad745db6db776ec5a40e78987b3f6aea5">00315</a> <span class="preprocessor">#define CS_MINOR_TUNING_LENGTH 7</span>
-<a name="l00316"></a>00316 <span class="preprocessor"></span>
-<a name="l00322"></a>00322 <span class="keyword">extern</span> <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code" href="key_8h.html#ad60946dc2dc352aec252d58c7099b192">CS_PYTHAGOREAN_TUNING</a>[];
-<a name="l00326"></a><a class="code" href="key_8h.html#ad80968ed076f133db3e4d774d7b15079">00326</a> <span class="preprocessor">#define CS_PYTHAGOREAN_TUNING_LENGTH 12</span>
-<a name="l00327"></a>00327 <span class="preprocessor"></span>
-<a name="l00333"></a><a class="code" href="key_8h.html#a1106df544fcb26a7ab400c2b9d59bb3b">00333</a> <span class="preprocessor">#define CS_EQUAL_TUNING ((double *) -1)</span>
-<a name="l00334"></a>00334 <span class="preprocessor"></span>
-<a name="l00337"></a><a class="code" href="key_8h.html#a1cf9bf67f50687a359d84c9d0c8ffcea">00337</a> <span class="preprocessor">#define CS_EQUAL_TUNING_LENGTH 12</span>
-<a name="l00338"></a>00338 <span class="preprocessor"></span>
-<a name="l00339"></a>00339 <span class="preprocessor">#endif</span>
+<a name="l00148"></a><a class="code" href="key_8h.html#af4901539e49d4e27ab405858d74d3b3c">00148</a> <span class="preprocessor">#define CS_A 220.0</span>
+<a name="l00149"></a>00149 <span class="preprocessor"></span>
+<a name="l00155"></a><a class="code" href="key_8h.html#a9e1e6620f1798928d6165c0b9ffc8769">00155</a> <span class="preprocessor">#define CS_A_SHARP 233.081880759045</span>
+<a name="l00156"></a>00156 <span class="preprocessor"></span>
+<a name="l00162"></a><a class="code" href="key_8h.html#a8643068b06a9e336cb5aa98e5c157ff7">00162</a> <span class="preprocessor">#define CS_B_FLAT 233.081880759045</span>
+<a name="l00163"></a>00163 <span class="preprocessor"></span>
+<a name="l00169"></a><a class="code" href="key_8h.html#a0db50a98f254f7b1eaafeae1d35adb40">00169</a> <span class="preprocessor">#define CS_B 246.941650628062</span>
+<a name="l00170"></a>00170 <span class="preprocessor"></span>
+<a name="l00176"></a><a class="code" href="key_8h.html#a5d579baa0e3aae7675516dfb25a955d4">00176</a> <span class="preprocessor">#define CS_C_FLAT 246.941650628062</span>
+<a name="l00177"></a>00177 <span class="preprocessor"></span>
+<a name="l00183"></a><a class="code" href="key_8h.html#aa4c3de89c8d998c8efec30f5a6b9e057">00183</a> <span class="preprocessor">#define CS_C 261.625565300599</span>
+<a name="l00184"></a>00184 <span class="preprocessor"></span>
+<a name="l00190"></a><a class="code" href="key_8h.html#a7638ea59317ad6151dc3b2bc67a0dd83">00190</a> <span class="preprocessor">#define CS_B_SHARP 261.625565300599</span>
+<a name="l00191"></a>00191 <span class="preprocessor"></span>
+<a name="l00197"></a><a class="code" href="key_8h.html#ae4b96c1a6dc1efbed706149aee650412">00197</a> <span class="preprocessor">#define CS_C_SHARP 277.182630976872</span>
+<a name="l00198"></a>00198 <span class="preprocessor"></span>
+<a name="l00204"></a><a class="code" href="key_8h.html#a689ca356a1c47b52fb8599db4da6b576">00204</a> <span class="preprocessor">#define CS_D_FLAT 277.182630976872</span>
+<a name="l00205"></a>00205 <span class="preprocessor"></span>
+<a name="l00211"></a><a class="code" href="key_8h.html#a88ba9eb6bce51bf28d63c1fa9461b8f5">00211</a> <span class="preprocessor">#define CS_D 293.664767917408</span>
+<a name="l00212"></a>00212 <span class="preprocessor"></span>
+<a name="l00218"></a><a class="code" href="key_8h.html#a524e63195e3fffc35345d66b37f1e8b8">00218</a> <span class="preprocessor">#define CS_D_SHARP 311.126983722081</span>
+<a name="l00219"></a>00219 <span class="preprocessor"></span>
+<a name="l00225"></a><a class="code" href="key_8h.html#a632ec57c0a0224e25c59af68ab4a179b">00225</a> <span class="preprocessor">#define CS_E_FLAT 311.126983722081</span>
+<a name="l00226"></a>00226 <span class="preprocessor"></span>
+<a name="l00232"></a><a class="code" href="key_8h.html#a047b9c007413e69a12bfe19b36a84dac">00232</a> <span class="preprocessor">#define CS_E 329.62755691287</span>
+<a name="l00233"></a>00233 <span class="preprocessor"></span>
+<a name="l00239"></a><a class="code" href="key_8h.html#a4f41dd3573e93074af5e07f69f415dc0">00239</a> <span class="preprocessor">#define CS_F_FLAT 329.62755691287</span>
+<a name="l00240"></a>00240 <span class="preprocessor"></span>
+<a name="l00246"></a><a class="code" href="key_8h.html#a94f90b1df5b2be165a315f43065e9df5">00246</a> <span class="preprocessor">#define CS_F 349.228231433004</span>
+<a name="l00247"></a>00247 <span class="preprocessor"></span>
+<a name="l00253"></a><a class="code" href="key_8h.html#a3f3c955ca9de8eb92ea914fba54ec797">00253</a> <span class="preprocessor">#define CS_E_SHARP 349.228231433004</span>
+<a name="l00254"></a>00254 <span class="preprocessor"></span>
+<a name="l00260"></a><a class="code" href="key_8h.html#a11d962dadee7eb2374c27e3707b27866">00260</a> <span class="preprocessor">#define CS_F_SHARP 369.994422711634</span>
+<a name="l00261"></a>00261 <span class="preprocessor"></span>
+<a name="l00267"></a><a class="code" href="key_8h.html#aa3cd1f08c7ddca88c705b5bcacbdec10">00267</a> <span class="preprocessor">#define CS_G_FLAT 369.994422711634</span>
+<a name="l00268"></a>00268 <span class="preprocessor"></span>
+<a name="l00274"></a><a class="code" href="key_8h.html#a51ea48d27cbd0b211372697a5c813069">00274</a> <span class="preprocessor">#define CS_G 391.995435981749</span>
+<a name="l00275"></a>00275 <span class="preprocessor"></span>
+<a name="l00281"></a><a class="code" href="key_8h.html#ae37c59919f827690b7571029ed47ac50">00281</a> <span class="preprocessor">#define CS_G_SHARP 415.304697579945</span>
+<a name="l00282"></a>00282 <span class="preprocessor"></span>
+<a name="l00288"></a><a class="code" href="key_8h.html#aac8c82452fa9f266dcc517e6ff6d93b4">00288</a> <span class="preprocessor">#define CS_A_FLAT 415.304697579945</span>
+<a name="l00289"></a>00289 <span class="preprocessor"></span>
+<a name="l00295"></a>00295 <span class="keyword">extern</span> <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code" href="key_8h.html#afcea7b939fcb677b67c61796a3ba5f14">CS_MAJOR_TUNING</a>[];
+<a name="l00299"></a><a class="code" href="key_8h.html#a013514b959383ce340a932900e2b9c75">00299</a> <span class="preprocessor">#define CS_MAJOR_TUNING_LENGTH 7</span>
+<a name="l00300"></a>00300 <span class="preprocessor"></span>
+<a name="l00306"></a>00306 <span class="keyword">extern</span> <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code" href="key_8h.html#ad84466f5ff1d60bc30077528a93d558b">CS_MINOR_TUNING</a>[];
+<a name="l00310"></a><a class="code" href="key_8h.html#ad745db6db776ec5a40e78987b3f6aea5">00310</a> <span class="preprocessor">#define CS_MINOR_TUNING_LENGTH 7</span>
+<a name="l00311"></a>00311 <span class="preprocessor"></span>
+<a name="l00317"></a>00317 <span class="keyword">extern</span> <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code" href="key_8h.html#ad60946dc2dc352aec252d58c7099b192">CS_PYTHAGOREAN_TUNING</a>[];
+<a name="l00321"></a><a class="code" href="key_8h.html#ad80968ed076f133db3e4d774d7b15079">00321</a> <span class="preprocessor">#define CS_PYTHAGOREAN_TUNING_LENGTH 12</span>
+<a name="l00322"></a>00322 <span class="preprocessor"></span>
+<a name="l00328"></a><a class="code" href="key_8h.html#a1106df544fcb26a7ab400c2b9d59bb3b">00328</a> <span class="preprocessor">#define CS_EQUAL_TUNING ((double *) -1)</span>
+<a name="l00329"></a>00329 <span class="preprocessor"></span>
+<a name="l00332"></a><a class="code" href="key_8h.html#a1cf9bf67f50687a359d84c9d0c8ffcea">00332</a> <span class="preprocessor">#define CS_EQUAL_TUNING_LENGTH 12</span>
+<a name="l00333"></a>00333 <span class="preprocessor"></span>
+<a name="l00334"></a>00334 <span class="preprocessor">#endif</span>
 </pre></div></div>
 <!--- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&nbsp;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&nbsp;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&nbsp;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&nbsp;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&nbsp;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&nbsp;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&nbsp;</span>Defines</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&nbsp;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&nbsp;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&nbsp;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&nbsp;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&nbsp;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&nbsp;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&nbsp;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&nbsp;</span>Defines</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -167,7 +167,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-<hr class="footer"/><address style="text-align: right;"><small>Generated on Sun Jul 18 22:45:56 2010 for cshellsynth by&nbsp;
+<hr class="footer"/><address style="text-align: right;"><small>Generated on Mon Aug 30 08:49:48 2010 for cshellsynth by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.3 </small></address>
 </body>

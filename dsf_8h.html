@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>cshellsynth: src/cshellsynth/edho.h File Reference</title>
+<title>cshellsynth: src/cshellsynth/dsf.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javaScript" src="search/search.js"></script>
@@ -44,65 +44,63 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </div>
 </div>
 <div class="contents">
-<h1>src/cshellsynth/edho.h File Reference</h1><code>#include &lt;jack/jack.h&gt;</code><br/>
+<h1>src/cshellsynth/dsf.h File Reference</h1><code>#include &lt;jack/jack.h&gt;</code><br/>
 <code>#include &lt;cshellsynth/atomic-types.h&gt;</code><br/>
 <code>#include &lt;<a class="el" href="synth_8h_source.html">cshellsynth/synth.h</a>&gt;</code><br/>
 
-<p><a href="edho_8h_source.html">Go to the source code of this file.</a></p>
+<p><a href="dsf_8h_source.html">Go to the source code of this file.</a></p>
 <table border="0" cellpadding="0" cellspacing="0">
 <tr><td colspan="2"><h2>Data Structures</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="structcs__edho__t.html">cs_edho_t</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="structcs__dsf__t.html">cs_dsf_t</a></td></tr>
 <tr><td colspan="2"><h2>Defines</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="edho_8h.html#a2cb09a4646f9ecd1e899c3a3b1a7ce7d">cs_edho_destroy</a>(cs_edho)&nbsp;&nbsp;&nbsp;cs_synth_destroy((<a class="el" href="structcs__synth__t.html">cs_synth_t</a> *) (cs_edho))</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="edho_8h.html#af5ecf39f830a5e1bcad09d52c63a711e">cs_edho_set_freq</a>(cs_edho, freq)&nbsp;&nbsp;&nbsp;cs_synth_set_freq((<a class="el" href="structcs__synth__t.html">cs_synth_t</a> *) (cs_edho), (freq))</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="edho_8h.html#aaeb53e2e43cad63f5c5c1f7ca043c044">cs_edho_set_offset</a>(cs_edho, offset)&nbsp;&nbsp;&nbsp;cs_synth_set_offset((<a class="el" href="structcs__synth__t.html">cs_synth_t</a> *) (cs_edho), (offset))</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="edho_8h.html#a7b1e9abaf68525d1c4e503b82d59f022">cs_edho_set_amp</a>(cs_edho, amp)&nbsp;&nbsp;&nbsp;cs_synth_set_amp((<a class="el" href="structcs__synth__t.html">cs_synth_t</a> *) (cs_edho), (amp))</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="dsf_8h.html#a65ecb816646338a09267e3dd53b0a30c">cs_dsf_destroy</a>(cs_dsf)&nbsp;&nbsp;&nbsp;cs_synth_destroy((<a class="el" href="structcs__synth__t.html">cs_synth_t</a> *) (cs_dsf))</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="dsf_8h.html#a5957b4de9335b7dcea57d5468566c2bb">cs_dsf_set_freq</a>(cs_dsf, freq)&nbsp;&nbsp;&nbsp;cs_synth_set_freq((<a class="el" href="structcs__synth__t.html">cs_synth_t</a> *) (cs_dsf), (freq))</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="dsf_8h.html#aa6dd7ec023f238eb305049eca780cd31">cs_dsf_set_offset</a>(cs_dsf, offset)&nbsp;&nbsp;&nbsp;cs_synth_set_offset((<a class="el" href="structcs__synth__t.html">cs_synth_t</a> *) (cs_dsf), (offset))</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="dsf_8h.html#a1d7059441f836c0d030bae6d8ae56844">cs_dsf_set_amp</a>(cs_dsf, amp)&nbsp;&nbsp;&nbsp;cs_synth_set_amp((<a class="el" href="structcs__synth__t.html">cs_synth_t</a> *) (cs_dsf), (amp))</td></tr>
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="edho_8h.html#a7f6937a4f7afa99d6cb87abe5f066a51">cs_edho_init</a> (<a class="el" href="structcs__edho__t.html">cs_edho_t</a> *self, const char *client_name, jack_options_t flags, char *server_name)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="edho_8h.html#a661577a2e756383dbade8e6c5b2c5dbc">cs_edho_set_bright</a> (<a class="el" href="structcs__edho__t.html">cs_edho_t</a> *self, float bright)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="edho_8h.html#ac81c27dd1324b71c2684a042c4a81ea0">cs_edho_set_scale</a> (<a class="el" href="structcs__edho__t.html">cs_edho_t</a> *self, int scale)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="dsf_8h.html#aba212831f3d501063528a24deb6c98d6">cs_dsf_init</a> (<a class="el" href="structcs__dsf__t.html">cs_dsf_t</a> *self, const char *client_name, jack_options_t flags, char *server_name)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="dsf_8h.html#a30ab6ba740a49ad33db93d901bbf6375">cs_dsf_set_bright</a> (<a class="el" href="structcs__dsf__t.html">cs_dsf_t</a> *self, float bright)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="dsf_8h.html#a54f837950fc73ef62cbfc0133427dc72">cs_dsf_set_scale</a> (<a class="el" href="structcs__dsf__t.html">cs_dsf_t</a> *self, int scale)</td></tr>
 </table>
 <hr/><a name="_details"></a><h2>Detailed Description</h2>
-<p>Exponentially Decreasing Harmonics Oscillator Synth</p>
-<p>Ruby version: <code>Synths::Edho</code> </p>
+<p>Discrete Summation Formula Synth</p>
+<p>Ruby version: <code>Synths::Dsf</code> </p>
 <p>This produces a wave corresponding to the equation</p>
 <div class="fragment"><pre class="fragment">
- *
- * inf  n
- *  E  b  * sin((n + 1)wt)
- * n=0
- *
- * </pre></div><p>Where b is "brightness", valued from 0 (a sine wave, <a class="el" href="sine_8h.html">sine.h</a>) to 1 (a cotangent/2 wave, containing equal amounts of all frequencies, <a class="el" href="cot_8h.html">cot.h</a>).</p>
-<p>If the <code>scale</code> parameter is set, the amplitude of the wave will be decreased such that the peak is always 1.0. </p>
+inf  n-1
+ Σ  b    * sin(n*wt)
+n=1
+</pre></div><p>Where b is "brightness", valued from 0 (a sine wave, <a class="el" href="sine_8h.html">sine.h</a>) to 1 (a cotangent/2 wave, containing equal amounts of all frequencies, <a class="el" href="cot_8h.html">cot.h</a>).</p>
+<p>If the <code>scale</code> parameter is set, the amplitude of the wave will be decreased such that the peak is always under 1.0. </p>
 <hr/><h2>Define Documentation</h2>
-<a class="anchor" id="a2cb09a4646f9ecd1e899c3a3b1a7ce7d"></a><!-- doxytag: member="edho.h::cs_edho_destroy" ref="a2cb09a4646f9ecd1e899c3a3b1a7ce7d" args="(cs_edho)" -->
+<a class="anchor" id="a65ecb816646338a09267e3dd53b0a30c"></a><!-- doxytag: member="dsf.h::cs_dsf_destroy" ref="a65ecb816646338a09267e3dd53b0a30c" args="(cs_dsf)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define cs_edho_destroy</td>
+          <td class="memname">#define cs_dsf_destroy</td>
           <td>(</td>
-          <td class="paramtype">cs_edho&nbsp;</td>
+          <td class="paramtype">cs_dsf&nbsp;</td>
           <td class="paramname"></td>
           <td>&nbsp;)&nbsp;</td>
-          <td>&nbsp;&nbsp;&nbsp;cs_synth_destroy((<a class="el" href="structcs__synth__t.html">cs_synth_t</a> *) (cs_edho))</td>
+          <td>&nbsp;&nbsp;&nbsp;cs_synth_destroy((<a class="el" href="structcs__synth__t.html">cs_synth_t</a> *) (cs_dsf))</td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Destroy edho synth</p>
+<p>Destroy dsf synth</p>
 <p>See <a class="el" href="synth_8h.html#a5dd09caecc74a19c53bfc943dcf8ec42">cs_synth_destroy</a> </p>
 
 </div>
 </div>
-<a class="anchor" id="a7b1e9abaf68525d1c4e503b82d59f022"></a><!-- doxytag: member="edho.h::cs_edho_set_amp" ref="a7b1e9abaf68525d1c4e503b82d59f022" args="(cs_edho, amp)" -->
+<a class="anchor" id="a1d7059441f836c0d030bae6d8ae56844"></a><!-- doxytag: member="dsf.h::cs_dsf_set_amp" ref="a1d7059441f836c0d030bae6d8ae56844" args="(cs_dsf, amp)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define cs_edho_set_amp</td>
+          <td class="memname">#define cs_dsf_set_amp</td>
           <td>(</td>
-          <td class="paramtype">cs_edho, </td>
+          <td class="paramtype">cs_dsf, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -110,7 +108,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
           <td class="paramtype">amp&nbsp;</td>
           <td class="paramname"></td>
           <td>&nbsp;)&nbsp;</td>
-          <td>&nbsp;&nbsp;&nbsp;cs_synth_set_amp((<a class="el" href="structcs__synth__t.html">cs_synth_t</a> *) (cs_edho), (amp))</td>
+          <td>&nbsp;&nbsp;&nbsp;cs_synth_set_amp((<a class="el" href="structcs__synth__t.html">cs_synth_t</a> *) (cs_dsf), (amp))</td>
         </tr>
       </table>
 </div>
@@ -119,14 +117,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 </div>
 </div>
-<a class="anchor" id="af5ecf39f830a5e1bcad09d52c63a711e"></a><!-- doxytag: member="edho.h::cs_edho_set_freq" ref="af5ecf39f830a5e1bcad09d52c63a711e" args="(cs_edho, freq)" -->
+<a class="anchor" id="a5957b4de9335b7dcea57d5468566c2bb"></a><!-- doxytag: member="dsf.h::cs_dsf_set_freq" ref="a5957b4de9335b7dcea57d5468566c2bb" args="(cs_dsf, freq)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define cs_edho_set_freq</td>
+          <td class="memname">#define cs_dsf_set_freq</td>
           <td>(</td>
-          <td class="paramtype">cs_edho, </td>
+          <td class="paramtype">cs_dsf, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -134,7 +132,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
           <td class="paramtype">freq&nbsp;</td>
           <td class="paramname"></td>
           <td>&nbsp;)&nbsp;</td>
-          <td>&nbsp;&nbsp;&nbsp;cs_synth_set_freq((<a class="el" href="structcs__synth__t.html">cs_synth_t</a> *) (cs_edho), (freq))</td>
+          <td>&nbsp;&nbsp;&nbsp;cs_synth_set_freq((<a class="el" href="structcs__synth__t.html">cs_synth_t</a> *) (cs_dsf), (freq))</td>
         </tr>
       </table>
 </div>
@@ -143,14 +141,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 </div>
 </div>
-<a class="anchor" id="aaeb53e2e43cad63f5c5c1f7ca043c044"></a><!-- doxytag: member="edho.h::cs_edho_set_offset" ref="aaeb53e2e43cad63f5c5c1f7ca043c044" args="(cs_edho, offset)" -->
+<a class="anchor" id="aa6dd7ec023f238eb305049eca780cd31"></a><!-- doxytag: member="dsf.h::cs_dsf_set_offset" ref="aa6dd7ec023f238eb305049eca780cd31" args="(cs_dsf, offset)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define cs_edho_set_offset</td>
+          <td class="memname">#define cs_dsf_set_offset</td>
           <td>(</td>
-          <td class="paramtype">cs_edho, </td>
+          <td class="paramtype">cs_dsf, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -158,7 +156,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
           <td class="paramtype">offset&nbsp;</td>
           <td class="paramname"></td>
           <td>&nbsp;)&nbsp;</td>
-          <td>&nbsp;&nbsp;&nbsp;cs_synth_set_offset((<a class="el" href="structcs__synth__t.html">cs_synth_t</a> *) (cs_edho), (offset))</td>
+          <td>&nbsp;&nbsp;&nbsp;cs_synth_set_offset((<a class="el" href="structcs__synth__t.html">cs_synth_t</a> *) (cs_dsf), (offset))</td>
         </tr>
       </table>
 </div>
@@ -168,14 +166,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 </div>
 <hr/><h2>Function Documentation</h2>
-<a class="anchor" id="a7f6937a4f7afa99d6cb87abe5f066a51"></a><!-- doxytag: member="edho.h::cs_edho_init" ref="a7f6937a4f7afa99d6cb87abe5f066a51" args="(cs_edho_t *self, const char *client_name, jack_options_t flags, char *server_name)" -->
+<a class="anchor" id="aba212831f3d501063528a24deb6c98d6"></a><!-- doxytag: member="dsf.h::cs_dsf_init" ref="aba212831f3d501063528a24deb6c98d6" args="(cs_dsf_t *self, const char *client_name, jack_options_t flags, char *server_name)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int cs_edho_init </td>
+          <td class="memname">int cs_dsf_init </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structcs__edho__t.html">cs_edho_t</a> *&nbsp;</td>
+          <td class="paramtype"><a class="el" href="structcs__dsf__t.html">cs_dsf_t</a> *&nbsp;</td>
           <td class="paramname"> <em>self</em>, </td>
         </tr>
         <tr>
@@ -204,19 +202,19 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </table>
 </div>
 <div class="memdoc">
-<p>Initialize edho synth</p>
+<p>Initialize dsf synth</p>
 <p>See <a class="el" href="synth_8h.html#a5dd09caecc74a19c53bfc943dcf8ec42">cs_synth_destroy</a> </p>
 
 </div>
 </div>
-<a class="anchor" id="a661577a2e756383dbade8e6c5b2c5dbc"></a><!-- doxytag: member="edho.h::cs_edho_set_bright" ref="a661577a2e756383dbade8e6c5b2c5dbc" args="(cs_edho_t *self, float bright)" -->
+<a class="anchor" id="a30ab6ba740a49ad33db93d901bbf6375"></a><!-- doxytag: member="dsf.h::cs_dsf_set_bright" ref="a30ab6ba740a49ad33db93d901bbf6375" args="(cs_dsf_t *self, float bright)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void cs_edho_set_bright </td>
+          <td class="memname">void cs_dsf_set_bright </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structcs__edho__t.html">cs_edho_t</a> *&nbsp;</td>
+          <td class="paramtype"><a class="el" href="structcs__dsf__t.html">cs_dsf_t</a> *&nbsp;</td>
           <td class="paramname"> <em>self</em>, </td>
         </tr>
         <tr>
@@ -233,7 +231,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </table>
 </div>
 <div class="memdoc">
-<p>Set bright, from 0-1, see discussion at <a class="el" href="edho_8h.html">edho.h</a></p>
+<p>Set bright, from 0-1, see discussion at <a class="el" href="dsf_8h.html">dsf.h</a></p>
 <p>Ruby version: <code>bright=</code> </p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
@@ -244,14 +242,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 </div>
 </div>
-<a class="anchor" id="ac81c27dd1324b71c2684a042c4a81ea0"></a><!-- doxytag: member="edho.h::cs_edho_set_scale" ref="ac81c27dd1324b71c2684a042c4a81ea0" args="(cs_edho_t *self, int scale)" -->
+<a class="anchor" id="a54f837950fc73ef62cbfc0133427dc72"></a><!-- doxytag: member="dsf.h::cs_dsf_set_scale" ref="a54f837950fc73ef62cbfc0133427dc72" args="(cs_dsf_t *self, int scale)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void cs_edho_set_scale </td>
+          <td class="memname">void cs_dsf_set_scale </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structcs__edho__t.html">cs_edho_t</a> *&nbsp;</td>
+          <td class="paramtype"><a class="el" href="structcs__dsf__t.html">cs_dsf_t</a> *&nbsp;</td>
           <td class="paramname"> <em>self</em>, </td>
         </tr>
         <tr>
@@ -285,7 +283,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&nbsp;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&nbsp;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&nbsp;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&nbsp;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&nbsp;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&nbsp;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&nbsp;</span>Defines</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&nbsp;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&nbsp;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&nbsp;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&nbsp;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&nbsp;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&nbsp;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&nbsp;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&nbsp;</span>Defines</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -294,7 +292,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-<hr class="footer"/><address style="text-align: right;"><small>Generated on Sun Jul 18 22:45:56 2010 for cshellsynth by&nbsp;
+<hr class="footer"/><address style="text-align: right;"><small>Generated on Mon Aug 30 08:49:48 2010 for cshellsynth by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.3 </small></address>
 </body>

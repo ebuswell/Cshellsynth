@@ -59,13 +59,33 @@ jack_port_t *&nbsp;</td><td class="memItemRight" valign="bottom"><b>out_port</b>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af14c29f9e72a9a0be4373390b429c0f7"></a><!-- doxytag: member="cs_lowpass_t::freq_port" ref="af14c29f9e72a9a0be4373390b429c0f7" args="" -->
 jack_port_t *&nbsp;</td><td class="memItemRight" valign="bottom"><b>freq_port</b></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">atomic_float_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="structcs__lowpass__t.html#a7c887b0d83fc6eccd412587b55572e46">freq</a></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">double&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="structcs__lowpass__t.html#a1848f21bb3fa57637d86c2a95d89362b">last_out</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">jack_port_t *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="structcs__lowpass__t.html#ad8c5bfd700438f684bd6815d80bb9259">Q_port</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">atomic_float_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="structcs__lowpass__t.html#a876bca33315e47d857c9a45f717263f5">Q</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">atomic_float_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="structcs__lowpass__t.html#a7e6f67dd49120235a6a1afe6fad17c9a">atten</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">double&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="structcs__lowpass__t.html#a6307ea7d8b3114c784da353855d68352">x1</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">double&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="structcs__lowpass__t.html#a3f6920b572a4742b0e5175c42e1a00c9">x2</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">double&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="structcs__lowpass__t.html#ad50fc4613dc8eb389dea8ecf9868c2b2">y1</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">double&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="structcs__lowpass__t.html#a0c639c669e0b065b36eaf25f6085a91c">y2</a></td></tr>
 </table>
 <hr/><a name="_details"></a><h2>Detailed Description</h2>
 <p>Lowpass filter</p>
 <p>Ruby version: <code>Filters::Lowpass</code> </p>
 <p>See <a class="el" href="structcs__filter__t.html">cs_filter_t</a> </p>
 <hr/><h2>Field Documentation</h2>
+<a class="anchor" id="a7e6f67dd49120235a6a1afe6fad17c9a"></a><!-- doxytag: member="cs_lowpass_t::atten" ref="a7e6f67dd49120235a6a1afe6fad17c9a" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">atomic_float_t <a class="el" href="structcs__lowpass__t.html#a7e6f67dd49120235a6a1afe6fad17c9a">cs_lowpass_t::atten</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Static version of Q </p>
+
+</div>
+</div>
 <a class="anchor" id="a7c887b0d83fc6eccd412587b55572e46"></a><!-- doxytag: member="cs_lowpass_t::freq" ref="a7c887b0d83fc6eccd412587b55572e46" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -80,17 +100,87 @@ jack_port_t *&nbsp;</td><td class="memItemRight" valign="bottom"><b>freq_port</b
 
 </div>
 </div>
-<a class="anchor" id="a1848f21bb3fa57637d86c2a95d89362b"></a><!-- doxytag: member="cs_lowpass_t::last_out" ref="a1848f21bb3fa57637d86c2a95d89362b" args="" -->
+<a class="anchor" id="a876bca33315e47d857c9a45f717263f5"></a><!-- doxytag: member="cs_lowpass_t::Q" ref="a876bca33315e47d857c9a45f717263f5" args="" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">double <a class="el" href="structcs__lowpass__t.html#a1848f21bb3fa57637d86c2a95d89362b">cs_lowpass_t::last_out</a></td>
+          <td class="memname">atomic_float_t <a class="el" href="structcs__lowpass__t.html#a876bca33315e47d857c9a45f717263f5">cs_lowpass_t::Q</a></td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Static version of frequency </p>
+<p>The filter's Q </p>
+
+</div>
+</div>
+<a class="anchor" id="ad8c5bfd700438f684bd6815d80bb9259"></a><!-- doxytag: member="cs_lowpass_t::Q_port" ref="ad8c5bfd700438f684bd6815d80bb9259" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">jack_port_t* <a class="el" href="structcs__lowpass__t.html#ad8c5bfd700438f684bd6815d80bb9259">cs_lowpass_t::Q_port</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>The center frequency </p>
+
+</div>
+</div>
+<a class="anchor" id="a6307ea7d8b3114c784da353855d68352"></a><!-- doxytag: member="cs_lowpass_t::x1" ref="a6307ea7d8b3114c784da353855d68352" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="structcs__lowpass__t.html#a6307ea7d8b3114c784da353855d68352">cs_lowpass_t::x1</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Attenuation, an alternative to Q </p>
+
+</div>
+</div>
+<a class="anchor" id="a3f6920b572a4742b0e5175c42e1a00c9"></a><!-- doxytag: member="cs_lowpass_t::x2" ref="a3f6920b572a4742b0e5175c42e1a00c9" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="structcs__lowpass__t.html#a3f6920b572a4742b0e5175c42e1a00c9">cs_lowpass_t::x2</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Previous input </p>
+
+</div>
+</div>
+<a class="anchor" id="ad50fc4613dc8eb389dea8ecf9868c2b2"></a><!-- doxytag: member="cs_lowpass_t::y1" ref="ad50fc4613dc8eb389dea8ecf9868c2b2" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="structcs__lowpass__t.html#ad50fc4613dc8eb389dea8ecf9868c2b2">cs_lowpass_t::y1</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Previous previous input </p>
+
+</div>
+</div>
+<a class="anchor" id="a0c639c669e0b065b36eaf25f6085a91c"></a><!-- doxytag: member="cs_lowpass_t::y2" ref="a0c639c669e0b065b36eaf25f6085a91c" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="structcs__lowpass__t.html#a0c639c669e0b065b36eaf25f6085a91c">cs_lowpass_t::y2</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Previous output </p>
 
 </div>
 </div>
@@ -103,7 +193,7 @@ jack_port_t *&nbsp;</td><td class="memItemRight" valign="bottom"><b>freq_port</b
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&nbsp;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&nbsp;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&nbsp;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&nbsp;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&nbsp;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&nbsp;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&nbsp;</span>Defines</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&nbsp;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&nbsp;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&nbsp;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&nbsp;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&nbsp;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&nbsp;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&nbsp;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&nbsp;</span>Defines</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -112,7 +202,7 @@ jack_port_t *&nbsp;</td><td class="memItemRight" valign="bottom"><b>freq_port</b
 </iframe>
 </div>
 
-<hr class="footer"/><address style="text-align: right;"><small>Generated on Sun Jul 18 22:45:56 2010 for cshellsynth by&nbsp;
+<hr class="footer"/><address style="text-align: right;"><small>Generated on Mon Aug 30 08:49:48 2010 for cshellsynth by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.3 </small></address>
 </body>

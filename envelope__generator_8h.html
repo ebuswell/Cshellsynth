@@ -80,18 +80,17 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>Ruby version: <code>EnvelopeGenerator</code> </p>
 <p>Creates an envelope corresponding to a control signal.</p>
 <div class="fragment"><pre class="fragment">
- *            _ attack_a
- *         _-- \
- *       --     \
- *     /          \________ sustain_a
- *    /                    \
- *  /                       \
- * /                          \
- * release_a                   release_a
- * |__________|___|       |___|
- *  attack_t   decay_t     release_t
- *
- * </pre></div><p>The bad ascii art is trying to illustrate the default exponential version.</p>
+           _ attack_a
+        _-- \
+      --     \
+    /          \________ sustain_a
+   /                    \
+ /                       \
+/                          \
+release_a                   release_a
+|__________|___|       |___|
+ attack_t   decay_t     release_t
+</pre></div><p>The bad ascii art is trying to illustrate the default exponential version.</p>
 <p>If you want the addition of "hold" time, run the output through a distortion filter. That's likely to give you a more releastic punch then adding in a hold parameter anyway.</p>
 <p>Also, note that by setting the appropriate parameters you can invert the envelope or do many other nonstandard things useful in controlling filters. The predictable way that a linear envelope interacts with Lin2Exp (<a class="el" href="lin2exp_8h.html">lin2exp.h</a>) is important for certain effects.</p>
 <p>The attack and decay cycle are always performed. A control signal to release during this time will cause the release to happen immediately after the decay. Conversely, a control signal to attack starts the attack cycle immediately.</p>
@@ -390,7 +389,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&nbsp;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&nbsp;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&nbsp;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&nbsp;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&nbsp;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&nbsp;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&nbsp;</span>Defines</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&nbsp;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&nbsp;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&nbsp;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&nbsp;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&nbsp;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&nbsp;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&nbsp;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&nbsp;</span>Defines</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -399,7 +398,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-<hr class="footer"/><address style="text-align: right;"><small>Generated on Sun Jul 18 22:45:56 2010 for cshellsynth by&nbsp;
+<hr class="footer"/><address style="text-align: right;"><small>Generated on Mon Aug 30 08:49:48 2010 for cshellsynth by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.3 </small></address>
 </body>

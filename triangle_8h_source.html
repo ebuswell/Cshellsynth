@@ -75,28 +75,31 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00043"></a>00043     jack_port_t *out_port;
 <a name="l00044"></a>00044     atomic_float_t amp;
 <a name="l00045"></a>00045     atomic_float_t offset;
-<a name="l00046"></a>00046     <span class="keywordtype">double</span> t; 
-<a name="l00047"></a>00047 } <a class="code" href="structcs__triangle__t.html">cs_triangle_t</a>;
-<a name="l00048"></a>00048 
-<a name="l00054"></a><a class="code" href="triangle_8h.html#a166e30a38c4e65e2195b945c106ca480">00054</a> <span class="preprocessor">#define cs_triangle_destroy(cs_triangle) cs_synth_destroy((cs_synth_t *) (cs_triangle))</span>
-<a name="l00055"></a>00055 <span class="preprocessor"></span>
-<a name="l00061"></a>00061 <span class="keywordtype">int</span> <a class="code" href="triangle_8h.html#a3166ec0e1e0d5f065a6868395c41e56b">cs_triangle_init</a>(<a class="code" href="structcs__triangle__t.html">cs_triangle_t</a> *<span class="keyword">self</span>, <span class="keyword">const</span> <span class="keywordtype">char</span> *client_name, jack_options_t flags, <span class="keywordtype">char</span> *server_name);
-<a name="l00062"></a>00062 
-<a name="l00066"></a><a class="code" href="triangle_8h.html#a0f01aa6f9a11ba1b97b428fae777895e">00066</a> <span class="preprocessor">#define cs_triangle_set_freq(cs_triangle, freq) cs_synth_set_freq((cs_synth_t *) (cs_triangle), (freq))</span>
-<a name="l00067"></a>00067 <span class="preprocessor"></span>
-<a name="l00071"></a><a class="code" href="triangle_8h.html#a11f7e34827dd5fc82cf19e24f2f0887d">00071</a> <span class="preprocessor">#define cs_triangle_set_offset(cs_triangle, offset) cs_synth_set_offset((cs_synth_t *) (cs_triangle), (offset))</span>
-<a name="l00072"></a>00072 <span class="preprocessor"></span>
-<a name="l00076"></a><a class="code" href="triangle_8h.html#a9a23f557763bbe5fdb894d30528fedf2">00076</a> <span class="preprocessor">#define cs_triangle_set_amp(cs_triangle, amp) cs_synth_set_amp((cs_synth_t *) (cs_triangle), (amp))</span>
-<a name="l00077"></a>00077 <span class="preprocessor"></span>
-<a name="l00078"></a>00078 <span class="preprocessor">#endif </span><span class="comment">/* #ifndef CSHELLSYNTH_TRIANGLE_H */</span>
-<a name="l00079"></a>00079 
+<a name="l00046"></a>00046     atomic_double_t slope; 
+<a name="l00047"></a><a class="code" href="structcs__triangle__t.html#a763d437a7d88011b7871aaf43fec7f89">00047</a>     <span class="keywordtype">double</span> t; 
+<a name="l00048"></a>00048 } <a class="code" href="structcs__triangle__t.html">cs_triangle_t</a>;
+<a name="l00049"></a>00049 
+<a name="l00055"></a><a class="code" href="triangle_8h.html#a166e30a38c4e65e2195b945c106ca480">00055</a> <span class="preprocessor">#define cs_triangle_destroy(cs_triangle) cs_synth_destroy((cs_synth_t *) (cs_triangle))</span>
+<a name="l00056"></a>00056 <span class="preprocessor"></span>
+<a name="l00062"></a>00062 <span class="keywordtype">int</span> <a class="code" href="triangle_8h.html#a3166ec0e1e0d5f065a6868395c41e56b">cs_triangle_init</a>(<a class="code" href="structcs__triangle__t.html">cs_triangle_t</a> *<span class="keyword">self</span>, <span class="keyword">const</span> <span class="keywordtype">char</span> *client_name, jack_options_t flags, <span class="keywordtype">char</span> *server_name);
+<a name="l00063"></a>00063 
+<a name="l00067"></a><a class="code" href="triangle_8h.html#a0f01aa6f9a11ba1b97b428fae777895e">00067</a> <span class="preprocessor">#define cs_triangle_set_freq(cs_triangle, freq) cs_synth_set_freq((cs_synth_t *) (cs_triangle), (freq))</span>
+<a name="l00068"></a>00068 <span class="preprocessor"></span>
+<a name="l00072"></a><a class="code" href="triangle_8h.html#a11f7e34827dd5fc82cf19e24f2f0887d">00072</a> <span class="preprocessor">#define cs_triangle_set_offset(cs_triangle, offset) cs_synth_set_offset((cs_synth_t *) (cs_triangle), (offset))</span>
+<a name="l00073"></a>00073 <span class="preprocessor"></span>
+<a name="l00077"></a><a class="code" href="triangle_8h.html#a9a23f557763bbe5fdb894d30528fedf2">00077</a> <span class="preprocessor">#define cs_triangle_set_amp(cs_triangle, amp) cs_synth_set_amp((cs_synth_t *) (cs_triangle), (amp))</span>
+<a name="l00078"></a>00078 <span class="preprocessor"></span>
+<a name="l00088"></a>00088 <span class="keywordtype">void</span> <a class="code" href="triangle_8h.html#ae766956263b32d68ee0a0ba2e0d93a1a">cs_triangle_set_slope</a>(<a class="code" href="structcs__triangle__t.html">cs_triangle_t</a> *<span class="keyword">self</span>, <span class="keywordtype">double</span> slope);
+<a name="l00089"></a>00089 
+<a name="l00090"></a>00090 <span class="preprocessor">#endif </span><span class="comment">/* #ifndef CSHELLSYNTH_TRIANGLE_H */</span>
+<a name="l00091"></a>00091 
 </pre></div></div>
 <!--- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&nbsp;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&nbsp;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&nbsp;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&nbsp;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&nbsp;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&nbsp;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&nbsp;</span>Defines</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&nbsp;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&nbsp;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&nbsp;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&nbsp;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&nbsp;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&nbsp;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&nbsp;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&nbsp;</span>Defines</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -105,7 +108,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-<hr class="footer"/><address style="text-align: right;"><small>Generated on Sun Jul 18 22:45:56 2010 for cshellsynth by&nbsp;
+<hr class="footer"/><address style="text-align: right;"><small>Generated on Mon Aug 30 08:49:48 2010 for cshellsynth by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.3 </small></address>
 </body>

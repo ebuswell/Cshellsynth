@@ -66,7 +66,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>Mixer</p>
 <p>Ruby version: <code>LLMixer</code>. There is also a derived Ruby <code>Mixer</code> class described below.</p>
 <p>This simple mixer class just adds its arguments together, scaled by their respective amplitudes. Additionally, it serves as the subclass of all things that mix two things to get one thing. Right now, that's just Modulator (<a class="el" href="modulator_8h.html">modulator.h</a>).</p>
-<p>In Ruby, there is a <code>Mixer</code> class which functions identically except that instead of <code>in1*</code> and <code>in2*</code>, there are <code>in[0-x]</code> and <code>amp[0-x]</code>. These are created on demand, but note that all intermediate values are filled in, so <code>in[3]</code> will ensure that <code>in[0]</code>, <code>in[1]</code>, and <code>in[2]</code> exist. </p>
+<p>In Ruby, there is a <code>Mixer</code> class which functions identically except that instead of <code>in1*</code> and <code>in2*</code>, there are <code>in[0-x]</code> and <code>amp[0-x]</code>. These are created on demand, but note that all intermediate values are filled in, so <code>in[3]</code> will ensure that <code>in[0]</code>, <code>in[1]</code>, and <code>in[2]</code> exist.</p>
+<p>Additionally, there is a FullMixer class which also has <code>pan[0-x]</code>, with <code>outL</code> and <code>outR</code> instead of <code>out</code>.</p>
+<p>By default, $mixer is created as a FullMixer, with outL and outR connected to the default output. </p>
 <hr/><h2>Define Documentation</h2>
 <a class="anchor" id="aba476cf97fdef14fbbc43038d46012ed"></a><!-- doxytag: member="mixer.h::cs_mix_destroy" ref="aba476cf97fdef14fbbc43038d46012ed" args="(cs_mix)" -->
 <div class="memitem">
@@ -292,7 +294,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&nbsp;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&nbsp;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&nbsp;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&nbsp;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&nbsp;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&nbsp;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&nbsp;</span>Defines</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&nbsp;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&nbsp;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&nbsp;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&nbsp;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&nbsp;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&nbsp;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&nbsp;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&nbsp;</span>Defines</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -301,7 +303,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-<hr class="footer"/><address style="text-align: right;"><small>Generated on Sun Jul 18 22:45:56 2010 for cshellsynth by&nbsp;
+<hr class="footer"/><address style="text-align: right;"><small>Generated on Mon Aug 30 08:49:48 2010 for cshellsynth by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.3 </small></address>
 </body>

@@ -66,6 +66,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="#index_s"><span>s</span></a></li>
       <li><a href="#index_t"><span>t</span></a></li>
       <li><a href="#index_u"><span>u</span></a></li>
+      <li><a href="#index_x"><span>x</span></a></li>
+      <li><a href="#index_y"><span>y</span></a></li>
       <li><a href="#index_z"><span>z</span></a></li>
     </ul>
   </div>
@@ -83,15 +85,18 @@ Here is a list of all documented struct and union fields with links to the struc
 <li>attack_t
 : <a class="el" href="structcs__envg__t.html#a7e2e92c63bdb555c633821ae0e2a4299">cs_envg_t</a>
 </li>
+<li>atten
+: <a class="el" href="structcs__lowpass__t.html#a7e6f67dd49120235a6a1afe6fad17c9a">cs_lowpass_t</a>
+</li>
 </ul>
 
 
 <h3><a class="anchor" id="index_b">- b -</a></h3><ul>
 <li>bright
-: <a class="el" href="structcs__edho__t.html#a3c89e2380edde2c1f1d33d8f38b67e06">cs_edho_t</a>
+: <a class="el" href="structcs__dsf__t.html#ac821ff9931911debf681f64fc5e5d7a2">cs_dsf_t</a>
 </li>
 <li>bright_port
-: <a class="el" href="structcs__edho__t.html#a18d132ad600bf7945c8fcc753d91a571">cs_edho_t</a>
+: <a class="el" href="structcs__dsf__t.html#ae055a938a2bc0c5b4833a450514d07f9">cs_dsf_t</a>
 </li>
 </ul>
 
@@ -119,10 +124,8 @@ Here is a list of all documented struct and union fields with links to the struc
 
 <h3><a class="anchor" id="index_f">- f -</a></h3><ul>
 <li>freq
-: <a class="el" href="structcs__bandpass__t.html#a485d75009e70b2c4e10fb0ada768367f">cs_bandpass_t</a>
-, <a class="el" href="structcs__highpass__t.html#a1796c7ef89ade819301f9e482381d424">cs_highpass_t</a>
+: <a class="el" href="structcs__lowpass__t.html#a7c887b0d83fc6eccd412587b55572e46">cs_lowpass_t</a>
 , <a class="el" href="structcs__synth__t.html#a97b3e1e27749b197fd930c587d50e5bc">cs_synth_t</a>
-, <a class="el" href="structcs__lowpass__t.html#a7c887b0d83fc6eccd412587b55572e46">cs_lowpass_t</a>
 </li>
 <li>freq_port
 : <a class="el" href="structcs__key__t.html#a364a183568a6a0f9b9b5afd9c0848578">cs_key_t</a>
@@ -163,14 +166,6 @@ Here is a list of all documented struct and union fields with links to the struc
 <li>last_a
 : <a class="el" href="structcs__envg__t.html#ac96dbc5af083f9661a107125a74c8997">cs_envg_t</a>
 </li>
-<li>last_in
-: <a class="el" href="structcs__highpass__t.html#aaa30716da48694635eb4c663761b5aa9">cs_highpass_t</a>
-</li>
-<li>last_out
-: <a class="el" href="structcs__highpass__t.html#a4a5d5630ad5b470a6e73128960750ca6">cs_highpass_t</a>
-, <a class="el" href="structcs__lowpass__t.html#a1848f21bb3fa57637d86c2a95d89362b">cs_lowpass_t</a>
-, <a class="el" href="structcs__bandpass__t.html#aaddb5faf266773854787f34cb21e7607">cs_bandpass_t</a>
-</li>
 <li>linear
 : <a class="el" href="structcs__envg__t.html#ada7407b963b036f1ec56c6a105d2465d">cs_envg_t</a>
 </li>
@@ -205,25 +200,30 @@ Here is a list of all documented struct and union fields with links to the struc
 <li>out
 : <a class="el" href="structcs__seq__t.html#a0bd9bd8188ad84f8e80aa9202bed1b79">cs_seq_t</a>
 </li>
-<li>out_accumulator
-: <a class="el" href="structcs__bandpass__t.html#a46877f3e4ba810d72333518ca73e656d">cs_bandpass_t</a>
-</li>
 <li>out_port
-: <a class="el" href="structcs__mix__t.html#a4f08e1bf29a13cd298615cd0cc3f5311">cs_mix_t</a>
-, <a class="el" href="structcs__synth__t.html#abd03e5ae5c919b181477674a4c7c95cf">cs_synth_t</a>
-, <a class="el" href="structcs__envg__t.html#aa8093f312e61b4210a7324b3efe30d06">cs_envg_t</a>
+: <a class="el" href="structcs__envg__t.html#aa8093f312e61b4210a7324b3efe30d06">cs_envg_t</a>
 , <a class="el" href="structcs__filter__t.html#ac50a32495a4abaebc86fb50f8aa5a45d">cs_filter_t</a>
+, <a class="el" href="structcs__synth__t.html#abd03e5ae5c919b181477674a4c7c95cf">cs_synth_t</a>
+, <a class="el" href="structcs__mix__t.html#a4f08e1bf29a13cd298615cd0cc3f5311">cs_mix_t</a>
 </li>
 <li>outL_port
 : <a class="el" href="structcs__sampler__t.html#a5d18f781646b78141ed4332d08bbff55">cs_sampler_t</a>
+, <a class="el" href="structcs__pan__t.html#ae111902cac4297b5b2cb2d07001cf478">cs_pan_t</a>
 </li>
 <li>outR_port
-: <a class="el" href="structcs__sampler__t.html#a74161f3007ff26a70d0aa39c7c8bab23">cs_sampler_t</a>
+: <a class="el" href="structcs__pan__t.html#a28298e1a809e0b2710992a1de3eec875">cs_pan_t</a>
+, <a class="el" href="structcs__sampler__t.html#a74161f3007ff26a70d0aa39c7c8bab23">cs_sampler_t</a>
 </li>
 </ul>
 
 
 <h3><a class="anchor" id="index_p">- p -</a></h3><ul>
+<li>pan
+: <a class="el" href="structcs__pan__t.html#a3b978873dcc89d965eef54d93bd2cccc">cs_pan_t</a>
+</li>
+<li>pan_port
+: <a class="el" href="structcs__pan__t.html#aa480b8ecd86fca8a0bd0819058ae881e">cs_pan_t</a>
+</li>
 <li>playing
 : <a class="el" href="structcs__sampler__t.html#a19f9e889738811ab2708cb4b627f8037">cs_sampler_t</a>
 , <a class="el" href="structcs__seq__t.html#a88f55030a9ec94abd75312add8018cf4">cs_seq_t</a>
@@ -233,10 +233,10 @@ Here is a list of all documented struct and union fields with links to the struc
 
 <h3><a class="anchor" id="index_q">- q -</a></h3><ul>
 <li>Q
-: <a class="el" href="structcs__bandpass__t.html#afd08d1e99f5df44e7d58d42423e2e1d5">cs_bandpass_t</a>
+: <a class="el" href="structcs__lowpass__t.html#a876bca33315e47d857c9a45f717263f5">cs_lowpass_t</a>
 </li>
 <li>Q_port
-: <a class="el" href="structcs__bandpass__t.html#ac37a0ec90251b61ceccca67f35d2e394">cs_bandpass_t</a>
+: <a class="el" href="structcs__lowpass__t.html#ad8c5bfd700438f684bd6815d80bb9259">cs_lowpass_t</a>
 </li>
 </ul>
 
@@ -268,7 +268,8 @@ Here is a list of all documented struct and union fields with links to the struc
 
 <h3><a class="anchor" id="index_s">- s -</a></h3><ul>
 <li>scale
-: <a class="el" href="structcs__edho__t.html#a802b9188abb7456566df2336d9438b97">cs_edho_t</a>
+: <a class="el" href="structcs__dsf__t.html#a7f94687ec0769b26ccfc036e3a6bd91f">cs_dsf_t</a>
+, <a class="el" href="structcs__itrain__t.html#ab2854da033e330383f933a7dde70a63d">cs_itrain_t</a>
 </li>
 <li>sf
 : <a class="el" href="structcs__sampler__t.html#a187edd4c7130dc317290e7838bd320ab">cs_sampler_t</a>
@@ -292,13 +293,14 @@ Here is a list of all documented struct and union fields with links to the struc
 <h3><a class="anchor" id="index_t">- t -</a></h3><ul>
 <li>t
 : <a class="el" href="structcs__square__t.html#a28b3721c758b4fadbb019a3d045c70a5">cs_square_t</a>
+, <a class="el" href="structcs__triangle__t.html#a763d437a7d88011b7871aaf43fec7f89">cs_triangle_t</a>
 </li>
 <li>target
 : <a class="el" href="structcs__porta__t.html#a9ec02e668c29a6ff546cd4e50b3a1126">cs_porta_t</a>
 </li>
 <li>tuning
-: <a class="el" href="structcs__key__t.html#a31165655ff099c212910f09fa21ac046">cs_key_t</a>
-, <a class="el" href="structcs__key__tuning__t.html#ad41224d5c3fce894ade69556e0c266be">cs_key_tuning_t</a>
+: <a class="el" href="structcs__key__tuning__t.html#ad41224d5c3fce894ade69556e0c266be">cs_key_tuning_t</a>
+, <a class="el" href="structcs__key__t.html#a31165655ff099c212910f09fa21ac046">cs_key_t</a>
 </li>
 <li>tuning_sync
 : <a class="el" href="structcs__key__t.html#aa77eeb565943881e93dc286e6a6e6091">cs_key_t</a>
@@ -309,6 +311,26 @@ Here is a list of all documented struct and union fields with links to the struc
 <h3><a class="anchor" id="index_u">- u -</a></h3><ul>
 <li>upwards
 : <a class="el" href="structcs__envg__t.html#a5a465613bce205083429d28f7b9f070d">cs_envg_t</a>
+</li>
+</ul>
+
+
+<h3><a class="anchor" id="index_x">- x -</a></h3><ul>
+<li>x1
+: <a class="el" href="structcs__lowpass__t.html#a6307ea7d8b3114c784da353855d68352">cs_lowpass_t</a>
+</li>
+<li>x2
+: <a class="el" href="structcs__lowpass__t.html#a3f6920b572a4742b0e5175c42e1a00c9">cs_lowpass_t</a>
+</li>
+</ul>
+
+
+<h3><a class="anchor" id="index_y">- y -</a></h3><ul>
+<li>y1
+: <a class="el" href="structcs__lowpass__t.html#ad50fc4613dc8eb389dea8ecf9868c2b2">cs_lowpass_t</a>
+</li>
+<li>y2
+: <a class="el" href="structcs__lowpass__t.html#a0c639c669e0b065b36eaf25f6085a91c">cs_lowpass_t</a>
 </li>
 </ul>
 
@@ -324,7 +346,7 @@ Here is a list of all documented struct and union fields with links to the struc
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&nbsp;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&nbsp;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&nbsp;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&nbsp;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&nbsp;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&nbsp;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&nbsp;</span>Defines</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&nbsp;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&nbsp;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&nbsp;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&nbsp;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&nbsp;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&nbsp;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&nbsp;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&nbsp;</span>Defines</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -333,7 +355,7 @@ Here is a list of all documented struct and union fields with links to the struc
 </iframe>
 </div>
 
-<hr class="footer"/><address style="text-align: right;"><small>Generated on Sun Jul 18 22:45:56 2010 for cshellsynth by&nbsp;
+<hr class="footer"/><address style="text-align: right;"><small>Generated on Mon Aug 30 08:49:48 2010 for cshellsynth by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.3 </small></address>
 </body>
