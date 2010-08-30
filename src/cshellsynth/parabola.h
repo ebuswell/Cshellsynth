@@ -3,6 +3,22 @@
  * Parabolic Wave Synth
  *
  * Ruby version: @c Synths::Parabola
+ *
+ * Makes a wave of the equation:
+ *
+ * @verbatim
+ 2                         2
+π ( (ft - floor(ft)) - 0.5)  - 1/12 )
+@endverbatim
+ *
+ * Which is equivalent to:
+ *
+ * @verbatim
+inf             2
+ Σ sin(n*wt) / n
+n=1
+@endverbatim
+ *
  */
 /*
  * Copyright 2010 Evan Buswell

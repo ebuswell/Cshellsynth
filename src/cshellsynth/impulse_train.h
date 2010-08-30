@@ -7,12 +7,10 @@
  * This produces an impulse train, which corresponds to:
  *
  * @verbatim
- *
- * inf
- *  E  cos(n*wt)
- * n=1
- *
- * @endverbatim
+inf
+ Σ cos(n*wt)
+n=1
+@endverbatim
  *
  * If the @c scale parameter is set, the (bandlimited) amplitude of the wave will be
  * decreased such that the peak is always under 1.0.  This is probably not what you want

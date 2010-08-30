@@ -9,15 +9,13 @@
  * This is useful because
  *
  * @verbatim
+inf
+ Σ sin(nwt) = cot(wt/2)/2
+n=1
+@endverbatim
  *
- * inf
- *  E sin(nwt) = cot(wt/2)/2
- * n=1
- *
- * @endverbatim
- *
- * Note that cotangent has an infinite peak (here reduced to HUGE), so you will want to
- * run this through Distortion (@ref distort.h) to limit it.
+ * Note that the ideal cotangent has an infinite peak, though the bandlimited version's
+ * peak is finite.  You will want to use distortion or some serious amplitude reduction.
  */
 /*
  * Copyright 2010 Evan Buswell

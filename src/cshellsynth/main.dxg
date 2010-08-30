@@ -19,7 +19,37 @@
 
    To file a bug report, or for more information, see the github page:
    http://github.com/ebuswell/Cshellsynth
+
+   To offer feedback of any sort, or to help with the development process, please join in
+   at cshellsynth-dev@googlegroups.com
+
+   @section bugs_sec Bugs
+
+   When installed to @c /usr/local, you must set @c LD_LIBRARY_PATH=/usr/local/lib when running ruby, e.g.
    
+   @code
+
+   LD_LIBRARY_PATH=/usr/local/lib irb
+
+   @endcode
+
+   If you're doing something heavily polyphonic, Jack may run out of clients or ports.  You can use
+
+   @code
+
+   jackd -p [maximum number of ports]
+
+   @endcode
+
+   to raise the maximum number of ports.  Unfortunately, the only way to raise the maximum
+   number of clients is to recompile jack2.  Run waf with
+
+   @code
+
+   ./waf [other options] --clients=512
+   
+   @endcode
+
    @section started_sec Getting Started
    
    This assumes you have already compiled and installed Cshellsynth.  If not, refer to the
@@ -27,7 +57,7 @@
    the Ruby module, but it should be useful even to someone who only wishes to use C.
    
    Cshellsynth is a modular synthesizer.  That means that every aspect of synthesis here
-   is conceptually seperate, and synthesis takes part in stages.  Every module is (at
+   is conceptually separate, and synthesis takes part in stages.  Every module is (at
    lease one) Jack client, but you probably don't need to think about that fact unless
    you're having resource troubles.  What's important to know is that every module has one
    or more out ports, and most modules have one or more in ports.  You connect them
@@ -40,13 +70,12 @@
    @endcode
    
    Note that although it is possible to have the left hand value be an out port, it is
-   preferable to use in ports as slightly more magic happens in that case.  This should be
-   fixed at some point.
+   preferable to use in ports as the lvalue as slightly more magic happens in that case.
+   This should be fixed at some point.
 
-   To create a synthesizer, hook up all the modules you want, finally hooking into
-   @c "system:playback_1" and/or @c "system:playback_2" or whatever other jack port you
-   wish to connect to.  To get a list of ports on your system, type @c "c.ports," where
-   @c c is any Jack client.
+   To create a synthesizer, hook up all the modules you want, finally hooking into @c
+   $mixer.in[N] or whatever other external jack port you wish to connect to.  To get a
+   list of ports on your system, type "@c c.ports," where @c c is any Jack client.
 
    In Cshellsynth, there are three main categories of modules: @c Filters, @c Controllers,
    and @c Synths.
@@ -63,16 +92,28 @@
    output port, @c out.  Some synths have other parameters as well.  Only one synth
    doesn't have any input: @c Synths::Noise (@ref noise.h).
 
-   @c Filters transform input to output.  These don't necessarily involve frequency, but
-   sometimes do.  A filter isn't strictly necessary, but most things sound better with at
-   least one filter.  @c Filters have at least an @c in and an @c out port, sometimes others.
+   @c Filters transform input to output.  These don't necessarily involve frequency, as
+   per the more usual usage of the term "filter."  If a filter based on frequency is
+   meant, I will specify "frequency filter".  A filter isn't strictly necessary, but most
+   things sound better with at least one filter.  @c Filters have at least an @c in and an
+   @c out port, sometimes others.
 
    In addition to these, there are a few important modules that aren't categorized.
 
-   @c Mixer (@ref mixer.h) takes an arbitrary number of inputs (<tt>in[0..x]</tt>) and adds them
-   all to produce one output.  Unless you're going monophonic, you'll probably want one of
-   these.  Note that Jack does this automatically for multiple clients connecting to one
-   port, but @c Mixer does this in a simpler manner.
+   @c Mixer (@ref mixer.h) takes an arbitrary number of inputs (<tt>in[0..x]</tt>) and
+   adds them all to produce one output.  Note that Jack will automatically mix together
+   multiple incoming connectoins to a given port, but @c Mixer allows for more explicit
+   control.
+
+   @c Modulator (@ref modulator.h) takes two inputs and creates an output equal to the
+   multiplication of one input by the other input.
+
+   @c Pan (@ref pan.h) takes one input and provides a left and right output, controlled by
+   a pan control.
+
+   @c FullMixer is a combination of mixers and pan controls to make something like a
+   studio mixer.  By default, cshellsynth creates a FullMixer "@c $mixer," with outputs
+   connected to your sound card out.
 
    @c EnvelopeGenerator (@ref envelope_generator.h) does something useful with control
    data, generating an envelope for your sound.  This is usually used in conjunction with
@@ -82,6 +123,90 @@
    hand-code the frequency in, but @c Key is a lot easier and more easily changeable.  For
    example, you can change from minor to major or modulate keys with a single line of
    code.
+
+   @section para_port Parameters, Ports, and Units
+
+   Every module is configurable with parameters and ports.  In most cases, ports and
+   parameters are interchangable, e.g. <tt>synth.freq = key.freq</tt> will connect the @c
+   synth object's frequency input port to the @c key object's frequency output port, and
+   <tt>synth.freq = 440.0</tt> will set the @c synth object's frequency parameter to a
+   constant 440.  There are, however, some ports with no corresponding parameter, and some
+   parameters with no corresponding port.  However, this should only be the case with
+   parameters for which a dynamic setting is useless, and ports for which a static setting
+   is useless.  Otherwise, it's a bug and should be reported; please include the use case.
+
+   At the moment, this is implemented by use of the @c NaN (Not a Number) values.  If a
+   parameter is set to a number, the port is not used; otherwise values are read from the
+   port.  In most cases, you won't have to think about this, as normally, when you connect
+   a port the parameter will automatically be set to NaN.  However, as Jack is somewhat
+   independent, many things can happen whereby a port will be connected but a parameter
+   will not be set to NaN.  In that case, you can manually set the parameter to NaN (via
+   something like <tt>synth.param = 0.0/0.0</tt>), and the port will start working.  This
+   works fine, but is considered a low-priority bug.
+
+   The default units for parameters and ports allow for maximum control.  Wherever
+   possible, they are also intuitive, but control is always a priority over ease.  With
+   data sent over the ports, time units are always in samples, frequency units are always
+   cycles per sample; when setting parameters, however, time units are always in seconds,
+   frequency units are always in Hz, EXCEPT for values < 1 Hz, which are per sample.  The
+   reason for this is so that functions like @c Key\#note2freq (@ref cs_key_note2freq) can
+   be used for setting static parameters in a way that is identical to the ports.  Unless
+   a @c Synth has a @c scale parameter, amplitude is normalized so that the root frequency
+   of a given wave is 1.  This means that by default most synths have a maximum amplitude
+   of more than 1 and should be mixed accordingly; e.g. a sawtooth wave (ideally) has a
+   maximum amplitude of π/2, and a parabolic wave has a maximum amplitude of π<sup>2</sup>/6.
+   The actual maximums are usually even greater from the effects of bandlimiting.
+
+   @section seq_sec Sequencers, Clocks, and Polyphony
+
+   All modules (except @c Mixer) have a @c polyphony parameter, that controls the maximum
+   number of simultaneous notes that can be played.  All modules in a given chain should
+   have the same value for polyphony.  <tt>Sequencer</tt>s will sequence round-robin over
+   each polyphonic node of a module.  Currently, this has limitations.  Polyphony is
+   implemented purely by multiplexing sequencer commands using multiple
+   <tt>Sequencer</tt>s, and so certain types of dynamic changes to the sequencing will end
+   up screwing with the round-robin order.
+
+   The @c Sequencer is probably the most volatile object at this point and is subject to
+   change in future versions.  This description is only valid for the time being.
+
+   Sequencers can be sequenced using two forms.  The first is to use a time range and a
+   list of triples, like:
+   
+   @code
+
+   seq.sequence(start, stop, [start_time1, stop_time1, value1],
+   		       	     [start_time2, stop_time2, value2],
+			     [start_time3, stop_time3, value3], ...)
+
+   @endcode
+
+   The second form uses a mini-language.  You pass the sequencer a string where every
+   token takes up a fixed amount of time, a space indicates a silence, a number indicates
+   a value, and a tilde indicates the continuation of a note, e.g.:
+
+   @code
+
+   seq << "0~1~2~3~4 3 2 1 0~2~4 2 0~~~~~  "
+
+   @endcode
+
+   will play a simple warm-up excercise.  The length of time that a given token takes up
+   is given by @c Sequencer\#granularity, where a beat (quarter note) is 1, an eighth note
+   is 0.5, etc.
+
+   Since the target use is livecoding, by default both of these methods will repeat once
+   they are finished.  If you don't want this, use @c Sequencer\#sequence_once or @c
+   Sequencer\#>>.
+
+   A sequencer will only start to do anything once a @c Clock is connected.  All @c
+   Sequencers should (probably) be connected to the same @c Clock.  There is a default
+   global clock created as @c $clock.
+
+   A @c Clock runs from 0 to @c Clock\#meter at @c Clock\#rate.  If Clock\#rate is set via
+   port, it is always in beats per sample.  If the @c rate parameter is set instead,
+   values greater than 1 are interpreted as beats per minute, less than one as beats per
+   sample.
 
    @section example_sec Example
 
@@ -163,11 +288,15 @@
 
    @c Synths::Square @ref square.h
 
+   @c Synths::Parabola @ref parabola.h
+
    @c Synths::Triangle @ref triangle.h
 
    @c Synths::FallingSaw @ref falling_saw.h
 
    @c Synths::RisingSaw @ref rising_saw.h
+
+   @c Synths::ImpulseTrain @ref impulse_train.h
 
    @subsection filters_ssect Filters
 
@@ -178,6 +307,8 @@
    @c Filters::Highpass @ref highpass.h
 
    @c Filters::Lowpass @ref lowpass.h
+
+   @c Filters::Notch @ref notch.h
 
    @c Filters::Distortion @ref distortion.h
 
@@ -198,6 +329,8 @@
    @c Mixer @ref mixer.h
 
    @c Modulator @ref modulator.h
+
+   @c Pan @ref pan.h
 
    @c Sampler @ref sampler.h
 

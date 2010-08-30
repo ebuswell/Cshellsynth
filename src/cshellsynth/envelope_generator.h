@@ -7,18 +7,17 @@
  * Creates an envelope corresponding to a control signal.
  *
  * @verbatim
- *            _ attack_a
- *         _-- \
- *       --     \
- *     /          \________ sustain_a
- *    /                    \
- *  /                       \
- * /                          \
- * release_a                   release_a
- * |__________|___|       |___|
- *  attack_t   decay_t     release_t
- *
- * @endverbatim
+           _ attack_a
+        _-- \
+      --     \
+    /          \________ sustain_a
+   /                    \
+ /                       \
+/                          \
+release_a                   release_a
+|__________|___|       |___|
+ attack_t   decay_t     release_t
+@endverbatim
  *
  * The bad ascii art is trying to illustrate the default exponential version.
  *

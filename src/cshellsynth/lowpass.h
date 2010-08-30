@@ -4,9 +4,10 @@
  *
  * Ruby version: @c Filters::Lowpass
  *
- * H(s) = 1 / (s^2 + s/Q + 1)
+ * @verbatim
+H(s) = 1 / (s^2 + s/Q + 1)
+@endverbatim
  *
- * @endverbatim
  */
 /*
  * Copyright 2010 Evan Buswell

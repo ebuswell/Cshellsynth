@@ -7,11 +7,9 @@
  * Translates a linear change into an exponential change according to the equation:
  *
  * @verbatim
- *
- *   x
- * z2
- *
- * @endverbatim
+  x
+z2
+@endverbatim
  *
  * where x is the original input, and z is @c zero, the value when x is 0
  *

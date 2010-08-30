@@ -7,12 +7,10 @@
  * This produces a wave corresponding to the equation
  *
  * @verbatim
- *
- * inf  n
- *  E  b  * sin((n + 1)wt)
- * n=0
- *
- * @endverbatim
+inf  n-1
+ Σ  b    * sin(n*wt)
+n=1
+@endverbatim
  *
  * Where b is "brightness", valued from 0 (a sine wave, @ref sine.h) to 1 (a
  * cotangent/2 wave, containing equal amounts of all frequencies, @ref cot.h).

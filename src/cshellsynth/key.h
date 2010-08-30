@@ -9,10 +9,9 @@
  * It does so according to an array which corresponds to the scale:
  *
  * @verbatim
- *              n/l
- * rt[n % l] * 2
- *
- * @endverbatim
+             n/l
+rt[n % l] * 2
+@endverbatim
  *
  * where r is the root, t is the tuning array, n is the note, and l is the length of the
  * array.  Note that n / l is truncated integer arithmetic, such that n / l is the integer
@@ -21,28 +20,24 @@
  * Additionally, notes may be fractional.  Fractional notes correspond to the equation:
  *
  * @verbatim
- *
- *       f
- * p(n/p)
- *
- * @endverbatim
+      f
+p(n/p)
+@endverbatim
  *
  * where p is the previous note, n is the next note, and f is the fractional portion.
  *
  * Note that in the case of equal temperament, this all just reduces to:
  *
  * @verbatim
- *
- *    n
- * r*2
- *
- * @endverbatim
+   n
+r*2
+@endverbatim
  *
  * Key comes with a number of pre-defined scales.  Minor, Major, Equal-Tempered, and
  * Pythagorean.  If you wish to define your own, pass an array of fractional values
  * between 1 and 2 that correspond to the notes in your scale.  If you have a favorite
- * somewhat conventional scale that you think should be predefined, file a bug with the
- * fractional coefficients of each note, and I'll probably add it.
+ * somewhat conventional scale that you think should be predefined, file a bug or send an
+ * email with the fractional coefficients of each note, and I'll probably add it.
  */
 /*
  * Copyright 2010 Evan Buswell

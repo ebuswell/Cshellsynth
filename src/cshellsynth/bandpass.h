@@ -4,9 +4,10 @@
  *
  * Ruby version: @c Filters::Bandpass
  *
- * H(s) = (s/Q) / (s^2 + s/Q + 1)
+ * @verbatim
+H(s) = (s/Q) / (s^2 + s/Q + 1)
+@endverbatim
  *
- * @endverbatim
  */
 /*
  * Copyright 2010 Evan Buswell

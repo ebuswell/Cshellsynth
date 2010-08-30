@@ -4,21 +4,40 @@
  *
  * Ruby version: @c Filters::Distortion
  *
- * Limits input according to the equation:
- *
- * @verbatim
- *          -s(gx - 1)
- *     log(e             + 1)
- * 1 - ----------------------
- *          -s
- *     log(e   + 1)
- *
- * @endverbatim
- *
- * where s is @c sharpness, g is @c gain, and x is the original input.  There is a
- * symmetrical equation for when x is negative.
+ * Limits input according to one of the following equations, where s is @c sharpness, g is
+ * @c gain, and x is the original input.
  *
  * Lower values of @c sharpness make the sound less "warm" and vice versa.
+ *
+ * For <tt>Exponential</tt>:
+ *
+ * @verbatim
+         -s(gx - 1)
+    log(e           + 1)
+1 - --------------------
+            -s
+       log(e   + 1)
+@endverbatim
+ *
+ * With a symmetrical equation for a negative x.
+ *
+ * For <tt>Hyperbolic</tt>:
+ *
+ * @verbatim
+      gx
+--------------
+     s     1/s
+(|gx|  + 1)
+@endverbatim
+ *
+ * For <tt>Arctangent</tt>:
+ *
+ * @verbatim
+2atan(sgx)
+----------
+    π
+@endverbatim
+ *
  */
 /*
  * Copyright 2010 Evan Buswell

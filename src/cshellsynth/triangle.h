@@ -43,7 +43,7 @@ typedef struct cs_triangle_struct {
     jack_port_t *out_port;
     atomic_float_t amp;
     atomic_float_t offset;
-    atomic_double_t slope; /** See @cs_triangle_set_slope */
+    atomic_double_t slope; /** See @ref cs_triangle_set_slope */
     double t; /** Time offset, as a fraction of wavelength */
 } cs_triangle_t;
 
