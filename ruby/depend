@@ -22,6 +22,7 @@
 distdir:
 	$(MAKEDIRS) $(distdir)/cshellsynth
 	$(COPY) *.c *.h depend extconf.rb $(distdir)
+	$(RM) $(distdir)/cshellsynth.c
 	$(COPY) cshellsynth/*.rb $(distdir)/cshellsynth/
 install-data:
 install-exec: install
