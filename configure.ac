@@ -20,7 +20,7 @@
 # along with Cshellsynth.  If not, see <http://www.gnu.org/licenses/>.
 
 AC_PREREQ([2.65])
-AC_INIT([cshellsynth], [0.5501], [ebuswell@gmail.com])
+AC_INIT([cshellsynth], [0.5502], [ebuswell@gmail.com])
 AM_INIT_AUTOMAKE([-Wall foreign])
 AC_CONFIG_SRCDIR([src/synth.c])
 AC_CONFIG_HEADERS([src/config.h])
