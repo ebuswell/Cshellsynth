@@ -14,14 +14,17 @@
 
    The source code for Cshellsynth can be downloaded
    <a
-   href="http://github.com/downloads/ebuswell/Cshellsynth/cshellsynth-0.5502.tar.gz">here</a>.
+   href="http://github.com/ebuswell/Cshellsynth/downloads/">here</a>.
    Please refer to the enclosed documentation for compilation instructions.
 
    To file a bug report, or for more information, see the github page:
    http://github.com/ebuswell/Cshellsynth
 
-   To offer feedback of any sort, or to help with the development process, please join in
-   at cshellsynth-dev@googlegroups.com
+   To get help, offer feedback of any sort, share what you've done, or <i>especially</i>
+   to help with the development process, please join in at
+   cshellsynth-dev@googlegroups.com.  To join this list, send an email to
+   cshellsynth-dev+subscribe@googlegroups.com.  Public archives are located at:
+   http://groups.google.com/group/cshellsynth-dev
 
    @section bugs_sec Bugs
 
@@ -49,6 +52,14 @@
    ./waf [other options] --clients=512
    
    @endcode
+
+   Since Ubuntu and most flavors of Debian have almost all of their audio stuff compiled
+   against jack1, you'll need to build a .deb of jack2 that claims to be jack1.  There's a
+   patch against the jack2 source that should help you do that---as well as set up options
+   suitable for cshellsynth---located in the attachment to <a
+   href="http://groups.google.com/group/cshellsynth-dev/msg/92e9a1bf9901119d">this
+   message</a>.  Obviously, this is a hack, and although no problems have been reported,
+   it may be unstable in certain situations.
 
    @section started_sec Getting Started
    
@@ -135,7 +146,7 @@
    parameters for which a dynamic setting is useless, and ports for which a static setting
    is useless.  Otherwise, it's a bug and should be reported; please include the use case.
 
-   At the moment, this is implemented by use of the @c NaN (Not a Number) values.  If a
+   At the moment, this is implemented by use of @c NaN (Not a Number) values.  If a
    parameter is set to a number, the port is not used; otherwise values are read from the
    port.  In most cases, you won't have to think about this, as normally, when you connect
    a port the parameter will automatically be set to NaN.  However, as Jack is somewhat
@@ -187,7 +198,7 @@
 
    @code
 
-   seq << "0~1~2~3~4 3 2 1 0~2~4 2 0~~~~~  "
+   seq << "0~2~4~5~7 5 4 2 0~4~7 4 0~~~~~  "
 
    @endcode
 
@@ -203,10 +214,13 @@
    Sequencers should (probably) be connected to the same @c Clock.  There is a default
    global clock created as @c $clock.
 
-   A @c Clock runs from 0 to @c Clock\#meter at @c Clock\#rate.  If Clock\#rate is set via
-   port, it is always in beats per sample.  If the @c rate parameter is set instead,
+   A @c Clock runs from 0 to @c Clock\#meter at @c Clock\#rate.  If @c Clock\#rate is set
+   via port, it is always in beats per sample.  If the @c rate parameter is set instead,
    values greater than 1 are interpreted as beats per minute, less than one as beats per
-   sample.
+   sample.  @c Clock\#meter only has an effect on the offset parameter for newly added
+   sequences.  A given sequence need not be an integer multiple of @c Clock\#meter in
+   length; this allows for certain complex rhythms to be set up, but also allows for
+   mistakes that sound really bad, so be careful.
 
    @section example_sec Example
 
