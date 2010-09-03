@@ -38,13 +38,13 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </div>
 </div>
 <div class="contents">
-<h1>Cshellsynth </h1><h3 class="version">0.55 </h3><h2><a class="anchor" id="intro_sec">
+<h1>Cshellsynth </h1><h3 class="version">0.5502 </h3><h2><a class="anchor" id="intro_sec">
 Introduction</a></h2>
 <p>Cshellsynth is library and a ruby module for software synthesis. It utilizes the <a href="http://jackaudio.org">jack api</a> for interaction with the sound card and other utilities. It also has one module---so far---that utilizes <a href="http://www.mega-nerd.com/libsndfile/">libsndfile</a>.</p>
 <p>Cshellsynth is designed to be mathematically precise, yet with an incredibly simple interface. It is my hope that with the included <a href="http://ruby-lang.org">Ruby</a> module, it will be useful for livecoding, but that is certainly not its only use.</p>
-<p>The source code for Cshellsynth can be downloaded <a href="http://github.com/downloads/ebuswell/Cshellsynth/cshellsynth-0.5501.tar.gz">here</a>. Please refer to the enclosed documentation for compilation instructions.</p>
+<p>The source code for Cshellsynth can be downloaded <a href="http://github.com/ebuswell/Cshellsynth/downloads/">here</a>. Please refer to the enclosed documentation for compilation instructions.</p>
 <p>To file a bug report, or for more information, see the github page: <a href="http://github.com/ebuswell/Cshellsynth">http://github.com/ebuswell/Cshellsynth</a></p>
-<p>To offer feedback of any sort, or to help with the development process, please join in at <a href="mailto:cshellsynth-dev@googlegroups.com">cshellsynth-dev@googlegroups.com</a></p>
+<p>To get help, offer feedback of any sort, share what you've done, or <em>especially</em> to help with the development process, please join in at <a href="mailto:cshellsynth-dev@googlegroups.com">cshellsynth-dev@googlegroups.com</a>. To join this list, send an email to <a href="mailto:cshellsynth-dev+subscribe@googlegroups.com">cshellsynth-dev+subscribe@googlegroups.com</a>. Public archives are located at: <a href="http://groups.google.com/group/cshellsynth-dev">http://groups.google.com/group/cshellsynth-dev</a></p>
 <h2><a class="anchor" id="bugs_sec">
 Bugs</a></h2>
 <p>When installed to <code>/usr/local</code>, you must set <code>LD_LIBRARY_PATH=/usr/local/lib</code> when running ruby, e.g.</p>
@@ -53,7 +53,8 @@ Bugs</a></h2>
 <div class="fragment"><pre class="fragment">   jackd -p [maximum number of ports]
 </pre></div><p>to raise the maximum number of ports. Unfortunately, the only way to raise the maximum number of clients is to recompile jack2. Run waf with</p>
 <div class="fragment"><pre class="fragment">   ./waf [other options] --clients=512
-</pre></div><h2><a class="anchor" id="started_sec">
+</pre></div><p>Since Ubuntu and most flavors of Debian have almost all of their audio stuff compiled against jack1, you'll need to build a .deb of jack2 that claims to be jack1. There's a patch against the jack2 source that should help you do that---as well as set up options suitable for cshellsynth---located in the attachment to <a href="http://groups.google.com/group/cshellsynth-dev/msg/92e9a1bf9901119d">this message</a>. Obviously, this is a hack, and although no problems have been reported, it may be unstable in certain situations.</p>
+<h2><a class="anchor" id="started_sec">
 Getting Started</a></h2>
 <p>This assumes you have already compiled and installed Cshellsynth. If not, refer to the README and INSTALL file for details. This mainly pertains to using Cshellsynth through the Ruby module, but it should be useful even to someone who only wishes to use C.</p>
 <p>Cshellsynth is a modular synthesizer. That means that every aspect of synthesis here is conceptually separate, and synthesis takes part in stages. Every module is (at lease one) Jack client, but you probably don't need to think about that fact unless you're having resource troubles. What's important to know is that every module has one or more out ports, and most modules have one or more in ports. You connect them together with jack_connect, or in Ruby, like:</p>
@@ -74,7 +75,7 @@ Getting Started</a></h2>
 <h2><a class="anchor" id="para_port">
 Parameters, Ports, and Units</a></h2>
 <p>Every module is configurable with parameters and ports. In most cases, ports and parameters are interchangable, e.g. <code>synth.freq = key.freq</code> will connect the <code>synth</code> object's frequency input port to the <code>key</code> object's frequency output port, and <code>synth.freq = 440.0</code> will set the <code>synth</code> object's frequency parameter to a constant 440. There are, however, some ports with no corresponding parameter, and some parameters with no corresponding port. However, this should only be the case with parameters for which a dynamic setting is useless, and ports for which a static setting is useless. Otherwise, it's a bug and should be reported; please include the use case.</p>
-<p>At the moment, this is implemented by use of the <code>NaN</code> (Not a Number) values. If a parameter is set to a number, the port is not used; otherwise values are read from the port. In most cases, you won't have to think about this, as normally, when you connect a port the parameter will automatically be set to NaN. However, as Jack is somewhat independent, many things can happen whereby a port will be connected but a parameter will not be set to NaN. In that case, you can manually set the parameter to NaN (via something like <code>synth.param = 0.0/0.0</code>), and the port will start working. This works fine, but is considered a low-priority bug.</p>
+<p>At the moment, this is implemented by use of <code>NaN</code> (Not a Number) values. If a parameter is set to a number, the port is not used; otherwise values are read from the port. In most cases, you won't have to think about this, as normally, when you connect a port the parameter will automatically be set to NaN. However, as Jack is somewhat independent, many things can happen whereby a port will be connected but a parameter will not be set to NaN. In that case, you can manually set the parameter to NaN (via something like <code>synth.param = 0.0/0.0</code>), and the port will start working. This works fine, but is considered a low-priority bug.</p>
 <p>The default units for parameters and ports allow for maximum control. Wherever possible, they are also intuitive, but control is always a priority over ease. With data sent over the ports, time units are always in samples, frequency units are always cycles per sample; when setting parameters, however, time units are always in seconds, frequency units are always in Hz, EXCEPT for values &lt; 1 Hz, which are per sample. The reason for this is so that functions like <code>Key#note2freq</code> (<a class="el" href="key_8h.html#a524e9ed220ff3b729830adf484098cd2">cs_key_note2freq</a>) can be used for setting static parameters in a way that is identical to the ports. Unless a <code>Synth</code> has a <code>scale</code> parameter, amplitude is normalized so that the root frequency of a given wave is 1. This means that by default most synths have a maximum amplitude of more than 1 and should be mixed accordingly; e.g. a sawtooth wave (ideally) has a maximum amplitude of π/2, and a parabolic wave has a maximum amplitude of π<sup>2</sup>/6. The actual maximums are usually even greater from the effects of bandlimiting.</p>
 <h2><a class="anchor" id="seq_sec">
 Sequencers, Clocks, and Polyphony</a></h2>
@@ -85,11 +86,11 @@ Sequencers, Clocks, and Polyphony</a></h2>
                              [start_time2, stop_time2, value2],
                              [start_time3, stop_time3, value3], ...)
 </pre></div><p>The second form uses a mini-language. You pass the sequencer a string where every token takes up a fixed amount of time, a space indicates a silence, a number indicates a value, and a tilde indicates the continuation of a note, e.g.:</p>
-<div class="fragment"><pre class="fragment">   seq &lt;&lt; <span class="stringliteral">&quot;0~1~2~3~4 3 2 1 0~2~4 2 0~~~~~  &quot;</span>
+<div class="fragment"><pre class="fragment">   seq &lt;&lt; <span class="stringliteral">&quot;0~2~4~5~7 5 4 2 0~4~7 4 0~~~~~  &quot;</span>
 </pre></div><p>will play a simple warm-up excercise. The length of time that a given token takes up is given by <code>Sequencer#granularity</code>, where a beat (quarter note) is 1, an eighth note is 0.5, etc.</p>
 <p>Since the target use is livecoding, by default both of these methods will repeat once they are finished. If you don't want this, use <code>Sequencer#sequence_once</code> or <code>Sequencer#&gt;&gt;</code>.</p>
 <p>A sequencer will only start to do anything once a <code>Clock</code> is connected. All <code>Sequencers</code> should (probably) be connected to the same <code>Clock</code>. There is a default global clock created as <code>$clock</code>.</p>
-<p>A <code>Clock</code> runs from 0 to <code>Clock#meter</code> at <code>Clock#rate</code>. If Clock#rate is set via port, it is always in beats per sample. If the <code>rate</code> parameter is set instead, values greater than 1 are interpreted as beats per minute, less than one as beats per sample.</p>
+<p>A <code>Clock</code> runs from 0 to <code>Clock#meter</code> at <code>Clock#rate</code>. If <code>Clock#rate</code> is set via port, it is always in beats per sample. If the <code>rate</code> parameter is set instead, values greater than 1 are interpreted as beats per minute, less than one as beats per sample. <code>Clock#meter</code> only has an effect on the offset parameter for newly added sequences. A given sequence need not be an integer multiple of <code>Clock#meter</code> in length; this allows for certain complex rhythms to be set up, but also allows for mistakes that sound really bad, so be careful.</p>
 <h2><a class="anchor" id="example_sec">
 Example</a></h2>
 <p>Cshellsynth comes bundled with a class <code>MiniSynth</code> that is pre-configured to turn your computer into a less-than-totally modular synth. Play with it, then look at the source code in <code>ruby/cshellsynth/extra.rb</code> to get an idea of how it works.</p>
@@ -168,7 +169,7 @@ Miscellaneous</a></h3>
 </iframe>
 </div>
 
-<hr class="footer"/><address style="text-align: right;"><small>Generated on Thu Sep 2 13:17:58 2010 for cshellsynth by&nbsp;
+<hr class="footer"/><address style="text-align: right;"><small>Generated on Thu Sep 2 23:47:09 2010 for cshellsynth by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.3 </small></address>
 </body>

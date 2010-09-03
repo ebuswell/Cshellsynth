@@ -75,7 +75,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00045"></a>00045     jack_port_t *out_port;
 <a name="l00046"></a>00046     atomic_float_t amp;
 <a name="l00047"></a>00047     atomic_float_t offset;
-<a name="l00048"></a>00048     atomic_double_t duty_cycle; 
+<a name="l00048"></a>00048     atomic_float_t duty_cycle; 
 <a name="l00049"></a><a class="code" href="structcs__square__t.html#a28b3721c758b4fadbb019a3d045c70a5">00049</a>     <span class="keywordtype">double</span> t; 
 <a name="l00050"></a>00050 } <a class="code" href="structcs__square__t.html">cs_square_t</a>;
 <a name="l00051"></a>00051 
@@ -89,7 +89,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00075"></a>00075 <span class="preprocessor"></span>
 <a name="l00079"></a><a class="code" href="square_8h.html#a81ec53ef06d121a2b153ddb6f6c8d114">00079</a> <span class="preprocessor">#define cs_square_set_amp(cs_square, amp) cs_synth_set_amp((cs_synth_t *) (cs_square), (amp))</span>
 <a name="l00080"></a>00080 <span class="preprocessor"></span>
-<a name="l00088"></a>00088 <span class="keywordtype">void</span> <a class="code" href="square_8h.html#aa1f724df7103121bf1edecafd9ff3315">cs_square_set_duty_cycle</a>(<a class="code" href="structcs__square__t.html">cs_square_t</a> *<span class="keyword">self</span>, <span class="keywordtype">double</span> duty_cycle);
+<a name="l00088"></a>00088 <span class="keywordtype">void</span> <a class="code" href="square_8h.html#ae116f6af92af7f7c04d99a2794cb8843">cs_square_set_duty_cycle</a>(<a class="code" href="structcs__square__t.html">cs_square_t</a> *<span class="keyword">self</span>, <span class="keywordtype">float</span> duty_cycle);
 <a name="l00089"></a>00089 
 <a name="l00090"></a>00090 <span class="preprocessor">#endif</span>
 </pre></div></div>
@@ -107,7 +107,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-<hr class="footer"/><address style="text-align: right;"><small>Generated on Thu Sep 2 13:17:58 2010 for cshellsynth by&nbsp;
+<hr class="footer"/><address style="text-align: right;"><small>Generated on Thu Sep 2 23:47:09 2010 for cshellsynth by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.3 </small></address>
 </body>
