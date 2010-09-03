@@ -25,7 +25,6 @@
 #include "cshellsynth/jclient.h"
 #include "falling_saw.h"
 #include "atomic-float.h"
-#include "atomic-double.h"
 
 static int cs_square_process(jack_nframes_t nframes, void *arg) {
     cs_square_t *self = (cs_square_t *) arg;
@@ -34,7 +33,7 @@ static int cs_square_process(jack_nframes_t nframes, void *arg) {
     if(out_buffer == NULL) {
 	return -1;
     }
-    double duty_cycle = atomic_double_read(&self->duty_cycle);
+    float duty_cycle = atomic_float_read(&self->duty_cycle);
     float freq = atomic_float_read(&self->freq);
     if(isnanf(freq)) {
 	freq_buffer = (float *) jack_port_get_buffer(self->freq_port, nframes);
@@ -56,7 +55,7 @@ static int cs_square_process(jack_nframes_t nframes, void *arg) {
 	    }
 	    double n = floor(1.0 / (2.0 * f));
 	    double na = (0.5 - n*f) / 0.0003;
-	    double t2 = self->t + duty_cycle;
+	    double t2 = self->t + ((double) duty_cycle);
 	    if(t2 >= 1.0) {
 		t2 -= 1.0;
 	    }
@@ -67,8 +66,8 @@ static int cs_square_process(jack_nframes_t nframes, void *arg) {
     return 0;
 }
 
-void cs_square_set_duty_cycle(cs_square_t *self, double duty_cycle) {
-    atomic_double_set(&self->duty_cycle, duty_cycle);
+void cs_square_set_duty_cycle(cs_square_t *self, float duty_cycle) {
+    atomic_float_set(&self->duty_cycle, duty_cycle);
 }
 
 int cs_square_init(cs_square_t *self, const char *client_name, jack_options_t flags, char *server_name) {
@@ -82,7 +81,7 @@ int cs_square_init(cs_square_t *self, const char *client_name, jack_options_t fl
 	return r;
     }
     self->t = 0.0;
-    atomic_double_set(&self->duty_cycle, 0.5);
+    atomic_float_set(&self->duty_cycle, 0.5);
     r = jack_activate(self->client);
     if(r != 0) {
 	cs_synth_destroy((cs_synth_t *) self);

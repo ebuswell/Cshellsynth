@@ -23,7 +23,6 @@
 #include "cshellsynth/notch.h"
 #include "cshellsynth/filter.h"
 #include "atomic-float.h"
-#include "atomic-double.h"
 
 static int cs_notch_process(jack_nframes_t nframes, void *arg) {
     cs_notch_t *self = (cs_notch_t *) arg;

@@ -86,11 +86,11 @@ typedef struct cs_envg_struct {
     jack_client_t *client;
     jack_port_t *ctl_port; /** Input control port */
     jack_port_t *out_port; /** Output */
-    atomic_double_t attack_t; /** Attack time */
+    atomic_float_t attack_t; /** Attack time */
     atomic_float_t attack_a; /** Attack amplitude */
-    atomic_double_t decay_t; /** Decay time */
+    atomic_float_t decay_t; /** Decay time */
     atomic_float_t sustain_a; /** Sustain amplitude */
-    atomic_double_t release_t; /** Release time */
+    atomic_float_t release_t; /** Release time */
     atomic_float_t release_a; /** Release amplitude */
     atomic_t linear; /** Whether it's linear or exponential */
     bool upwards; /** Keeps track of which direction we're going */
@@ -118,7 +118,7 @@ int cs_envg_init(cs_envg_t *self, const char *client_name, jack_options_t flags,
  *
  * Ruby version: @c attack_t=
  */
-void cs_envg_set_attack_t(cs_envg_t *self, double attack_t);
+void cs_envg_set_attack_t(cs_envg_t *self, float attack_t);
 
 /**
  * Set attack amplitude
@@ -132,7 +132,7 @@ void cs_envg_set_attack_a(cs_envg_t *self, float attack_a);
  *
  * Ruby version: @c decay_t=
  */
-void cs_envg_set_decay_t(cs_envg_t *self, double decay_t);
+void cs_envg_set_decay_t(cs_envg_t *self, float decay_t);
 
 /**
  * Set sustain amplitude
@@ -146,7 +146,7 @@ void cs_envg_set_sustain_a(cs_envg_t *self, float sustain_a);
  *
  * Ruby version: @c release_t=
  */
-void cs_envg_set_release_t(cs_envg_t *self, double release_t);
+void cs_envg_set_release_t(cs_envg_t *self, float release_t);
 
 /**
  * Set release amplitude

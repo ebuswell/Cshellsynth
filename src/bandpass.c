@@ -23,7 +23,6 @@
 #include "cshellsynth/bandpass.h"
 #include "cshellsynth/filter.h"
 #include "atomic-float.h"
-#include "atomic-double.h"
 
 static int cs_bandpass_process(jack_nframes_t nframes, void *arg) {
     cs_bandpass_t *self = (cs_bandpass_t *) arg;

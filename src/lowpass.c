@@ -23,7 +23,6 @@
 #include "cshellsynth/lowpass.h"
 #include "cshellsynth/filter.h"
 #include "atomic-float.h"
-#include "atomic-double.h"
 
 static int cs_lowpass_process(jack_nframes_t nframes, void *arg) {
     cs_lowpass_t *self = (cs_lowpass_t *) arg;

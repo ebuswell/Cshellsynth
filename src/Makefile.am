@@ -29,4 +29,4 @@ test_CFLAGS = $(JACK_CFLAGS) $(SNDFILE_CFLAGS) $(CFLAGS) -Wall -Wextra
 TESTS = test
 MAINTAINERCLEANFILES = Makefile.in config.h.in config.h.in~
 
-EXTRA_DIST = atomic-double.h atomic-float.h atomic.h atomic-long.h atomic-ptr.h falling_saw.h parabola.h util.h cshellsynth/main.dxg
+EXTRA_DIST = atomic-float.h atomic.h atomic-long.h atomic-ptr.h falling_saw.h parabola.h util.h cshellsynth/main.dxg

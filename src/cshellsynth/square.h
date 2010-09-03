@@ -45,7 +45,7 @@ typedef struct cs_square_struct {
     jack_port_t *out_port;
     atomic_float_t amp;
     atomic_float_t offset;
-    atomic_double_t duty_cycle; /** Fraction of time the wave spends at the maximum. */
+    atomic_float_t duty_cycle; /** Fraction of time the wave spends at the maximum. */
     double t; /** Time offset, as a fraction of wavelength */
 } cs_square_t;
 
@@ -85,6 +85,6 @@ int cs_square_init(cs_square_t *self, const char *client_name, jack_options_t fl
  *
  * @param duty_cycle duty cycle.  0.5 by default.
  */
-void cs_square_set_duty_cycle(cs_square_t *self, double duty_cycle);
+void cs_square_set_duty_cycle(cs_square_t *self, float duty_cycle);
 
 #endif

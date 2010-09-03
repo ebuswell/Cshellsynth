@@ -24,7 +24,6 @@
 #include "cshellsynth/envelope_generator.h"
 #include "cshellsynth/jclient.h"
 #include "atomic-float.h"
-#include "atomic-double.h"
 
 static inline double cs_envg_process_stage(int linear, double from, double to, double last, double time) {
     if(linear) {
@@ -44,11 +43,11 @@ static int cs_envg_process(jack_nframes_t nframes, void *arg) {
     if(out_buffer == NULL) {
 	return -1;
     }
-    double attack_t = atomic_double_read(&self->attack_t);
+    float attack_t = atomic_float_read(&self->attack_t);
     float attack_a = atomic_float_read(&self->attack_a);
-    double decay_t = atomic_double_read(&self->decay_t);
+    float decay_t = atomic_float_read(&self->decay_t);
     float sustain_a = atomic_float_read(&self->sustain_a);
-    double release_t = atomic_double_read(&self->release_t);
+    float release_t = atomic_float_read(&self->release_t);
     float release_a = atomic_float_read(&self->release_a);
     int linear = atomic_read(&self->linear);
     double attack_adj = attack_adj; /* suppress uninitialized warning */
@@ -75,7 +74,7 @@ static int cs_envg_process(jack_nframes_t nframes, void *arg) {
 	}
 	switch(self->state) {
 	case ATTACK:
-	    if(attack_t <= 0.0) {
+	    if(attack_t <= 0.0f) {
 		self->last_a = attack_a;
 		self->state = DECAY;
 		self->upwards = (sustain_a > self->last_a);
@@ -90,7 +89,7 @@ static int cs_envg_process(jack_nframes_t nframes, void *arg) {
 		break;
 	    }
 	case DECAY:
-	    if(decay_t <= 0.0) {
+	    if(decay_t <= 0.0f) {
 		self->state = SUSTAIN;
 		// fall through
 	    } else {
@@ -136,7 +135,7 @@ static int cs_envg_process(jack_nframes_t nframes, void *arg) {
 		}
 	    }
 	case RELEASE:
-	    if(release_t <= 0.0) {
+	    if(release_t <= 0.0f) {
 		self->state = FINISHED;
 		// fall through
 	    } else {
@@ -173,12 +172,12 @@ int cs_envg_init(cs_envg_t *self, const char *client_name, jack_options_t flags,
 	return -1;
     }
 
-    atomic_double_set(&self->attack_t, 0.0);
+    atomic_float_set(&self->attack_t, 0.0f);
     atomic_float_set(&self->attack_a, 1.0f);
-    atomic_double_set(&self->decay_t, 0.0);
+    atomic_float_set(&self->decay_t, 0.0f);
     atomic_float_set(&self->sustain_a, 1.0f);
-    atomic_double_set(&self->release_t, 0.0);
-    atomic_float_set(&self->release_a, 0.0);
+    atomic_float_set(&self->release_t, 0.0f);
+    atomic_float_set(&self->release_a, 0.0f);
     atomic_set(&self->linear, 0);
     self->state = FINISHED;
     self->last_a = 0.0;
@@ -201,24 +200,24 @@ void cs_envg_set_linear(cs_envg_t *self, int linear) {
     atomic_set(&self->linear, linear);
 }
 
-void cs_envg_set_attack_t(cs_envg_t *self, double attack_t) {
-    atomic_double_set(&self->attack_t, attack_t * jack_get_sample_rate(self->client));
+void cs_envg_set_attack_t(cs_envg_t *self, float attack_t) {
+    atomic_float_set(&self->attack_t, attack_t * jack_get_sample_rate(self->client));
 }
 
 void cs_envg_set_attack_a(cs_envg_t *self, float attack_a) {
     atomic_float_set(&self->attack_a, attack_a);
 }
 
-void cs_envg_set_decay_t(cs_envg_t *self, double decay_t) {
-    atomic_double_set(&self->decay_t, decay_t * jack_get_sample_rate(self->client));
+void cs_envg_set_decay_t(cs_envg_t *self, float decay_t) {
+    atomic_float_set(&self->decay_t, decay_t * jack_get_sample_rate(self->client));
 }
 
 void cs_envg_set_sustain_a(cs_envg_t *self, float sustain_a) {
     atomic_float_set(&self->sustain_a, sustain_a);
 }
 
-void cs_envg_set_release_t(cs_envg_t *self, double release_t) {
-    atomic_double_set(&self->release_t, release_t * jack_get_sample_rate(self->client));
+void cs_envg_set_release_t(cs_envg_t *self, float release_t) {
+    atomic_float_set(&self->release_t, release_t * jack_get_sample_rate(self->client));
 }
 
 void cs_envg_set_release_a(cs_envg_t *self, float release_a) {

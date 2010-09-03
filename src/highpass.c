@@ -23,7 +23,6 @@
 #include "cshellsynth/highpass.h"
 #include "cshellsynth/filter.h"
 #include "atomic-float.h"
-#include "atomic-double.h"
 
 static int cs_highpass_process(jack_nframes_t nframes, void *arg) {
     cs_highpass_t *self = (cs_highpass_t *) arg;

@@ -38,19 +38,10 @@ typedef struct {
 typedef atomic64_t atomic_ptr_t;
 typedef atomic64_t atomic_long_t;
 
-typedef struct {
-	volatile double counter;
-} atomic_double_t;
-
 #else /* #ifdef __LP64__ */
 
 typedef atomic_t atomic_ptr_t;
 typedef atomic_t atomic_long_t;
-
-typedef struct {
-	volatile int counter;
-	volatile double d;
-} atomic_double_t;
 
 #endif /* #ifdef __LP64__ */
 
